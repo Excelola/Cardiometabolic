@@ -46,16 +46,30 @@ export const MOCK_MEASUREMENT_DEFINITION: MeasurementDefinition = {
 export const MOCK_MEASUREMENT_HISTORY: readonly MeasurementHistoryItem[] = [
   {
     id: "synthetic-record-1",
-    label: "Synthetic record",
+    label: "Sample record A",
     value: "—",
-    recordedAtLabel: "Example date",
+    recordedAtLabel: "Synthetic preview date",
     provenance: "User Entered",
   },
   {
     id: "synthetic-record-2",
-    label: "Imported synthetic record",
+    label: "Sample record B",
     value: "—",
-    recordedAtLabel: "Example date",
+    recordedAtLabel: "Synthetic preview date",
     provenance: "Imported",
+  },
+  {
+    id: "synthetic-record-3",
+    label: "Sample record C",
+    value: "—",
+    recordedAtLabel: "Synthetic preview date",
+    provenance: "Verified",
+  },
+  {
+    id: "synthetic-record-4",
+    label: "Sample derived item",
+    value: "—",
+    recordedAtLabel: "Synthetic preview date",
+    provenance: "System Derived",
   },
 ];

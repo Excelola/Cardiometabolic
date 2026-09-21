@@ -9,6 +9,7 @@ type FormFieldProps = Readonly<{
   helperText?: string;
   placeholder?: string;
   required?: boolean;
+  disabled?: boolean;
 }>;
 
 export function FormField({
@@ -20,6 +21,7 @@ export function FormField({
   helperText,
   placeholder,
   required = false,
+  disabled = false,
 }: FormFieldProps) {
   const helperId = helperText ? `${id}-help` : undefined;
 
@@ -32,6 +34,7 @@ export function FormField({
       <input
         aria-describedby={helperId}
         autoComplete={autoComplete}
+        disabled={disabled}
         id={id}
         inputMode={inputMode}
         name={id}

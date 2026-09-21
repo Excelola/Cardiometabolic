@@ -2,10 +2,11 @@
 
 ## Purpose and authority
 
-This document describes implementation decisions for the initial Next.js
-frontend foundation. The Google Drive Master PRD remains authoritative for
-product vision, requirements, journeys, rules, permissions, scope, and approved
-decisions. Master PRD sections 1–6 were stated as approved for this task.
+This document describes implementation decisions for the Next.js frontend
+foundation and approved HILERA visual system. The Google Drive Master PRD
+remains authoritative for product vision, requirements, journeys, rules,
+permissions, scope, and approved decisions. Master PRD sections 1–6 were stated
+as approved for this task.
 
 The foundation deliberately does not fill gaps in the product or clinical
 specification. A visible shell is not evidence that its backend behavior,
@@ -17,9 +18,11 @@ policy, field inventory, or clinical semantics have been approved.
   Server Components, error handling, and production builds.
 - TypeScript uses strict mode. Domain strings are modeled as readonly literal
   unions so unapproved values cannot be introduced casually.
-- Pages and display components are Server Components by default. The generic
-  measurement form is a small Client Component because it owns browser event
-  handling; only JSON-serializable definitions cross that boundary.
+- Pages and display components are Server Components by default. The route
+  shells and generic measurement form remain Server Components. Two small Client
+  Components handle current-route navigation state and prevent preview forms
+  from submitting sensitive values; only serializable content crosses those
+  boundaries.
 - There is no backend, database, authentication provider, session, API route,
   persistence, analytics, or external integration in this foundation.
 - The UI does not log identifiers, health data, secrets, or form values.
@@ -28,34 +31,39 @@ policy, field inventory, or clinical semantics have been approved.
 
 | Route | Purpose | Current behavior |
 | --- | --- | --- |
-| `/` | Landing page | Public informational shell |
-| `/sign-up` | Sign-up entry | Select phone or email; no account creation |
-| `/sign-in` | Sign-in entry | Select phone or email; no session creation |
-| `/auth` | Authentication choice | Shared method-selection shell |
-| `/auth/identifier/[channel]` | Identifier entry | Accepts `phone` or `email`; no submission or storage |
-| `/auth/verify` | Verification code | OTP UI shell; no delivery or verification |
-| `/onboarding` | Progressive onboarding | Approved field categories shown as one non-persistent preview |
+| `/` | Landing page | HILERA public shell with image-ready hero media |
+| `/sign-up` | Sign-up entry | Email-and-password account-creation shell; no persistence |
+| `/sign-in` | Sign-in entry | Email-and-password sign-in shell; no session creation |
+| `/auth` | Legacy authentication route | Inactive notice with links to the approved sign-in and sign-up routes |
+| `/auth/identifier/[channel]` | Legacy identifier route | Retained inactive shell for old `phone` and `email` deep links |
+| `/auth/verify` | Legacy verification route | Retained inactive shell; verification codes are not in the MVP journey |
+| `/onboarding` | Progressive onboarding | Approved basic profile field shell plus deferred consent and image-ready areas |
 | `/app` | Application entry | Redirects to the dashboard shell |
-| `/app/dashboard` | Limited dashboard | Synthetic cards and approved product-state list |
+| `/app/dashboard` | Limited dashboard | Current synthetic workflow state, navigation cards, and all approved product states |
 | `/app/measurements/new` | Generic measurement entry | Placeholder definition; saving disabled |
 | `/app/measurements/history` | Measurement history | Synthetic records and provenance labels |
-| `/app/trends` | Trend view | Empty visualization shell |
-| `/app/risk-summary` | Risk Awareness Summary | Empty inputs, summary, and provenance shells |
+| `/app/trends` | Trend view | Polished insufficient-history shell with no fabricated trend |
+| `/app/risk-summary` | Risk Awareness Summary | Structural readiness shell with no score or clinical interpretation |
 
 The `/app` prefix is an organizational route in this foundation, not an access
 control boundary. Real authentication and authorization must be enforced on the
 server once approved session and permission requirements exist.
 
+The active MVP authentication journey begins directly at `/sign-up` or
+`/sign-in`. No current navigation links to the legacy `/auth` routes. Those
+files remain only until a separate route-cleanup decision is approved.
+
 ## Component structure
 
 ```text
 src/components
+├── brand/        exact approved HILERA lockup presentation
 ├── app/          authenticated shell and product-state presentation
-├── auth/         shared authentication cards and method selection
+├── auth/         shared authentication cards and email/password fields
 ├── health/       generic measurement and provenance components
 ├── onboarding/   progressive-step presentation
 ├── site/         public header and footer
-└── ui/           reusable link, card, field, and status primitives
+└── ui/           reusable buttons, cards, fields, badges, notices, media, and empty states
 ```
 
 Domain types live in `src/domain`; runtime-safe public configuration lives in
@@ -86,8 +94,9 @@ approved.
 
 ## Design-token strategy
 
-`src/app/globals.css` defines semantic custom properties rather than final brand
-names or palette scales:
+`src/app/globals.css` maps the approved HILERA palette to semantic custom
+properties. Raw palette values are declared once at the root; components consume
+semantic aliases rather than scattering color values:
 
 - `--color-primary`
 - `--color-surface`
@@ -98,10 +107,17 @@ names or palette scales:
 - `--color-warning`
 - `--color-critical`
 
-The assigned values are provisional, restrained, and brand-neutral. Components
-consume semantic aliases only. A later approved brand layer can change token
-values without rewriting component intent. Supporting tokens cover focus,
-contrast, spacing, radius, shadow, and content width.
+The approved palette is Forest `#1F3D2E`, Deep Green `#355E46`, Sage `#7FA387`,
+Mist `#DCE6D9`, Cream `#F7F4ED`, Warm Sand `#D8A77A`, Ink `#183029`,
+Secondary Text `#64736B`, Border `#D9E1DB`, and White `#FFFFFF`. Supporting
+tokens cover focus, contrast, spacing, radius, shadow, and content width. Major
+headings use the approved Georgia-style editorial serif stack; application UI
+uses an Inter-style system stack without a remote font dependency.
+
+The locked logo is extracted without redrawing from the approved
+`13_Brand_Tokens_Locked_Logo.svg` `Brand-Lockup` group and is served as
+`public/hilera-lockup.svg`. Shared `HileraLogo` and `BrandLockup` components are
+the only product UI entry points for that asset.
 
 Accessibility foundations include semantic landmarks, explicit labels,
 described-by relationships, keyboard-visible focus, a skip link, sufficient
@@ -109,23 +125,38 @@ touch target sizing, reduced-motion handling, responsive navigation, and text
 alternatives for placeholder visualizations. Formal accessibility testing and
 assistive-technology review remain required.
 
-## Configurable product name
+## Configurable approved product name
 
 `src/config/product.ts` reads the display-safe
 `NEXT_PUBLIC_PRODUCT_NAME` environment value and uses
-`Cardiometabolic Early Detection & Control` as a provisional fallback. UI and
-metadata consume that shared configuration. The final brand name is not treated
-as approved by this implementation.
+`HILERA` as the approved fallback. UI and metadata consume that shared
+configuration; no route embeds an alternate product name.
+
+## Responsive shells, footers, and media readiness
+
+- Public, authentication, and onboarding routes share the HILERA public header
+  and footer. The footer exposes Privacy and Terms areas and a concise product
+  boundary without inventing legal policy or claims.
+- `/app` routes share a responsive application header, current-route navigation,
+  sidebar, content frame, and compact legal strip. `/app` remains a frontend
+  namespace rather than an authorization boundary.
+- Landing and onboarding use the shared `MediaFrame` architecture so future
+  approved HILERA imagery can be inserted without restructuring either route.
+  No stock imagery or decorative imagery was added to health-data screens.
+- Desktop grids collapse deliberately at tablet and mobile breakpoints. Forms,
+  state cards, history rows, navigation, and actions stack without horizontal
+  page overflow; application navigation becomes a keyboard-accessible wrapping
+  grid on narrow viewports.
 
 ## Mocked and deferred behavior
 
 All displayed records and current-state values are synthetic. The following are
 intentionally absent or non-functional:
 
-- Account creation, authentication, sessions, and authorization
-- OTP delivery and verification
-- OTP expiry, resend timing, attempt limits, rate limits, provider, and fallback
-  recovery behavior
+- Account creation, authentication, password persistence, sessions, and authorization
+- Password complexity, expiry, recovery, lockout, and rate-limit behavior
+- Email ownership verification
+- Phone authentication and network-delivered verification codes
 - Data persistence, APIs, imports, verification, and derivation
 - Consent document text, versioning, jurisdiction rules, recording, and withdrawal
 - Approved country/market inventory and market-specific behavior
@@ -153,10 +184,13 @@ and traceable backend implementation.
 
 Implementation beyond the shells depends on approval or provision of:
 
-1. Final brand name and brand token values.
-2. Authentication journeys, session rules, role/permission model, account
-   recovery, and account deletion behavior.
-3. OTP policy, security controls, provider, fallback, and abuse-prevention rules.
+1. Approved production imagery and any final asset-delivery requirements.
+2. HILERA backend authentication contracts, password hashing and storage
+   implementation, production session infrastructure, and authorization design.
+   Plaintext passwords must never be stored by that future implementation.
+3. Password policy, session duration, account recovery, email ownership
+   verification, account lockout, rate-limit, role/permission, and account
+   deletion behavior.
 4. Consent content, versioning, jurisdiction mapping, audit requirements, and
    withdrawal behavior.
 5. Supported country/market inventory and localization requirements.

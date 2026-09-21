@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
 
 import { AuthCard } from "@/components/auth/auth-card";
-import { AuthMethodChoices } from "@/components/auth/auth-method-choices";
+import { AuthCredentialsForm } from "@/components/auth/auth-credentials-form";
 
 export const metadata: Metadata = { title: "Sign up" };
 
 export default function SignUpPage() {
   return (
     <AuthCard
-      eyebrow="Create your account"
-      intro="Choose a phone number or email address to begin the account-access flow. No account is created in this UI preview."
-      title="Start with a secure identifier"
+      eyebrow="Create your HILERA account"
+      intro="Use your email address and a password to begin."
+      note="This frontend preview does not create an account or store your email address or password."
+      title="Create your account"
     >
-      <AuthMethodChoices />
+      <AuthCredentialsForm mode="sign-up" />
     </AuthCard>
   );
 }

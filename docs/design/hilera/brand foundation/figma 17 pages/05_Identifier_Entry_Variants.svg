@@ -1,0 +1,50 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<title>HILERA Identifier Entry Variants</title>
+<defs>
+  <filter id="shadow" x="-20%" y="-20%" width="160%" height="180%">
+    <feDropShadow dx="0" dy="10" stdDeviation="22" flood-color="#1F3D2E" flood-opacity="0.08"/>
+  </filter>
+  <filter id="softShadow" x="-20%" y="-20%" width="160%" height="180%">
+    <feDropShadow dx="0" dy="5" stdDeviation="12" flood-color="#1F3D2E" flood-opacity="0.06"/>
+  </filter>
+  <linearGradient id="heroWash" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#F7F4ED"/>
+    <stop offset="100%" stop-color="#DCE6D9"/>
+  </linearGradient>
+  <style>
+    .sans { font-family: Inter, Arial, Helvetica, sans-serif; }
+    .serif { font-family: Georgia, "Times New Roman", serif; }
+  </style>
+</defs>
+<rect width="1600" height="1000" fill="#F7F4ED"/>
+<rect width="1600" height="1000" fill="#F2EEE6"/><text x="70" y="80" class="sans" font-size="13" font-weight="700" letter-spacing="2" fill="#7FA387">DYNAMIC ROUTE /auth/identifier/[channel]</text><text x="70" y="128" class="serif" font-size="40" font-weight="700" fill="#183029">Identifier-entry variants</text><g id="Phone-Variant"><rect x="70" y="180" width="700" height="730" rx="26" fill="#F7F4ED" stroke="#D9E1DB" filter="url(#shadow)"/>
+<g id="Brand-Lockup">
+
+<g id="Logo-Mark" transform="translate(125 235) scale(0.72)">
+  <circle cx="0" cy="0" r="29" fill="none" stroke="#1F3D2E" stroke-width="3"/>
+  <rect x="-11" y="-14" width="6" height="29" rx="3" fill="#1F3D2E"/>
+  <rect x="6" y="-5" width="6" height="20" rx="3" fill="#1F3D2E"/>
+  <circle cx="9" cy="-14" r="4.5" fill="#D8A77A"/>
+  <path d="M-5 2 C0 -5, 7 -8, 12 -7 C8 -1, 2 5, -5 9 Z" fill="#7FA387"/>
+</g>
+<text x="157.4" y="241.48" class="sans" font-size="18.72" font-weight="700" letter-spacing="4.32" fill="#1F3D2E">HILERA</text>
+</g><text x="125" y="340" class="sans" font-size="12" font-weight="700" letter-spacing="2" fill="#7FA387">SECURE ACCOUNT ACCESS</text><text x="125" y="400" class="serif" font-size="38" font-weight="700" fill="#183029">Enter your phone number</text><text x="125" y="440" class="sans" font-size="15" fill="#64736B">Use the phone you selected on the previous screen.</text><g id="Field-Phone"><text x="125" y="510" class="sans" font-size="14" font-weight="700" fill="#183029">Phone</text><rect x="125" y="524" width="590" height="56" rx="14" fill="#FFFFFF" stroke="#D9E1DB"/><g id="Icon-phone" transform="translate(143 540) scale(0.75)" fill="none" stroke="#64736B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M10 6h4M11 18h2"/></g><text x="175" y="559" class="sans" font-size="15" fill="#64736B">+234 000 000 0000</text></g><g id="Button-Continue-to-verification">
+<rect x="125" y="635" width="235" height="52" rx="14" fill="#1F3D2E" stroke="#1F3D2E"/>
+<g id="Icon-arrow" transform="translate(143 649) scale(0.8333333333333334)" fill="none" stroke="#F7F4ED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M14 7l5 5-5 5"/></g>
+<text x="251.5" y="668" text-anchor="middle" class="sans" font-size="16" font-weight="700" fill="#F7F4ED">Continue to verification</text>
+</g><rect x="125" y="720" width="590" height="104" rx="16" fill="#EEF3ED" stroke="#D9E1DB"/><g id="Icon-shield" transform="translate(148 748) scale(0.9166666666666666)" fill="none" stroke="#1F3D2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-2.3 8-7 10-4.7-2-7-5.4-7-10V6l7-3Z"/><path d="M9 12l2 2 4-5"/></g><text x="185" y="763" class="sans" font-size="14" font-weight="700" fill="#183029">Ownership verification required</text><text x="185" y="790" class="sans" font-size="13" fill="#64736B">Your identifier is not active until the approved verification step succeeds.</text></g><g id="Email-Variant"><rect x="820" y="180" width="700" height="730" rx="26" fill="#F7F4ED" stroke="#D9E1DB" filter="url(#shadow)"/>
+<g id="Brand-Lockup">
+
+<g id="Logo-Mark" transform="translate(875 235) scale(0.72)">
+  <circle cx="0" cy="0" r="29" fill="none" stroke="#1F3D2E" stroke-width="3"/>
+  <rect x="-11" y="-14" width="6" height="29" rx="3" fill="#1F3D2E"/>
+  <rect x="6" y="-5" width="6" height="20" rx="3" fill="#1F3D2E"/>
+  <circle cx="9" cy="-14" r="4.5" fill="#D8A77A"/>
+  <path d="M-5 2 C0 -5, 7 -8, 12 -7 C8 -1, 2 5, -5 9 Z" fill="#7FA387"/>
+</g>
+<text x="907.4" y="241.48" class="sans" font-size="18.72" font-weight="700" letter-spacing="4.32" fill="#1F3D2E">HILERA</text>
+</g><text x="875" y="340" class="sans" font-size="12" font-weight="700" letter-spacing="2" fill="#7FA387">SECURE ACCOUNT ACCESS</text><text x="875" y="400" class="serif" font-size="38" font-weight="700" fill="#183029">Enter your email address</text><text x="875" y="440" class="sans" font-size="15" fill="#64736B">Use the email you selected on the previous screen.</text><g id="Field-Email"><text x="875" y="510" class="sans" font-size="14" font-weight="700" fill="#183029">Email</text><rect x="875" y="524" width="590" height="56" rx="14" fill="#FFFFFF" stroke="#D9E1DB"/><g id="Icon-mail" transform="translate(893 540) scale(0.75)" fill="none" stroke="#64736B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M4 7l8 6 8-6"/></g><text x="925" y="559" class="sans" font-size="15" fill="#64736B">name@example.com</text></g><g id="Button-Continue-to-verification">
+<rect x="875" y="635" width="235" height="52" rx="14" fill="#1F3D2E" stroke="#1F3D2E"/>
+<g id="Icon-arrow" transform="translate(893 649) scale(0.8333333333333334)" fill="none" stroke="#F7F4ED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M14 7l5 5-5 5"/></g>
+<text x="1001.5" y="668" text-anchor="middle" class="sans" font-size="16" font-weight="700" fill="#F7F4ED">Continue to verification</text>
+</g><rect x="875" y="720" width="590" height="104" rx="16" fill="#EEF3ED" stroke="#D9E1DB"/><g id="Icon-shield" transform="translate(898 748) scale(0.9166666666666666)" fill="none" stroke="#1F3D2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-2.3 8-7 10-4.7-2-7-5.4-7-10V6l7-3Z"/><path d="M9 12l2 2 4-5"/></g><text x="935" y="763" class="sans" font-size="14" font-weight="700" fill="#183029">Ownership verification required</text><text x="935" y="790" class="sans" font-size="13" fill="#64736B">Your identifier is not active until the approved verification step succeeds.</text></g></svg>

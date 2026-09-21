@@ -3,52 +3,50 @@ import type { Metadata } from "next";
 import { ProductStateList } from "@/components/app/product-state-list";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
-import { StatusBanner } from "@/components/ui/status-banner";
-import { MOCK_CURRENT_PRODUCT_STATE } from "@/domain/product-state";
+import { InformationCard } from "@/components/ui/information-card";
+import { PageTitle } from "@/components/ui/page-title";
+import { StatusCard } from "@/components/ui/status-card";
+import { MOCK_CURRENT_PRODUCT_STATE, PRODUCT_STATE_DETAILS } from "@/domain/product-state";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
 export default function DashboardPage() {
   return (
     <>
-      <header className="page-heading">
-        <p className="eyebrow">Limited dashboard</p>
-        <h1>Your health information workspace</h1>
-        <p className="lede">
-          This authenticated shell uses synthetic content and does not establish a real session.
-        </p>
-      </header>
-      <StatusBanner>
-        Mock current product state: <strong>{MOCK_CURRENT_PRODUCT_STATE}</strong>
-      </StatusBanner>
-      <div className="dashboard-grid">
-        <Card>
-          <h2>Continue setup</h2>
-          <p>Review the progressive onboarding structure and pending dependencies.</p>
-          <ButtonLink href="/onboarding" variant="secondary">
-            Review setup
-          </ButtonLink>
-        </Card>
-        <Card>
-          <h2>Add information</h2>
-          <p>Preview a generic measurement-entry architecture without clinical fields.</p>
-          <ButtonLink href="/app/measurements/new" variant="secondary">
-            Open entry shell
-          </ButtonLink>
-        </Card>
-        <Card>
-          <h2>Risk Awareness Summary</h2>
-          <p>See the summary shell while inputs and approved calculations remain deferred.</p>
-          <ButtonLink href="/app/risk-summary" variant="secondary">
-            View summary shell
-          </ButtonLink>
-        </Card>
+      <PageTitle title="Your health, at a glance">
+        <p className="lede">A calm view of what you have completed and what comes next.</p>
+      </PageTitle>
+      <StatusCard
+        action={<ButtonLink href="/onboarding">Continue setup</ButtonLink>}
+        status={MOCK_CURRENT_PRODUCT_STATE}
+        title="Complete the next part of your setup."
+      >
+        <p>{PRODUCT_STATE_DETAILS[MOCK_CURRENT_PRODUCT_STATE]}</p>
+      </StatusCard>
+      <div className="dashboard-grid dashboard-grid--four">
+        <InformationCard title="Add information">
+          <p>Record a supported measurement when the approved inventory is available.</p>
+          <ButtonLink href="/app/measurements/new" variant="text">Add data</ButtonLink>
+        </InformationCard>
+        <InformationCard title="History">
+          <p>Review what you have recorded over time.</p>
+          <ButtonLink href="/app/measurements/history" variant="text">View history</ButtonLink>
+        </InformationCard>
+        <InformationCard title="Trends">
+          <p>See longitudinal views when enough supported history exists.</p>
+          <ButtonLink href="/app/trends" variant="text">View trends</ButtonLink>
+        </InformationCard>
+        <InformationCard title="Summary">
+          <p>A clinically governed summary appears only when its requirements are met.</p>
+          <ButtonLink href="/app/risk-summary" variant="text">View status</ButtonLink>
+        </InformationCard>
       </div>
-      <section className="section" aria-labelledby="states-heading">
+      <section className="section product-states-section" aria-labelledby="states-heading">
         <Card>
-          <h2 id="states-heading">Approved product-state model</h2>
+          <p className="eyebrow">Approved workflow states</p>
+          <h2 id="states-heading">Product-state presentation</h2>
           <p className="muted">
-            The list presents workflow states only; it does not represent medical status.
+            These states describe product progress only. They do not represent medical status.
           </p>
           <ProductStateList />
         </Card>

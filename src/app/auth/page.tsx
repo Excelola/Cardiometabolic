@@ -1,13 +1,27 @@
+import type { Metadata } from "next";
+
 import { AuthCard } from "@/components/auth/auth-card";
-import { AuthMethodChoices } from "@/components/auth/auth-method-choices";
+import { ButtonLink } from "@/components/ui/button-link";
+import { Notice } from "@/components/ui/notice";
+
+export const metadata: Metadata = { title: "Legacy authentication route" };
 
 export default function AuthPage() {
   return (
     <AuthCard
-      intro="Select the identifier you want to use. Provider and recovery behavior remain intentionally unconfigured."
-      title="Choose phone or email"
+      eyebrow="Legacy route"
+      intro="This route is not part of the current HILERA MVP authentication journey."
+      title="Choose an active account route"
     >
-      <AuthMethodChoices />
+      <div className="stack">
+        <Notice title="Email and password is the approved MVP model">
+          Phone authentication and network-delivered verification codes are deferred.
+        </Notice>
+        <ButtonLink href="/sign-in">Go to sign in</ButtonLink>
+        <ButtonLink href="/sign-up" variant="secondary">
+          Go to sign up
+        </ButtonLink>
+      </div>
     </AuthCard>
   );
 }

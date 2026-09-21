@@ -1,8 +1,8 @@
-# Cardiometabolic frontend
+# HILERA frontend
 
-Initial Next.js frontend foundation for Cardiometabolic Early Detection & Control.
-The displayed product name is provisional and configurable through
-`NEXT_PUBLIC_PRODUCT_NAME`.
+Next.js frontend foundation for HILERA. The approved product name remains
+centrally configurable through `NEXT_PUBLIC_PRODUCT_NAME`, with `HILERA` as the
+approved fallback.
 
 ## Requirements
 

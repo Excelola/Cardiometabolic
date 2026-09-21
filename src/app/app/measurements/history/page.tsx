@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 
-import { ProvenanceBadge } from "@/components/health/provenance-badge";
+import { MeasurementHistoryRow } from "@/components/health/measurement-history-row";
 import { Card } from "@/components/ui/card";
+import { PageTitle } from "@/components/ui/page-title";
 import { MOCK_MEASUREMENT_HISTORY } from "@/domain/health";
 
 export const metadata: Metadata = { title: "Measurement history" };
@@ -9,28 +10,22 @@ export const metadata: Metadata = { title: "Measurement history" };
 export default function MeasurementHistoryPage() {
   return (
     <>
-      <header className="page-heading">
-        <p className="eyebrow">Synthetic data</p>
-        <h1>Measurement history</h1>
+      <PageTitle title="Measurement history">
         <p className="lede">
-          A generic history surface showing provenance without approved measurement inventory.
+          Review supported information chronologically, including where it came from.
         </p>
-      </header>
+      </PageTitle>
       <Card>
+        <p className="eyebrow">Synthetic preview records</p>
         <ul className="history-list">
           {MOCK_MEASUREMENT_HISTORY.map((item) => (
-            <li key={item.id}>
-              <div>
-                <strong>{item.label}</strong>
-                <div className="muted">{item.recordedAtLabel}</div>
-              </div>
-              <div>
-                <span>{item.value}</span>{" "}
-                <ProvenanceBadge provenance={item.provenance} />
-              </div>
-            </li>
+            <MeasurementHistoryRow item={item} key={item.id} />
           ))}
         </ul>
+        <p className="muted history-disclaimer">
+          Synthetic examples demonstrate layout only. Provenance labels do not imply an
+          approved integration or verification process.
+        </p>
       </Card>
     </>
   );

@@ -11,12 +11,12 @@ export const metadata: Metadata = {
     template: `%s | ${productConfig.productName}`,
   },
   description:
-    "A configurable frontend foundation for cardiometabolic early detection and control.",
+    "HILERA helps people understand health information and review changes over time.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
-    <html lang="en">
+    <html data-scroll-behavior="smooth" lang="en">
       <body>
         <a className="skip-link" href="#main-content">
           Skip to main content

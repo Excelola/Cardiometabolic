@@ -1,32 +1,22 @@
 import type { Metadata } from "next";
 
+import { TrendEmptyState } from "@/components/health/trend-empty-state";
 import { Card } from "@/components/ui/card";
-import { StatusBanner } from "@/components/ui/status-banner";
+import { PageTitle } from "@/components/ui/page-title";
 
 export const metadata: Metadata = { title: "Trends" };
 
 export default function TrendsPage() {
   return (
     <>
-      <header className="page-heading">
-        <p className="eyebrow">Trend-view shell</p>
-        <h1>Trends over time</h1>
+      <PageTitle title="Trends">
         <p className="lede">
-          This page reserves a responsive, accessible presentation area for approved data.
+          See supported information over time without adding clinical meaning by design alone.
         </p>
-      </header>
-      <StatusBanner>
-        No measurements, reference ranges, thresholds, or clinical trends are implemented.
-      </StatusBanner>
+      </PageTitle>
       <Card>
-        <div
-          aria-label="Empty trend chart placeholder"
-          className="chart-placeholder"
-          role="img"
-        >
-          Trend visualization will appear after approved measurement definitions and data
-          services are available.
-        </div>
+        <p className="eyebrow">Longitudinal view</p>
+        <TrendEmptyState />
       </Card>
     </>
   );

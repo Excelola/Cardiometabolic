@@ -4,63 +4,65 @@ import { ProgressSteps } from "@/components/onboarding/progress-steps";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
 import { FormField } from "@/components/ui/form-field";
-import { StatusBanner } from "@/components/ui/status-banner";
+import { MediaFrame } from "@/components/ui/media-frame";
+import { NonSubmittingForm } from "@/components/ui/non-submitting-form";
+import { Notice } from "@/components/ui/notice";
+import { SelectField } from "@/components/ui/select-field";
 
 export const metadata: Metadata = { title: "Onboarding" };
 
 export default function OnboardingPage() {
   return (
-    <main className="centered-page" id="main-content">
-      <Card className="flow-card">
-        <p className="eyebrow">Progressive onboarding preview</p>
-        <h1>Set up your profile</h1>
-        <ProgressSteps currentStep={1} />
-        <StatusBanner>
-          This single preview displays approved field categories together. A production
-          flow will reveal them progressively and persist them only through approved services.
-        </StatusBanner>
-        <form className="stack">
-          <fieldset>
-            <legend>Profile details</legend>
+    <main className="onboarding-page" id="main-content">
+      <div className="container">
+        <header className="onboarding-page__heading">
+          <p className="eyebrow">Progressive onboarding</p>
+          <h1>A few essentials first.</h1>
+          <p className="lede">Complete what is needed now. You can return to the rest later.</p>
+        </header>
+        <ProgressSteps currentStep={2} />
+        <div className="onboarding-layout">
+          <Card className="onboarding-card">
+            <h2>About you</h2>
+            <p className="muted">These are the approved basic profile fields for the V1 foundation.</p>
+            <NonSubmittingForm className="onboarding-form">
             <FormField
               autoComplete="nickname"
               id="preferred-name"
-              label="Preferred or display name"
+              label="Preferred name"
+              placeholder="What should HILERA call you?"
               required
             />
             <FormField
               autoComplete="bday"
-              helperText="Enter your exact date of birth."
+              helperText="Used as the source for age where an approved capability requires it."
               id="date-of-birth"
               label="Date of birth"
               required
               type="date"
             />
-            <div className="field">
-              <label htmlFor="market-context">Country or market context *</label>
-              <select id="market-context" name="market-context" required>
-                <option value="">Choose an option</option>
-                <option value="synthetic-market">Synthetic example market</option>
-              </select>
-              <span className="field__help">
-                The approved country/market inventory and behavior are not yet configured.
-              </span>
+            <SelectField
+              helperText="Approved market options and market-specific behavior remain deferred."
+              id="market-context"
+              label="Country or market"
+              required
+            >
+              <option value="">Choose country or market</option>
+            </SelectField>
+            <div className="page-actions">
+              <ButtonLink href="/app/dashboard">Continue</ButtonLink>
+              <ButtonLink href="/app/dashboard" variant="secondary">Save for later</ButtonLink>
             </div>
-          </fieldset>
-          <fieldset>
-            <legend>Consent</legend>
-            <p className="muted">
-              Approved consent documents, versions, jurisdictional rules, and withdrawal
-              behavior must be supplied before this control can become functional.
-            </p>
-            <label className="consent-option">
-              <input disabled name="consent-placeholder" type="checkbox" />
-              <span>I have reviewed the approved consent information (preview unavailable).</span>
-            </label>
-          </fieldset>
-          <ButtonLink href="/app/dashboard">View authenticated shell</ButtonLink>
-        </form>
-      </Card>
+            </NonSubmittingForm>
+          </Card>
+          <MediaFrame ariaLabel="Image-ready HILERA onboarding media area" className="onboarding-media">
+            <p className="eyebrow">Consent flow shell</p>
+            <h2>Clear choices, at the right time.</h2>
+            <p>Approved consent information, versions, jurisdiction rules, and withdrawal behavior will appear in the dedicated consent step.</p>
+            <Notice>Nothing entered in this visual preview is submitted or stored.</Notice>
+          </MediaFrame>
+        </div>
+      </div>
     </main>
   );
 }

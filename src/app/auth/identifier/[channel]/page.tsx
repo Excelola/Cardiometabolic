@@ -3,13 +3,13 @@ import { notFound } from "next/navigation";
 
 import { AuthCard } from "@/components/auth/auth-card";
 import { ButtonLink } from "@/components/ui/button-link";
-import { FormField } from "@/components/ui/form-field";
+import { Notice } from "@/components/ui/notice";
 
 type IdentifierPageProps = Readonly<{
   params: Promise<{ channel: string }>;
 }>;
 
-export const metadata: Metadata = { title: "Enter your identifier" };
+export const metadata: Metadata = { title: "Legacy identifier route" };
 
 export default async function IdentifierPage({ params }: IdentifierPageProps) {
   const { channel } = await params;
@@ -17,24 +17,21 @@ export default async function IdentifierPage({ params }: IdentifierPageProps) {
     notFound();
   }
 
-  const isPhone = channel === "phone";
-
   return (
     <AuthCard
-      intro={`Enter the ${isPhone ? "phone number" : "email address"} you want to use. This preview does not submit or store the value.`}
-      title={`Enter your ${isPhone ? "phone number" : "email address"}`}
+      eyebrow="Legacy route"
+      intro="This previous identifier-entry route is retained for review but is not part of the active MVP journey."
+      title="Identifier selection is no longer required"
     >
-      <form className="stack">
-        <FormField
-          autoComplete={isPhone ? "tel" : "email"}
-          id="identifier"
-          inputMode={isPhone ? "tel" : "email"}
-          label={isPhone ? "Phone number" : "Email address"}
-          required
-          type={isPhone ? "tel" : "email"}
-        />
-        <ButtonLink href="/auth/verify">Continue to verification</ButtonLink>
-      </form>
+      <div className="stack">
+        <Notice title="Email and password is the approved MVP model">
+          The former {channel} identifier flow is inactive. No identifier entered here is processed or stored.
+        </Notice>
+        <ButtonLink href="/sign-in">Go to sign in</ButtonLink>
+        <ButtonLink href="/sign-up" variant="secondary">
+          Go to sign up
+        </ButtonLink>
+      </div>
     </AuthCard>
   );
 }

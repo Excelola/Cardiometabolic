@@ -1,38 +1,23 @@
 import type { Metadata } from "next";
 
+import { RiskSummaryState } from "@/components/health/risk-summary-state";
 import { Card } from "@/components/ui/card";
-import { StatusBanner } from "@/components/ui/status-banner";
+import { PageTitle } from "@/components/ui/page-title";
 
 export const metadata: Metadata = { title: "Risk Awareness Summary" };
 
 export default function RiskSummaryPage() {
   return (
     <>
-      <header className="page-heading">
-        <p className="eyebrow">Summary shell</p>
-        <h1>Risk Awareness Summary</h1>
+      <PageTitle title="Health summary">
         <p className="lede">
-          A reserved surface for approved deterministic results and permitted explanations.
+          A clinically governed summary appears only when approved requirements are satisfied.
         </p>
-      </header>
-      <StatusBanner tone="warning">
-        No risk formula, score, threshold, diagnosis, recommendation, or escalation logic is
-        present in this foundation.
-      </StatusBanner>
-      <div className="dashboard-grid">
-        <Card>
-          <h2>Inputs</h2>
-          <div className="empty-state">Awaiting approved input specifications.</div>
-        </Card>
-        <Card>
-          <h2>Summary</h2>
-          <div className="empty-state">Awaiting approved deterministic clinical specification.</div>
-        </Card>
-        <Card>
-          <h2>Provenance</h2>
-          <div className="empty-state">Awaiting approved derivation and verification rules.</div>
-        </Card>
-      </div>
+      </PageTitle>
+      <Card>
+        <p className="eyebrow">Cardiometabolic Risk Awareness Summary</p>
+        <RiskSummaryState />
+      </Card>
     </>
   );
 }

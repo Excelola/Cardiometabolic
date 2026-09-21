@@ -2,9 +2,9 @@ type ProgressStepsProps = Readonly<{
   currentStep: number;
 }>;
 
-const STEPS = ["Your name", "Date of birth", "Country or market", "Consent"] as const;
+const STEPS = ["Consent", "About you", "Health context", "Baseline"] as const;
 
-export function ProgressSteps({ currentStep }: ProgressStepsProps) {
+export function ProgressIndicator({ currentStep }: ProgressStepsProps) {
   return (
     <nav aria-label="Onboarding progress">
       <ol className="progress-steps">
@@ -25,3 +25,5 @@ export function ProgressSteps({ currentStep }: ProgressStepsProps) {
     </nav>
   );
 }
+
+export const ProgressSteps = ProgressIndicator;

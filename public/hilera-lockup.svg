@@ -1,0 +1,13 @@
+<svg width="470" height="155" viewBox="165 270 470 155" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <title>HILERA</title>
+  <g id="Brand-Lockup">
+    <g id="Logo-Mark" transform="translate(235 345) scale(2.2)">
+      <circle cx="0" cy="0" r="29" fill="none" stroke="#1F3D2E" stroke-width="3"/>
+      <rect x="-11" y="-14" width="6" height="29" rx="3" fill="#1F3D2E"/>
+      <rect x="6" y="-5" width="6" height="20" rx="3" fill="#1F3D2E"/>
+      <circle cx="9" cy="-14" r="4.5" fill="#D8A77A"/>
+      <path d="M-5 2 C0 -5, 7 -8, 12 -7 C8 -1, 2 5, -5 9 Z" fill="#7FA387"/>
+    </g>
+    <text x="334" y="364.8" font-family="Inter, Arial, Helvetica, sans-serif" font-size="57.2" font-weight="700" letter-spacing="13.2" fill="#1F3D2E">HILERA</text>
+  </g>
+</svg>

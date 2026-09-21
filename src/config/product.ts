@@ -1,4 +1,4 @@
-const DEFAULT_PRODUCT_NAME = "Cardiometabolic Early Detection & Control";
+export const DEFAULT_PRODUCT_NAME = "HILERA";
 
 export type PublicProductConfig = Readonly<{
   productName: string;

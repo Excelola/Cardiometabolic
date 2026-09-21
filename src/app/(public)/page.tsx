@@ -1,53 +1,50 @@
 import { ButtonLink } from "@/components/ui/button-link";
-import { Card } from "@/components/ui/card";
+import { MediaFrame } from "@/components/ui/media-frame";
 import { productConfig } from "@/config/product";
 
 export default function LandingPage() {
   return (
     <main id="main-content">
-      <section className="hero">
+      <section className="hero" id="how-it-works">
         <div className="container hero__grid">
           <div className="hero__copy">
-            <p className="eyebrow">Early detection and ongoing awareness</p>
-            <h1>Build a clearer view of your cardiometabolic health information.</h1>
+            <p className="eyebrow">Health information, made clearer</p>
+            <h1>
+              <span>Understand your</span>
+              <em>health information.</em>
+              <span>Review your progress.</span>
+              <span>Take the next safe step.</span>
+            </h1>
             <p className="lede">
-              {productConfig.productName} is being designed to help people collect,
-              understand, and follow approved health information over time.
+              {productConfig.productName} helps you understand health information, see
+              changes over time, and know an appropriate next step without replacing
+              professional healthcare.
             </p>
             <div className="hero__actions">
-              <ButtonLink href="/sign-up">Create an account</ButtonLink>
+              <ButtonLink href="/sign-up">Create account</ButtonLink>
               <ButtonLink href="/sign-in" variant="secondary">
                 Sign in
               </ButtonLink>
             </div>
           </div>
-          <Card>
-            <p className="eyebrow">Foundation preview</p>
-            <h2>A guided, progressive experience</h2>
-            <p>
-              Account access, consent, setup, data entry, history, trends, and
-              summary surfaces are represented as non-clinical UI shells.
-            </p>
-          </Card>
+          <MediaFrame ariaLabel="Image-ready HILERA hero media area" className="hero-media">
+            <p className="eyebrow">Your health, over time</p>
+            <h2>Simple at first glance.</h2>
+            <ul className="hero-media__list">
+              <li><strong>Health information</strong><span>Keep important information together.</span></li>
+              <li><strong>Review</strong><span>Look back at what you recorded.</span></li>
+              <li><strong>Changes over time</strong><span>See supported information over time.</span></li>
+              <li><strong>Next step</strong><span>Follow approved guidance when available.</span></li>
+            </ul>
+          </MediaFrame>
         </div>
       </section>
-      <section className="section" aria-labelledby="foundation-heading">
-        <div className="container">
-          <h2 id="foundation-heading">Designed around clarity and provenance</h2>
-          <div className="feature-grid">
-            <Card>
-              <h3>Progressive setup</h3>
-              <p>Collect only approved information at the appropriate step.</p>
-            </Card>
-            <Card>
-              <h3>Traceable information</h3>
-              <p>Show where data came from without implying clinical validity.</p>
-            </Card>
-            <Card>
-              <h3>Accessible by default</h3>
-              <p>Semantic structure, keyboard focus, readable contrast, and responsive layouts.</p>
-            </Card>
-          </div>
+      <section className="trust-strip" id="why-hilera" aria-label="HILERA product principles">
+        <div className="container trust-strip__grid">
+          <div><strong>Privacy by design</strong><span>Your information is handled with care.</span></div>
+          <div><strong>You stay in control</strong><span>Know what is collected and why.</span></div>
+          <div id="learn"><strong>Clear explanations</strong><span>Health information in simpler words.</span></div>
+          <div><strong>Clinically bounded</strong><span>No unsupported diagnosis or treatment.</span></div>
         </div>
       </section>
     </main>
