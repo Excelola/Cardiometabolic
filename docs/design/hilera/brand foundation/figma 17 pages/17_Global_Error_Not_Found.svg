@@ -1,0 +1,50 @@
+<svg width="1600" height="1000" viewBox="0 0 1600 1000" fill="none" xmlns="http://www.w3.org/2000/svg">
+<title>HILERA Global Error and Not Found</title>
+<defs>
+  <filter id="shadow" x="-20%" y="-20%" width="160%" height="180%">
+    <feDropShadow dx="0" dy="10" stdDeviation="22" flood-color="#1F3D2E" flood-opacity="0.08"/>
+  </filter>
+  <filter id="softShadow" x="-20%" y="-20%" width="160%" height="180%">
+    <feDropShadow dx="0" dy="5" stdDeviation="12" flood-color="#1F3D2E" flood-opacity="0.06"/>
+  </filter>
+  <linearGradient id="heroWash" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#F7F4ED"/>
+    <stop offset="100%" stop-color="#DCE6D9"/>
+  </linearGradient>
+  <style>
+    .sans { font-family: Inter, Arial, Helvetica, sans-serif; }
+    .serif { font-family: Georgia, "Times New Roman", serif; }
+  </style>
+</defs>
+<rect width="1600" height="1000" fill="#F7F4ED"/>
+<text x="90" y="95" class="sans" font-size="13" font-weight="700" letter-spacing="2" fill="#7FA387">GLOBAL APPLICATION STATES</text><text x="90" y="155" class="serif" font-size="48" font-weight="700" fill="#183029">Error + not-found pages</text><g id="Error-Page"><rect x="90" y="220" width="700" height="650" rx="26" fill="#FFFFFF" stroke="#D9E1DB" filter="url(#shadow)"/>
+<g id="Brand-Lockup">
+
+<g id="Logo-Mark" transform="translate(160 290) scale(0.72)">
+  <circle cx="0" cy="0" r="29" fill="none" stroke="#1F3D2E" stroke-width="3"/>
+  <rect x="-11" y="-14" width="6" height="29" rx="3" fill="#1F3D2E"/>
+  <rect x="6" y="-5" width="6" height="20" rx="3" fill="#1F3D2E"/>
+  <circle cx="9" cy="-14" r="4.5" fill="#D8A77A"/>
+  <path d="M-5 2 C0 -5, 7 -8, 12 -7 C8 -1, 2 5, -5 9 Z" fill="#7FA387"/>
+</g>
+<text x="192.4" y="296.48" class="sans" font-size="18.72" font-weight="700" letter-spacing="4.32" fill="#1F3D2E">HILERA</text>
+</g><circle cx="440" cy="450" r="60" fill="#EEF3ED"/><g id="Icon-info" transform="translate(416 426) scale(2.0)" fill="none" stroke="#1F3D2E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/></g><text x="440" y="555" text-anchor="middle" class="serif" font-size="34" font-weight="700" fill="#183029">Something didn’t load</text><text x="440" y="610" text-anchor="middle" class="sans" font-size="14" fill="#64736B">Your information has not been shown as saved unless the action</text><text x="440" y="634" text-anchor="middle" class="sans" font-size="14" fill="#64736B">completed successfully.</text><g id="Button-Try-again">
+<rect x="335" y="710" width="210" height="52" rx="14" fill="#1F3D2E" stroke="#1F3D2E"/>
+<g id="Icon-arrow" transform="translate(353 724) scale(0.8333333333333334)" fill="none" stroke="#F7F4ED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M14 7l5 5-5 5"/></g>
+<text x="449.0" y="743" text-anchor="middle" class="sans" font-size="16" font-weight="700" fill="#F7F4ED">Try again</text>
+</g></g><g id="Not Found-Page"><rect x="840" y="220" width="700" height="650" rx="26" fill="#FFFFFF" stroke="#D9E1DB" filter="url(#shadow)"/>
+<g id="Brand-Lockup">
+
+<g id="Logo-Mark" transform="translate(910 290) scale(0.72)">
+  <circle cx="0" cy="0" r="29" fill="none" stroke="#1F3D2E" stroke-width="3"/>
+  <rect x="-11" y="-14" width="6" height="29" rx="3" fill="#1F3D2E"/>
+  <rect x="6" y="-5" width="6" height="20" rx="3" fill="#1F3D2E"/>
+  <circle cx="9" cy="-14" r="4.5" fill="#D8A77A"/>
+  <path d="M-5 2 C0 -5, 7 -8, 12 -7 C8 -1, 2 5, -5 9 Z" fill="#7FA387"/>
+</g>
+<text x="942.4" y="296.48" class="sans" font-size="18.72" font-weight="700" letter-spacing="4.32" fill="#1F3D2E">HILERA</text>
+</g><circle cx="1190" cy="450" r="60" fill="#EEF3ED"/><g id="Icon-summary" transform="translate(1166 426) scale(2.0)" fill="none" stroke="#1F3D2E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6V3Z"/><path d="M15 3v5h5M9 12h7M9 16h6"/></g><text x="1190" y="555" text-anchor="middle" class="serif" font-size="34" font-weight="700" fill="#183029">We can’t find that page</text><text x="1190" y="610" text-anchor="middle" class="sans" font-size="14" fill="#64736B">The page may have moved, or the address may be incorrect.</text><g id="Button-Go-to-dashboard">
+<rect x="1085" y="710" width="210" height="52" rx="14" fill="#1F3D2E" stroke="#1F3D2E"/>
+<g id="Icon-arrow" transform="translate(1103 724) scale(0.8333333333333334)" fill="none" stroke="#F7F4ED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M14 7l5 5-5 5"/></g>
+<text x="1199.0" y="743" text-anchor="middle" class="sans" font-size="16" font-weight="700" fill="#F7F4ED">Go to dashboard</text>
+</g></g></svg>

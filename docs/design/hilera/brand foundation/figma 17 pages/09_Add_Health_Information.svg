@@ -1,0 +1,49 @@
+<svg width="1440" height="1024" viewBox="0 0 1440 1024" fill="none" xmlns="http://www.w3.org/2000/svg">
+<title>HILERA Add Health Information</title>
+<defs>
+  <filter id="shadow" x="-20%" y="-20%" width="160%" height="180%">
+    <feDropShadow dx="0" dy="10" stdDeviation="22" flood-color="#1F3D2E" flood-opacity="0.08"/>
+  </filter>
+  <filter id="softShadow" x="-20%" y="-20%" width="160%" height="180%">
+    <feDropShadow dx="0" dy="5" stdDeviation="12" flood-color="#1F3D2E" flood-opacity="0.06"/>
+  </filter>
+  <linearGradient id="heroWash" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#F7F4ED"/>
+    <stop offset="100%" stop-color="#DCE6D9"/>
+  </linearGradient>
+  <style>
+    .sans { font-family: Inter, Arial, Helvetica, sans-serif; }
+    .serif { font-family: Georgia, "Times New Roman", serif; }
+  </style>
+</defs>
+<rect width="1440" height="1024" fill="#F7F4ED"/>
+<g id="Topbar">
+<rect x="0" y="0" width="1440" height="88" fill="#FFFFFF"/>
+<line x1="0" y1="88" x2="1440" y2="88" stroke="#D9E1DB"/>
+
+<g id="Brand-Lockup">
+
+<g id="Logo-Mark" transform="translate(72 44) scale(0.78)">
+  <circle cx="0" cy="0" r="29" fill="none" stroke="#1F3D2E" stroke-width="3"/>
+  <rect x="-11" y="-14" width="6" height="29" rx="3" fill="#1F3D2E"/>
+  <rect x="6" y="-5" width="6" height="20" rx="3" fill="#1F3D2E"/>
+  <circle cx="9" cy="-14" r="4.5" fill="#D8A77A"/>
+  <path d="M-5 2 C0 -5, 7 -8, 12 -7 C8 -1, 2 5, -5 9 Z" fill="#7FA387"/>
+</g>
+<text x="107.1" y="51.02" class="sans" font-size="20.28" font-weight="700" letter-spacing="4.68" fill="#1F3D2E">HILERA</text>
+</g>
+<text x="1186" y="52" class="sans" font-size="14" fill="#64736B">Private preview</text><g id="Icon-bell" transform="translate(1295 33) scale(0.9166666666666666)" fill="none" stroke="#1F3D2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 17h12l-1.3-2.3V10a4.7 4.7 0 0 0-9.4 0v4.7L6 17Z"/><path d="M10 20h4"/></g><circle cx="1360" cy="44" r="19" fill="#DCE6D9"/><text x="1360" y="50" text-anchor="middle" class="sans" font-size="13" font-weight="700" fill="#1F3D2E">OF</text></g><g id="Application-Sidebar">
+<rect x="0" y="88" width="246" height="936" fill="#FFFFFF"/>
+<line x1="246" y1="88" x2="246" y2="1024" stroke="#D9E1DB"/>
+<g id="Icon-home" transform="translate(44 139) scale(0.8333333333333334)" fill="none" stroke="#64736B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11.5L12 4l9 7.5V21H6V11.5Z"/><path d="M9.5 21v-6h5v6"/></g><text x="78" y="156" class="sans" font-size="15" font-weight="500" fill="#64736B">Dashboard</text><rect x="24" y="185" width="198" height="48" rx="13" fill="#EEF3ED"/><g id="Icon-plus" transform="translate(44 198) scale(0.8333333333333334)" fill="none" stroke="#1F3D2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></g><text x="78" y="215" class="sans" font-size="15" font-weight="700" fill="#1F3D2E">Add data</text><g id="Icon-history" transform="translate(44 257) scale(0.8333333333333334)" fill="none" stroke="#64736B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 8A8 8 0 1 1 4 14"/><path d="M4.5 8V3.5M4.5 8H9"/><path d="M12 7v5l3 2"/></g><text x="78" y="274" class="sans" font-size="15" font-weight="500" fill="#64736B">History</text><g id="Icon-trend" transform="translate(44 316) scale(0.8333333333333334)" fill="none" stroke="#64736B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 18l5-5 4 3 7-9"/><path d="M16 7h4v4"/></g><text x="78" y="333" class="sans" font-size="15" font-weight="500" fill="#64736B">Trends</text><g id="Icon-summary" transform="translate(44 375) scale(0.8333333333333334)" fill="none" stroke="#64736B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6V3Z"/><path d="M15 3v5h5M9 12h7M9 16h6"/></g><text x="78" y="392" class="sans" font-size="15" font-weight="500" fill="#64736B">Summary</text><line x1="32" y1="860" x2="214" y2="860" stroke="#D9E1DB"/><g id="Icon-settings" transform="translate(44 890) scale(0.8333333333333334)" fill="none" stroke="#64736B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19 12l2-1-1-3-2 .2-1.5-1.5.2-2-3-1-1 2h-2l-1-2-3 1 .2 2L5.5 8.2 3.5 8 2.5 11l2 1v2l-2 1 1 3 2-.2 1.5 1.5-.2 2 3 1 1-2h2l1 2 3-1-.2-2 1.5-1.5 2 .2 1-3-2-1z"/></g><text x="78" y="907" class="sans" font-size="15" fill="#64736B">Settings</text><g id="Icon-logout" transform="translate(44 944) scale(0.8333333333333334)" fill="none" stroke="#64736B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5H5v14h5"/><path d="M13 8l4 4-4 4M8 12h9"/></g><text x="78" y="961" class="sans" font-size="15" fill="#64736B">Sign out</text></g><g id="Page-Title">
+<text x="300" y="155" class="serif" font-size="46" font-weight="700" fill="#183029">Add health information</text>
+<text x="300" y="198" class="sans" font-size="17" fill="#64736B">Record only supported measurements defined by the approved V1 inventory.</text>
+</g><g id="Measurement-Entry-Form"><rect x="300" y="245" width="1080" height="660" rx="24" fill="#FFFFFF" stroke="#D9E1DB" filter="url(#shadow)"/><text x="345" y="300" class="sans" font-size="13" font-weight="700" letter-spacing="2" fill="#7FA387">MANUAL ENTRY FOUNDATION</text><g id="Field-Measurement-type"><text x="345" y="355" class="sans" font-size="14" font-weight="700" fill="#183029">Measurement type</text><rect x="345" y="369" width="470" height="56" rx="14" fill="#FFFFFF" stroke="#D9E1DB"/><text x="363" y="404" class="sans" font-size="15" fill="#64736B">Choose a supported measurement</text></g><g id="Field-Value-and-unit"><text x="860" y="355" class="sans" font-size="14" font-weight="700" fill="#183029">Value and unit</text><rect x="860" y="369" width="470" height="56" rx="14" fill="#FFFFFF" stroke="#D9E1DB"/><text x="878" y="404" class="sans" font-size="15" fill="#64736B">Available after measurement selection</text></g><g id="Field-When-was-it-measured?"><text x="345" y="485" class="sans" font-size="14" font-weight="700" fill="#183029">When was it measured?</text><rect x="345" y="499" width="470" height="56" rx="14" fill="#FFFFFF" stroke="#D9E1DB"/><g id="Icon-calendar" transform="translate(363 515) scale(0.75)" fill="none" stroke="#64736B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M8 3v4M16 3v4M4 9h16"/></g><text x="395" y="534" class="sans" font-size="15" fill="#64736B">Date and time</text></g><g id="Field-Source"><text x="860" y="485" class="sans" font-size="14" font-weight="700" fill="#183029">Source</text><rect x="860" y="499" width="470" height="56" rx="14" fill="#FFFFFF" stroke="#D9E1DB"/><text x="878" y="534" class="sans" font-size="15" fill="#64736B">User Entered</text></g><rect x="345" y="625" width="985" height="112" rx="18" fill="#EEF3ED" stroke="#D9E1DB"/><g id="Icon-info" transform="translate(372 655) scale(0.9166666666666666)" fill="none" stroke="#1F3D2E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 10v6M12 7h.01"/></g><text x="410" y="669" class="sans" font-size="14" font-weight="700" fill="#183029">Measurement specification required</text><text x="410" y="697" class="sans" font-size="13.5" fill="#64736B">Names, units, validation, context and clinical meaning must come from the approved measurement and clinical specifications.</text><g id="Button-Save-information">
+<rect x="345" y="780" width="180" height="52" rx="14" fill="#1F3D2E" stroke="#1F3D2E"/>
+<g id="Icon-check" transform="translate(363 794) scale(0.8333333333333334)" fill="none" stroke="#F7F4ED" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M8 12l2.5 2.5L16 9"/></g>
+<text x="444.0" y="813" text-anchor="middle" class="sans" font-size="16" font-weight="700" fill="#F7F4ED">Save information</text>
+</g><g id="Button-Cancel">
+<rect x="540" y="780" width="120" height="52" rx="14" fill="#FFFFFF" stroke="#D9E1DB"/>
+
+<text x="600.0" y="813" text-anchor="middle" class="sans" font-size="16" font-weight="700" fill="#1F3D2E">Cancel</text>
+</g></g></svg>
