@@ -27,6 +27,41 @@ policy, field inventory, or clinical semantics have been approved.
   persistence, analytics, or external integration in this foundation.
 - The UI does not log identifiers, health data, secrets, or form values.
 
+## HILERA development preview workflow
+
+1. **Local development.** Run `pnpm dev --hostname 127.0.0.1 --port 3011`
+   from the repository root and open `http://127.0.0.1:3011/`. Next.js
+   applies supported edits through hot reload. Use this mode for everyday
+   implementation and browser QA.
+2. **Local production-like preview.** Run `pnpm build`, then run
+   `pnpm start --hostname 127.0.0.1 --port 3012`. Open
+   `http://127.0.0.1:3012/` to verify the built app before a milestone review.
+   Rebuild to pick up further edits.
+3. **AppDeploy milestone preview.** Use the existing testing app when remote
+   reviewers or public multi-device testing need a shared URL. Ordinary
+   frontend changes use the local modes above.
+4. **Pull request review.** Record the local QA results and include an AppDeploy
+   link when a milestone preview has been published.
+5. **Merge and release.** Merge after the required review. Production deployment
+   is a separate release decision.
+
+### Optional phone testing on trusted Wi-Fi
+
+Connect the computer and phone to the same trusted local network. In Windows
+PowerShell, run `ipconfig` and find the IPv4 address for the computer's active
+Wi-Fi adapter. Stop the loopback development server before using its port,
+then bind Next.js to that single address:
+
+```powershell
+$lanIp = Read-Host 'Enter the active Wi-Fi adapter IPv4 address'
+pnpm dev --hostname $lanIp --port 3011
+```
+
+Open `http://<computer-LAN-IPv4>:3011/` on both the computer and the phone.
+If Windows asks about network access, allow it only on a trusted Private
+network. Stop the server when testing ends. Use synthetic information in all
+preview modes and keep the LAN listener off public networks and the internet.
+
 ## Route structure
 
 | Route | Purpose | Current behavior |

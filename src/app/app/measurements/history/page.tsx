@@ -29,8 +29,11 @@ export default function MeasurementHistoryPage() {
           ))}
         </ol>
         <p className="muted history-disclaimer">
-          Source labels describe where a record came from. The preview illustrates how
-          each source appears in History.
+          These are synthetic preview records. The labels show how each source category
+          would appear. Imported does not mean imports or integrations are available.
+          Verified requires an approved verification process. System Derived does not mean
+          the record was medically interpreted. Source labels do not tell you whether a
+          record is medically accurate or safe.
         </p>
       </Card>
     </>
