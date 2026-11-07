@@ -1,6 +1,6 @@
 # HILERA opportunity map
 
-Research date: 7 November 2026. Classification is a research recommendation, not product approval.
+Research date: 7 November 2026. The product owner approved the bounded HILERA Bundle 1 presentation scope on 7 November 2026. The Master PRD records that approval.
 Evidence: [audits](README.md#read-in-order) and [register](evidence/README.md).
 Value, effort, cost and risk are qualitative analyst judgments using the definitions in the README. No numeric score or priority calculation is claimed.
 
@@ -13,20 +13,20 @@ Value, effort, cost and risk are qualitative analyst judgments using the definit
 | Calm HILERA visual system and exact eight product states (H02; owner-approved milestone) | Familiar, understandable journey | High | Preserve current work | Maintenance | State-transition specification | States are workflow, not medical classifications | No new data for visual preservation | Approved |
 | Honest insufficient-history/readiness states (H01 §§5.14, 5.18) | Avoid false reassurance | High | Existing shell; future wiring | Normal operations | Valid data/clinical rules | Prevents invented results | Sensitive errors must be bounded | Approved |
 
-Only the already approved baseline is marked Approved here. No candidate below inherits that status.
+The KEEP table records the existing baseline. The decision sections below record the separately approved Bundle 1 scope.
 
 ## IMPROVE
 
 | Finding | User value | MVP value | Effort | Operating cost | Dependency burden | Clinical risk | Privacy/security risk | Decision status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| HIL-RD-004 next action and continuity | Resume useful work | High | Low UI; High backend | Secure storage/support | State/auth/consent contracts | No medical prioritisation | Sensitive drafts | Requires product approval |
-| HIL-RD-001 current/history organisation | Find the right context | High | Moderate | Data queries/maintenance | Inventory/time semantics | Latest is not necessarily clinically meaningful | Per-user access | Requires product approval |
-| HIL-RD-002 retrieval; functional correction is separate | Find records reliably | High | Low layout; Moderate–High functionality | Queries/support | Retrieval scope and data dictionary | No clinical relevance ranking | No sensitive query logging | Requires product approval |
+| HIL-RD-004 dashboard hierarchy | Find the current workflow state and next task | High | Low UI | UI maintenance | Existing product states | Workflow state is separate from health status | Synthetic preview | Approved |
+| HIL-RD-001 chronological history | Find the right record context | High | Low presentation | UI maintenance | Existing provenance labels and supported details | Chronological presentation | Synthetic review data | Approved |
+| HIL-RD-002 search/filter; excluded from Bundle 1 | Find records reliably | High | Moderate–High functionality | Queries/support | Retrieval scope and data dictionary | No clinical relevance ranking | No sensitive query logging | Requires product approval |
 | HIL-RD-014 state catalogue | Understand absent or failed information | High | Low–Moderate | QA/support | Error contracts later | No healthy/safe inference | No internal data in errors | Requires product approval |
-| HIL-RD-005 education presentation | Understand approved information | High | Moderate with governance | Editorial/clinical review | Content approval | Unreviewed copy could mislead | Avoid reading-based sensitive profiling | Requires product approval |
+| HIL-RD-005 education presentation and action links | Understand the next approved task | High | Low shell presentation | UI maintenance | Approved task destinations | Use neutral placeholders or approved content | Avoid reading-based sensitive profiling | Approved |
 | HIL-RD-015 reminder controls | Return by choice | High | Moderate–High | Channel costs unresolved | Cadence/channel/budget | No clinical schedule implied | Notification exposure | Requires product approval |
 
-These are proposed ways to deliver or refine existing capabilities, not evidence that current implementation is complete.
+This table distinguishes approved refinements from options awaiting a separate decision. Approval covers the stated scope.
 
 ## ADD CANDIDATE
 
@@ -61,7 +61,7 @@ Rejected here follows explicit owner/repository prohibitions for current work; i
 
 | Finding | User value | MVP value | Effort | Operating cost | Dependency burden | Clinical risk | Privacy/security risk | Decision status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Approved clinical education content (HIL-RD-005); interpretation is excluded from Bundle 1 | Potential understanding | P0 education; conditional content approval | Content varies | Ongoing clinical governance | Reviewed content and versioning | High if copied or inferred from competitors | No reading-based profiling | Requires product approval; additional clinical review |
+| Future medical copy for the HIL-RD-005 education surface | Potential understanding | P0 education; conditional content approval | Content varies | Ongoing clinical governance | Reviewed content and versioning | High if copied or inferred from competitors | No reading-based profiling | Shell and approved action links: Approved. New medical copy requires clinical content approval. |
 | Guided symptom assessment (HIL-RD-010) | Future only | Deferred | High | No paid service authorised | Reopen owner decision before review | Acute urgency/differential risk | Provider transfer/retention | Deferred |
 
 No numeric risk, clinical threshold, symptom probability, medical questionnaire or algorithm is defined here.
@@ -77,7 +77,7 @@ No numeric risk, clinical threshold, symptom probability, medical questionnaire 
 
 ## Recommended HILERA MVP Expansion Bundle 1
 
-**Research recommendation only; not approved implementation scope.** “Expansion” means a proposed improvement package, not automatic expansion of P0 capabilities. Candidates 1 and 3–6 primarily refine approved P0 UX. Candidate 2 needs an explicit retrieval-functionality boundary decision. All six await product-owner review of the actual bundle.
+The product owner approved HIL-RD-001, HIL-RD-003, HIL-RD-004, HIL-RD-005 and HIL-RD-006 on **7 November 2026**. Approval covers bounded HILERA frontend presentation within existing P0 capabilities. HIL-RD-002 still requires product approval and is explicitly excluded from Bundle 1. Competitor evidence remains research context.
 
 The [decision backlog](06-proposed-product-decisions.md) is canonical for approval status; clinical/privacy headings below and above describe additional review gates, not alternative approval statuses.
 
@@ -88,8 +88,8 @@ The [decision backlog](06-proposed-product-decisions.md) is canonical for approv
 | User problem | Accumulated information is hard to follow when chronology and record context compete. |
 | Current HILERA capability | Already P0; B (UX improvement), with A (functional delivery incomplete). History is a synthetic shell. |
 | Competitor evidence | Guava G03/G09: consolidated records and retrieval; Dario D04: combined logbook. |
-| Proposed improvement | Use a consistent chronological hierarchy, readable record context and links to existing trends and a future approved detail view. Preserve provenance labels without adding trust meaning. |
-| Whether product approval is actually required | No new capability approval for bounded presentation; owner approval of the proposed UX bundle is still pending. New record semantics or fields require a separate decision. |
+| Approved improvement | Show date/time, record identity, applicable approved details, source and access to supported record context in chronological order. Keep provenance labels descriptive of source. |
+| Product-approval boundary | Approval covers chronological presentation and supported detail access. Search, filters, new fields, inventory, correction semantics and clinical ranking require separate decisions. |
 | PRD SYNC IMPACT | Not Required — chronology and presentation are covered by approved P0 history; new data/ordering semantics would reopen review. |
 | UX impact | High core-loop value; make date, record identity and provenance scannable without copying Guava's layout. |
 | Technical impact | Reuse history rows, page titles, badges and empty states; no framework or service replacement. |
@@ -101,7 +101,8 @@ The [decision backlog](06-proposed-product-decisions.md) is canonical for approv
 | Dependencies | Owner-approved UX, existing provenance/state model; approved inventory and time semantics before real records. |
 | Implementation complexity | Low presentation; moderate functional history delivery, excluded. |
 | Recommended delivery bundle | Bundle 1 shared history/entry/dashboard presentation. |
-| APPROVAL STATUS | Requires product approval — proposed bundle/UX not yet approved; capability baseline remains as stated. |
+| APPROVAL STATUS | Approved |
+| Approval date | 7 November 2026 |
 
 ### Candidate 2: History search/filter/retrieval — HIL-RD-002
 
@@ -110,8 +111,8 @@ The [decision backlog](06-proposed-product-decisions.md) is canonical for approv
 | User problem | Users may struggle to find a particular historical record as records accumulate. |
 | Current HILERA capability | Already P0 history; B for retrieval affordances. Exact search/filter functionality is not established by capability-level approval. |
 | Competitor evidence | Guava G03/G09: searchable record organisation. No measured retrieval speed or live interaction testing. |
-| Proposed improvement | First clarify navigation and record context. Propose date/type filters over approved records for review; exclude full-text indexing, saved searches and query retention. |
-| Whether product approval is actually required | Explicit boundary decision required before adding filters/search. Reordering existing navigation is UX; new query behaviour, stored preferences or a search service is additional functionality. |
+| Proposed improvement | Consider date/type filters over approved records in a later decision. |
+| Product-approval boundary | All search and filter controls require separate approval, including client-side filters. Chronology and supported record details are covered by HIL-RD-001. |
 | PRD SYNC IMPACT | Uncertain — Not Required if owner confirms bounded filters specify existing history; Required if new search behaviour, data, retention or permissions are approved. |
 | UX impact | High potential value; distinguish no history from no matching results and provide accessible reset. |
 | Technical impact | Low mock/presentation work; moderate query/pagination/filter work requires later contracts. |
@@ -120,10 +121,10 @@ The [decision backlog](06-proposed-product-decisions.md) is canonical for approv
 | Clinical impact | No clinical relevance ranking, automatic risk sorting or inferred meaning. |
 | Privacy/security impact | Do not log query contents or persist sensitive filters in browser storage. |
 | Operating cost | No new service in Bundle 1; indexing/operations would require separate budget approval. |
-| Dependencies | Owner resolution of UX versus functionality; approved record metadata, query semantics and accessibility criteria. |
+| Dependencies | Separate product approval, approved record metadata, query semantics and accessibility criteria. |
 | Implementation complexity | Low retrieval layout; moderate functional search, excluded pending decision. |
-| Recommended delivery bundle | Bundle 1 only for accepted presentation boundary; separate functionality decision for unresolved search. |
-| APPROVAL STATUS | Requires product approval — proposed bundle/UX not yet approved; capability baseline remains as stated. |
+| Recommended delivery bundle | Excluded from Bundle 1. Review separately. |
+| APPROVAL STATUS | Requires product approval |
 
 ### Candidate 3: Faster repeat Add Health Information entry — HIL-RD-003
 
@@ -132,8 +133,8 @@ The [decision backlog](06-proposed-product-decisions.md) is canonical for approv
 | User problem | Repeat manual capture can feel cumbersome or disconnected from the resulting history. |
 | Current HILERA capability | Already P0; B for entry UX and A for functioning capture. Existing generic form is disabled pending inventory. |
 | Competitor evidence | Guava G08/G09: manual logging/repeat-entry references; Omada O07: documented manual entry. No timed task evidence. |
-| Proposed improvement | Reduce navigation and clarify entry context, labels, validation space and the route back to history. Do not prefill prior health values or claim a save occurred. |
-| Whether product approval is actually required | No new capability approval for presentation; approve exact UX before implementation. Defaults, new fields, autosave or duplicated readings need separate decisions. |
+| Approved improvement | Reduce navigation and clarify measurement, date/context, provenance and the route back to History in the generic non-submitting form. |
+| Product-approval boundary | Approval covers the form shell. Previous-value prefilling, new inventory or units, validation thresholds, autosave and persistence require separate decisions. |
 | PRD SYNC IMPACT | Not Required — bounded presentation refines approved manual entry; new capture/default/persistence rules would require review. |
 | UX impact | High value hypothesis; speed must be tested with synthetic tasks, not asserted. |
 | Technical impact | Reuse generic entry components and form primitives; retain strong typing and validation boundaries. |
@@ -145,7 +146,8 @@ The [decision backlog](06-proposed-product-decisions.md) is canonical for approv
 | Dependencies | Approved inventory, validation rules and save behaviour before functional data capture. |
 | Implementation complexity | Low shell UX; moderate functional entry once specified. |
 | Recommended delivery bundle | Bundle 1 alongside history, with functional capture explicitly excluded. |
-| APPROVAL STATUS | Requires product approval — proposed bundle/UX not yet approved; capability baseline remains as stated. |
+| APPROVAL STATUS | Approved |
+| Approval date | 7 November 2026 |
 
 ### Candidate 4: Dashboard/current-health-picture hierarchy — HIL-RD-004
 
@@ -154,8 +156,8 @@ The [decision backlog](06-proposed-product-decisions.md) is canonical for approv
 | User problem | Returning users need to distinguish product readiness, recent information and the next permitted task. |
 | Current HILERA capability | Already P0; B for dashboard hierarchy, A for persisted returning-user continuity. Current dashboard is synthetic. |
 | Competitor evidence | Guava G03: current versus historical organisation; Omada O03/O04: visible activity/progress references. |
-| Proposed improvement | Prioritise current product state, incomplete tasks, recent approved information, monitoring activity, trend access and one approved next action. Distinguish workflow state from health status. |
-| Whether product approval is actually required | No new capability approval for hierarchy; owner approves layout. New prioritisation rules, state transitions or clinical next actions require explicit approval. |
+| Approved improvement | Prioritise the current product state, relevant incomplete task, recent approved information, monitoring activity, trend access and one existing approved next action where practical. Present workflow readiness separately from health status. |
+| Product-approval boundary | Approval covers hierarchy within the existing eight product states. New state semantics, transitions, risk ranking and clinical next actions require separate approval. |
 | PRD SYNC IMPACT | Not Required — existing dashboard/continuity/next-step scope; new state semantics or action-selection rules trigger review. |
 | UX impact | High core-loop value; avoid fake values and avoid equating missing data with reassurance. |
 | Technical impact | Compose existing status/information cards and navigation; real resume depends on later services. |
@@ -167,7 +169,8 @@ The [decision backlog](06-proposed-product-decisions.md) is canonical for approv
 | Dependencies | Existing eight product states; approved next-action mapping and content before functional behaviour. |
 | Implementation complexity | Low layout; moderate state/resume integration, excluded. |
 | Recommended delivery bundle | Bundle 1 dashboard/history/entry coherence. |
-| APPROVAL STATUS | Requires product approval — proposed bundle/UX not yet approved; capability baseline remains as stated. |
+| APPROVAL STATUS | Approved |
+| Approval date | 7 November 2026 |
 
 ### Candidate 5: Education-to-action interaction — HIL-RD-005
 
@@ -176,8 +179,8 @@ The [decision backlog](06-proposed-product-decisions.md) is canonical for approv
 | User problem | Users may read information without understanding the existing approved next step. |
 | Current HILERA capability | Already P0 education and next-step guidance; A for delivery, B for presentation. Goals and contextual education/search remain P1 (C). |
 | Competitor evidence | Omada O02/O03/O10: documented learning and action references; transfer is a design hypothesis, not an efficacy claim. |
-| Proposed improvement | Pair approved short education with a clear link to an already approved task. Offer a navigational continuation; no goal creation, saved reflection, completion tracking or new personalised advice. |
-| Whether product approval is actually required | No new capability approval for bounded links/presentation; approve content and UX. New reflections, habit tracking, goals or recommendation rules require separate decisions. |
+| Approved improvement | Pair approved education or neutral structural placeholders with a link to an existing approved task. Use a frontend-only /app/education shell if needed. |
+| Product-approval boundary | Approval covers presentation and links. Medical copy still needs content approval. Saved reflections, tracking, P1 goals, coaching, AI and personalised recommendations remain outside this decision. |
 | PRD SYNC IMPACT | Not Required — presentation within approved P0 education/next steps; new collection/personalisation or promotion of P1 scope would require sync. |
 | UX impact | High value hypothesis; clear purpose and optional continuation without coercion. |
 | Technical impact | Reusable approved-content card/notice and existing route links; CMS and progress services excluded. |
@@ -186,10 +189,11 @@ The [decision backlog](06-proposed-product-decisions.md) is canonical for approv
 | Clinical impact | Only reviewed approved content; no treatment, coaching or algorithmic advice. |
 | Privacy/security impact | No inference from reading behaviour and no sensitive analytics. |
 | Operating cost | UI low; recurring editorial/clinical review is real work, not a free-content assumption. |
-| Dependencies | Approved educational copy, content owner/version and approved next-step mapping. |
+| Dependencies | Approved task destinations. Medical copy requires approved content and versioning. |
 | Implementation complexity | Low presentation; content governance effort depends on existing material. |
-| Recommended delivery bundle | Bundle 1 approved-content presentation; P1 goals/search and reminder delivery excluded. |
-| APPROVAL STATUS | Requires product approval — proposed bundle/UX not yet approved; capability baseline remains as stated. |
+| Recommended delivery bundle | Bundle 1 education shell and approved action links, with approved copy where available. P1 goals, content search and reminder delivery stay separate. |
+| APPROVAL STATUS | Approved |
+| Approval date | 7 November 2026 |
 
 ### Candidate 6: Unified cardiometabolic navigation/presentation — HIL-RD-006
 
@@ -198,8 +202,8 @@ The [decision backlog](06-proposed-product-decisions.md) is canonical for approv
 | User problem | Separate health-area experiences could fragment the user's history and monitoring journey. |
 | Current HILERA capability | Already P0 dashboard, entry, history, trends, education and conditional summary; B for coherent presentation, A for full delivery. |
 | Competitor evidence | Dario D01/D04/D06/D07: integrated offering/logbook/reporting references; exact in-app menu structure unverified. |
-| Proposed improvement | Use common navigation, page anatomy, provenance, history rows and readiness language across existing surfaces. Preserve HILERA branding and generic measurement architecture. |
-| Whether product approval is actually required | No new capability approval for consistent navigation; owner approves the UX bundle. New domains, clinical groupings or inventory require explicit approval. |
+| Approved improvement | Use common navigation, page anatomy, provenance and readiness language across Dashboard, Add Health Information, History, Trends, Risk Awareness Summary and Education. Preserve HILERA branding and generic measurement architecture. |
+| Product-approval boundary | Approval covers the shared presentation of the six named surfaces. New domains, clinical groupings, inventory, permissions and integrations require separate approval. |
 | PRD SYNC IMPACT | Not Required — shared presentation of approved capabilities; expanded inventory, permissions or clinical aggregation would require sync. |
 | UX impact | High consistency value; avoid one separate mini-app per future health area. |
 | Technical impact | Refine shared AppShell/navigation/cards; keep Next.js App Router and existing component boundaries. |
@@ -210,12 +214,13 @@ The [decision backlog](06-proposed-product-decisions.md) is canonical for approv
 | Operating cost | Low shared-component maintenance; no device, coach, integration or paid dependency. |
 | Dependencies | Owner-approved navigation, current route structure, accessibility and exact approved labels. |
 | Implementation complexity | Low–moderate cross-screen presentation review; no backend architecture replacement. |
-| Recommended delivery bundle | Bundle 1 common navigation and component refinement across all six candidates. |
-| APPROVAL STATUS | Requires product approval — proposed bundle/UX not yet approved; capability baseline remains as stated. |
+| Recommended delivery bundle | Bundle 1 common navigation and component refinement across the approved surfaces. |
+| APPROVAL STATUS | Approved |
+| Approval date | 7 November 2026 |
 
 ## Delivery sequence and speed
 
-Recommend **one cohesive presentation batch** after owner review: shared navigation/component conventions, chronological history, entry context, dashboard hierarchy and approved education-to-action links. Include retrieval affordances only within the boundary accepted for HIL-RD-002. Review desktop/mobile, keyboard use, empty results and incomplete-data states together. Reuse existing frontend architecture and synthetic records.
+Deliver one presentation batch covering shared navigation and components, chronological history, entry context, dashboard hierarchy and approved education-to-action links. Review desktop and mobile layouts, keyboard use, empty states and incomplete-data states together. Reuse the existing frontend architecture and synthetic records.
 
 Acceptance proposal: users can distinguish current state from historical events, locate the path to a record, return from entry to history, understand insufficient history, and identify an already approved next action. Validate through consented usability sessions with synthetic data; no invented success threshold or sensitive analytics.
 
@@ -223,6 +228,6 @@ Keep separate: functional auth/session/authorization; save/resume and data APIs;
 
 ## Explicit exclusions from Bundle 1
 
-Symptom logging; guided symptom assessment; diagnosis; differential diagnosis; triage; medication management; prescribing; treatment recommendations; wearable/device integrations; external lab integrations; coaching; community; employer functionality; insurer functionality; telemedicine; AI health interpretation; AI clinical summaries; custom clinical health scores.
+HIL-RD-002 history search and filters are excluded, including full-text search, new filters, indexing, saved searches and retained queries. Other exclusions include symptom logging, guided symptom assessment, diagnosis, differential diagnosis, triage, medication management, prescribing, treatment recommendations, wearable/device integrations, external lab integrations, coaching, community, employer functionality, insurer functionality, telemedicine, AI health interpretation, AI clinical summaries and custom clinical health scores.
 
-Goals, export/shareable summaries and contextual education/search remain approved P1 capabilities, outside this P0 presentation recommendation. Basic reminders remain P0 but delivery details are deferred. No P2 designation is inferred where the confirmed baseline does not supply one.
+Goals, export/shareable summaries and contextual education/search remain approved P1 capabilities outside Bundle 1. Basic reminders remain P0, with delivery details deferred.
