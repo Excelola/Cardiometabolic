@@ -9,13 +9,12 @@ export const metadata: Metadata = { title: "Risk Awareness Summary" };
 export default function RiskSummaryPage() {
   return (
     <>
-      <PageTitle title="Health summary">
+      <PageTitle title="Risk Awareness Summary">
         <p className="lede">
           A clinically governed summary appears only when approved requirements are satisfied.
         </p>
       </PageTitle>
       <Card>
-        <p className="eyebrow">Cardiometabolic Risk Awareness Summary</p>
         <RiskSummaryState />
       </Card>
     </>

@@ -5,14 +5,15 @@ import { usePathname } from "next/navigation";
 
 export const APP_LINKS = [
   { href: "/app/dashboard", label: "Dashboard" },
-  { href: "/app/measurements/new", label: "Add data" },
+  { href: "/app/measurements/new", label: "Add info" },
   { href: "/app/measurements/history", label: "History" },
   { href: "/app/trends", label: "Trends" },
   { href: "/app/risk-summary", label: "Summary" },
+  { href: "/app/education", label: "Education" },
 ] as const;
 
 export function AppNavigation() {
-  const pathname = usePathname();
+  const pathname = usePathname()?.replace(/\/$/, "");
 
   return (
     <nav aria-label="Application navigation" className="app-nav">

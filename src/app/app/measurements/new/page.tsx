@@ -5,14 +5,15 @@ import { Card } from "@/components/ui/card";
 import { PageTitle } from "@/components/ui/page-title";
 import { MOCK_MEASUREMENT_DEFINITION } from "@/domain/health";
 
-export const metadata: Metadata = { title: "Add information" };
+export const metadata: Metadata = { title: "Add health information" };
 
 export default function MeasurementEntryPage() {
   return (
     <>
       <PageTitle title="Add health information">
         <p className="lede">
-          Record only supported measurements defined by the approved V1 inventory.
+          See what a manual entry includes, from the measurement details to its date
+          and source.
         </p>
       </PageTitle>
       <Card>
