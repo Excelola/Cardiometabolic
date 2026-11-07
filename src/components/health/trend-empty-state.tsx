@@ -6,12 +6,11 @@ export function TrendEmptyState() {
     <div className="trend-empty-state">
       <div aria-hidden="true" className="trend-empty-state__canvas" />
       <EmptyState
-        action={<ButtonLink href="/app/measurements/new">Add information</ButtonLink>}
+        action={<ButtonLink href="/app/measurements/new">Add health information</ButtonLink>}
         title="Not enough supported history yet"
       >
         <p>
-          HILERA will show a real trend only when enough approved information exists for
-          the selected measurement.
+          Trend views need enough supported records over time. This preview does not contain those records.
         </p>
       </EmptyState>
     </div>

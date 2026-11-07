@@ -39,11 +39,12 @@ policy, field inventory, or clinical semantics have been approved.
 | `/auth/verify` | Legacy verification route | Retained inactive shell; verification codes are not in the MVP journey |
 | `/onboarding` | Progressive onboarding | Approved basic profile field shell plus deferred consent and image-ready areas |
 | `/app` | Application entry | Redirects to the dashboard shell |
-| `/app/dashboard` | Limited dashboard | Current synthetic workflow state, navigation cards, and all approved product states |
-| `/app/measurements/new` | Generic measurement entry | Placeholder definition; saving disabled |
-| `/app/measurements/history` | Measurement history | Synthetic records and provenance labels |
+| `/app/dashboard` | Dashboard | Synthetic workflow state, one setup action, recent-information and monitoring sections, and a workflow-state disclosure |
+| `/app/measurements/new` | Generic measurement entry | Placeholder measurement, date and source context with a direct link to History. Saving is disabled |
+| `/app/measurements/history` | Measurement history | Chronological synthetic records with date, identity, provenance and inline details |
 | `/app/trends` | Trend view | Polished insufficient-history shell with no fabricated trend |
 | `/app/risk-summary` | Risk Awareness Summary | Structural readiness shell with no score or clinical interpretation |
+| `/app/education` | P0 Education shell | Product-use guidance with an action to review History. Medical content awaits approval |
 
 The `/app` prefix is an organizational route in this foundation, not an access
 control boundary. Real authentication and authorization must be enforced on the
@@ -52,6 +53,23 @@ server once approved session and permission requirements exist.
 The active MVP authentication journey begins directly at `/sign-up` or
 `/sign-in`. No current navigation links to the legacy `/auth` routes. Those
 files remain only until a separate route-cleanup decision is approved.
+
+## Approved MVP Expansion Bundle 1
+
+The 7 November 2026 product decision covers Health History IA (HIL-RD-001),
+repeat entry UX (HIL-RD-003), dashboard hierarchy (HIL-RD-004), Education to an
+existing action (HIL-RD-005), and shared app navigation and presentation
+(HIL-RD-006). The Master PRD was synced externally.
+
+The six app surfaces reuse the AppShell, AppNavigation, PageTitle, cards and
+buttons. The history row reuses ProvenanceBadge and reveals available record
+context with native HTML disclosure. Entry retains the shared non-submitting
+form and generic measurement definition. Education uses static product guidance.
+History search and filtering (HIL-RD-002) remain a separate decision.
+
+The preview uses synthetic display metadata. Backend, API, database, migration,
+persistence, clinical rules and the production measurement inventory remain
+outside Bundle 1.
 
 ## Component structure
 

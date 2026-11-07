@@ -12,8 +12,12 @@ type MeasurementEntryFormProps = Readonly<{
 
 export function MeasurementEntryForm({ definition }: MeasurementEntryFormProps) {
   return (
-    <NonSubmittingForm className="measurement-form">
-      <p className="eyebrow">Manual entry foundation</p>
+    <NonSubmittingForm aria-labelledby="measurement-entry-title" className="measurement-form">
+      <p className="eyebrow">Manual entry</p>
+      <h2 id="measurement-entry-title">Measurement details</h2>
+      <Notice title="Preview only">
+        <p>Measurement selection and saving are unavailable in this preview.</p>
+      </Notice>
       <div className="measurement-form__grid">
         <SelectField disabled id="measurement-type" label="Measurement type">
           <option>Choose a supported measurement</option>
@@ -22,26 +26,29 @@ export function MeasurementEntryForm({ definition }: MeasurementEntryFormProps) 
           disabled
           helperText={definition.fields[0]?.helperText}
           id="measurement-value"
+          inputMode={definition.fields[0]?.inputMode}
           label="Value and unit"
           placeholder="Available after measurement selection"
         />
         <FormField
           disabled
+          helperText="This identifies when the measurement was taken."
           id="measurement-time"
-          label="When was it measured?"
+          label="Date and time measured"
           placeholder="Date and time"
         />
-        <SelectField disabled id="measurement-source" label="Source">
+        <SelectField
+          disabled
+          helperText="Manual entries appear with this source label in History."
+          id="measurement-source"
+          label="Source"
+        >
           <option>User Entered</option>
         </SelectField>
       </div>
-      <Notice title="Measurement specification required">
-        Names, units, validation, context, and clinical meaning must come from the approved
-        measurement and clinical specifications.
-      </Notice>
       <div className="page-actions">
-        <Button disabled type="submit">Save information</Button>
-        <ButtonLink href="/app/dashboard" variant="secondary">Cancel</ButtonLink>
+        <ButtonLink href="/app/measurements/history">View history</ButtonLink>
+        <Button disabled type="submit" variant="secondary">Save information</Button>
       </div>
     </NonSubmittingForm>
   );

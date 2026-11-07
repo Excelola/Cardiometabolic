@@ -11,7 +11,7 @@ export default function TrendsPage() {
     <>
       <PageTitle title="Trends">
         <p className="lede">
-          See supported information over time without adding clinical meaning by design alone.
+          Review how supported information changes over time when enough history is available.
         </p>
       </PageTitle>
       <Card>

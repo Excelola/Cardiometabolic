@@ -5,7 +5,7 @@ export function AppHeader() {
     <header className="app-header">
       <BrandLockup href="/app/dashboard" priority />
       <div className="app-header__meta">
-        <span className="preview-label">Private preview</span>
+        <span className="preview-label">Test preview</span>
         <span aria-label="Account area unavailable in preview" className="account-placeholder">
           Account
         </span>
