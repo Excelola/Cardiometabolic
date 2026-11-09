@@ -123,3 +123,39 @@ Accepted, intentional deviations from the SVG references:
 - [x] Clinical, authentication-policy, backend, analytics, and persistence inventions excluded.
 
 final result: passed
+
+## MVP Expansion Bundle 1
+
+The 7 November 2026 approval covers chronological History, repeat entry UX,
+the dashboard hierarchy, Education-to-action links, and shared app navigation.
+History search and filtering (HIL-RD-002) are excluded.
+
+- **History and entry:** History shows ordered sample dates, record identity,
+  all four provenance labels, and a keyboard-operable details disclosure.
+  Entry explains measurement, date and source context and links to History.
+  Save and all measurement controls are disabled. The preview uses no real
+  measurements.
+- **Dashboard and Education:** Dashboard prioritises sample setup progress and
+  one setup action. Recent information and monitoring have separate sections.
+  Education connects a product-use explanation to History. Risk Awareness
+  Summary links to Education and Trends retains the insufficient-history state.
+- **Shared presentation:** All six routes use the existing shell, locked logo,
+  brand tokens and legal strip. The mobile navigation wraps to show all six
+  destinations. Active navigation is visible and uses `aria-current`.
+
+Chromium QA rendered Dashboard, Add Health Information, History, Trends,
+Risk Awareness Summary and Education at 1440 × 1024 and 390 × 844. All 12
+renders had one H1, the main landmark, a footer, the locked logo, and no
+horizontal overflow. Navigation targets measured 44 px. Keyboard checks
+covered the skip link, Dashboard → Education, Entry → History and the History
+details disclosure. Browser checks also covered labelled and disabled entry
+controls, provenance, readiness states, and the absence of History search and
+filter controls. The only console finding was the existing missing favicon
+request. Small app section labels now use the approved Deep Green token for
+stronger contrast. This was a focused browser review.
+
+AppDeploy hosts a separate static frontend test preview. Its deployment
+overlay keeps the locked SVG, labels the public preview for fictional data,
+and removes native form field names so an early submission carries no field
+values. The application still has no backend, persistence, clinical logic,
+approved measurement inventory, or API/database changes.

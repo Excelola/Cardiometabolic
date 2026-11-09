@@ -852,6 +852,10 @@ fieldset {
   font-size: clamp(2.15rem, 3.2vw, 2.75rem);
 }
 
+.app-main .eyebrow {
+  color: var(--color-deep-green);
+}
+
 .page-heading {
   margin-bottom: var(--space-5);
 }
@@ -911,18 +915,20 @@ fieldset {
   font-size: 1.12rem;
 }
 
-.dashboard-grid--four .information-card {
-  display: flex;
-  flex-direction: column;
+.app-section {
+  margin-top: var(--space-6);
 }
 
-.dashboard-grid--four .button {
-  align-self: flex-start;
-  margin-top: auto;
+.app-section > h2 {
+  margin-bottom: var(--space-3);
 }
 
-.product-states-section {
-  padding-bottom: 0;
+.app-disclosure {
+  color: var(--color-primary);
+  cursor: pointer;
+  font-weight: 700;
+  min-height: 2.75rem;
+  padding-block: var(--space-3);
 }
 
 .state-list,
@@ -965,6 +971,7 @@ fieldset {
 
 .measurement-form__grid {
   margin-bottom: var(--space-4);
+  margin-top: var(--space-3);
 }
 
 .measurement-form .page-actions {
@@ -977,35 +984,56 @@ fieldset {
 }
 
 .measurement-history-row {
-  align-items: center;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  display: flex;
-  gap: var(--space-4);
-  justify-content: space-between;
   padding: var(--space-4);
 }
 
 .measurement-history-row__summary {
-  display: grid;
-  gap: var(--space-1);
-}
-
-.measurement-history-row__summary span {
-  color: var(--color-text-secondary);
-  font-size: 0.8rem;
-}
-
-.measurement-history-row__meta {
   align-items: center;
   display: flex;
-  gap: var(--space-4);
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  justify-content: space-between;
 }
 
-.row-disclosure {
+.measurement-history-row__identity {
+  display: grid;
+  gap: var(--space-1);
+  overflow-wrap: anywhere;
+}
+
+.measurement-history-row__identity span {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.measurement-history-row__details {
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-3);
+}
+
+.measurement-history-row__details summary {
   color: var(--color-primary);
-  font-size: 0.78rem;
-  font-weight: 750;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 700;
+  min-height: 2.75rem;
+  padding-block: var(--space-3);
+}
+
+.measurement-history-row__details dl {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.measurement-history-row__details dt {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+}
+
+.measurement-history-row__details dd {
+  margin: var(--space-1) 0 0;
 }
 
 .history-disclaimer {
@@ -1197,8 +1225,7 @@ fieldset {
     padding: var(--space-6) var(--space-4);
   }
 
-  .status-card,
-  .measurement-history-row {
+  .status-card {
     align-items: stretch;
     flex-direction: column;
   }
@@ -1211,10 +1238,6 @@ fieldset {
   .page-actions {
     align-items: stretch;
     flex-direction: column;
-  }
-
-  .measurement-history-row__meta {
-    justify-content: space-between;
   }
 
   .app-footer {

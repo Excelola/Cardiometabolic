@@ -43,33 +43,34 @@ export const MOCK_MEASUREMENT_DEFINITION: MeasurementDefinition = {
   ],
 };
 
+/** Display-only examples ordered from the most recent preview day and time. */
 export const MOCK_MEASUREMENT_HISTORY: readonly MeasurementHistoryItem[] = [
   {
     id: "synthetic-record-1",
     label: "Sample record A",
     value: "—",
-    recordedAtLabel: "Synthetic preview date",
+    recordedAtLabel: "Preview day 3, 16:20",
     provenance: "User Entered",
   },
   {
     id: "synthetic-record-2",
     label: "Sample record B",
     value: "—",
-    recordedAtLabel: "Synthetic preview date",
+    recordedAtLabel: "Preview day 2, 14:10",
     provenance: "Imported",
   },
   {
     id: "synthetic-record-3",
     label: "Sample record C",
     value: "—",
-    recordedAtLabel: "Synthetic preview date",
+    recordedAtLabel: "Preview day 2, 09:30",
     provenance: "Verified",
   },
   {
     id: "synthetic-record-4",
     label: "Sample derived item",
     value: "—",
-    recordedAtLabel: "Synthetic preview date",
+    recordedAtLabel: "Preview day 1, 11:45",
     provenance: "System Derived",
   },
 ];
