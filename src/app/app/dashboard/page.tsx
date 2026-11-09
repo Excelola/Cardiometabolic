@@ -43,7 +43,7 @@ export default function DashboardPage() {
       <div className="app-section">
         <Card className="workflow-notes">
           <details>
-            <summary className="app-disclosure">About HILERA workflow states</summary>
+            <summary className="app-disclosure">What these statuses mean</summary>
             <p className="muted">These eight states describe progress through the product.</p>
             <ProductStateList />
           </details>

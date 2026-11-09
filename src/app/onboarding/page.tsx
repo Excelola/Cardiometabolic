@@ -24,7 +24,7 @@ export default function OnboardingPage() {
         <div className="onboarding-layout">
           <Card className="onboarding-card">
             <h2>About you</h2>
-            <Notice>Nothing entered in this visual preview is submitted or stored.</Notice>
+            <Notice>This preview does not save or submit your answers.</Notice>
             <NonSubmittingForm className="onboarding-form">
               <FormField
                 autoComplete="nickname"
@@ -51,7 +51,7 @@ export default function OnboardingPage() {
               </SelectField>
               <div className="page-actions">
                 <ButtonLink href="/app/dashboard">Continue</ButtonLink>
-                <ButtonLink href="/app/dashboard" variant="secondary">Leave for now</ButtonLink>
+                <ButtonLink href="/app/dashboard" variant="secondary">Save for later</ButtonLink>
               </div>
             </NonSubmittingForm>
           </Card>
