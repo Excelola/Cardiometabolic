@@ -4,15 +4,13 @@ import { EmptyState } from "@/components/ui/empty-state";
 export function TrendEmptyState() {
   return (
     <div className="trend-empty-state">
-      <div aria-hidden="true" className="trend-empty-state__canvas" />
       <EmptyState
-        action={<ButtonLink href="/app/measurements/new">Add health information</ButtonLink>}
-        title="Not enough supported history yet"
+        action={<ButtonLink href="/app/measurements/new">Add a measurement</ButtonLink>}
+        title="Not enough measurements to show changes yet"
       >
-        <p>
-          Trend views need enough supported records over time. This preview does not contain those records.
-        </p>
+        <p>This view needs more supported measurements recorded over time.</p>
       </EmptyState>
+      <div aria-hidden="true" className="trend-empty-state__canvas" />
     </div>
   );
 }

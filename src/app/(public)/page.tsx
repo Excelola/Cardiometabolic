@@ -8,17 +8,11 @@ export default function LandingPage() {
       <section className="hero" id="how-it-works">
         <div className="container hero__grid">
           <div className="hero__copy">
-            <p className="eyebrow">Health information, made clearer</p>
-            <h1>
-              <span>Understand your</span>
-              <em>health information.</em>
-              <span>Review your progress.</span>
-              <span>Take the next safe step.</span>
-            </h1>
+            <p className="eyebrow">Your health journal</p>
+            <h1>Understand your <em>health information</em></h1>
             <p className="lede">
-              {productConfig.productName} helps you understand health information, see
-              changes over time, and know an appropriate next step without replacing
-              professional healthcare.
+              Keep track of your measurements, see how they change over time, and learn
+              what HILERA can help you do next.
             </p>
             <div className="hero__actions">
               <ButtonLink href="/sign-up">Create account</ButtonLink>
@@ -26,10 +20,15 @@ export default function LandingPage() {
                 Sign in
               </ButtonLink>
             </div>
+            <p className="hero__boundary muted">
+              {productConfig.productName} helps you understand health information, see
+              changes over time, and know an appropriate next step without replacing
+              professional healthcare.
+            </p>
           </div>
-          <MediaFrame ariaLabel="Image-ready HILERA hero media area" className="hero-media">
-            <p className="eyebrow">Your health, over time</p>
-            <h2>Simple at first glance.</h2>
+          <MediaFrame ariaLabel="What you can do with HILERA" className="hero-media">
+            <p className="eyebrow">How it works</p>
+            <h2>Your health, over time</h2>
             <ul className="hero-media__list">
               <li><strong>Health information</strong><span>Keep important information together.</span></li>
               <li><strong>Review</strong><span>Look back at what you recorded.</span></li>

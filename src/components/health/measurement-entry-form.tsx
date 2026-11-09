@@ -13,14 +13,13 @@ type MeasurementEntryFormProps = Readonly<{
 export function MeasurementEntryForm({ definition }: MeasurementEntryFormProps) {
   return (
     <NonSubmittingForm aria-labelledby="measurement-entry-title" className="measurement-form">
-      <p className="eyebrow">Manual entry</p>
       <h2 id="measurement-entry-title">Measurement details</h2>
       <Notice title="Preview only">
-        <p>Measurement selection and saving are unavailable in this preview.</p>
+        <p>Measurement entry is unavailable in this preview. You can view sample records in Past measurements.</p>
       </Notice>
       <div className="measurement-form__grid">
         <SelectField disabled id="measurement-type" label="Measurement type">
-          <option>Choose a supported measurement</option>
+          <option>Select measurement type</option>
         </SelectField>
         <FormField
           disabled
@@ -28,7 +27,7 @@ export function MeasurementEntryForm({ definition }: MeasurementEntryFormProps) 
           id="measurement-value"
           inputMode={definition.fields[0]?.inputMode}
           label="Value and unit"
-          placeholder="Available after measurement selection"
+          placeholder="Select a measurement first"
         />
         <FormField
           disabled
@@ -39,7 +38,7 @@ export function MeasurementEntryForm({ definition }: MeasurementEntryFormProps) 
         />
         <SelectField
           disabled
-          helperText="Manual entries appear with this source label in History."
+          helperText="Manual entries appear with this source label in Past measurements."
           id="measurement-source"
           label="Source"
         >
@@ -47,8 +46,8 @@ export function MeasurementEntryForm({ definition }: MeasurementEntryFormProps) 
         </SelectField>
       </div>
       <div className="page-actions">
-        <ButtonLink href="/app/measurements/history">View history</ButtonLink>
-        <Button disabled type="submit" variant="secondary">Save information</Button>
+        <ButtonLink href="/app/measurements/history">View past measurements</ButtonLink>
+        <Button disabled type="submit" variant="secondary">Save measurement</Button>
       </div>
     </NonSubmittingForm>
   );

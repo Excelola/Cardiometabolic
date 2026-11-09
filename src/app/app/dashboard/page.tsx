@@ -8,36 +8,40 @@ import { PageTitle } from "@/components/ui/page-title";
 import { StatusCard } from "@/components/ui/status-card";
 import { MOCK_CURRENT_PRODUCT_STATE } from "@/domain/product-state";
 
-export const metadata: Metadata = { title: "Dashboard" };
+export const metadata: Metadata = { title: "Overview" };
 
 export default function DashboardPage() {
+  const status = MOCK_CURRENT_PRODUCT_STATE === "Setup In Progress"
+    ? "Setup in progress"
+    : MOCK_CURRENT_PRODUCT_STATE;
+
   return (
     <>
-      <PageTitle eyebrow="Dashboard" title="Your health, at a glance">
-        <p className="lede">See where you are in setup and where to go next.</p>
+      <PageTitle eyebrow="Overview" title="Your health overview">
+        <p className="lede">See where you are in setup and find your next step.</p>
       </PageTitle>
       <StatusCard
         action={<ButtonLink href="/onboarding">Continue setup</ButtonLink>}
-        status={MOCK_CURRENT_PRODUCT_STATE}
-        title="Profile and consent"
+        status={status}
+        title="Finish setting up your profile"
       >
-        <p>This sample state shows setup progress. Open setup to review the profile and consent steps.</p>
+        <p>Continue to review your profile and consent.</p>
       </StatusCard>
       <section className="app-section" aria-labelledby="current-picture-heading">
-        <h2 id="current-picture-heading">Your current picture</h2>
+        <h2 id="current-picture-heading">Review your measurements</h2>
         <div className="dashboard-grid">
-          <InformationCard title="Recent information">
-            <p>History contains sample records so you can see how entries are organised.</p>
-            <ButtonLink href="/app/measurements/history" variant="text">Review history</ButtonLink>
+          <InformationCard title="Past measurements">
+            <p>This preview shows sample measurement records.</p>
+            <ButtonLink href="/app/measurements/history" variant="text">View past measurements</ButtonLink>
           </InformationCard>
-          <InformationCard title="Monitoring activity">
-            <p>Trends need a record of supported information over time. This preview has no trend data.</p>
-            <ButtonLink href="/app/trends" variant="text">Review trends</ButtonLink>
+          <InformationCard title="Changes over time">
+            <p>This preview has no measurements to compare over time.</p>
+            <ButtonLink href="/app/trends" variant="text">See changes over time</ButtonLink>
           </InformationCard>
         </div>
       </section>
       <div className="app-section">
-        <Card>
+        <Card className="workflow-notes">
           <details>
             <summary className="app-disclosure">About HILERA workflow states</summary>
             <p className="muted">These eight states describe progress through the product.</p>

@@ -159,3 +159,30 @@ overlay keeps the locked SVG, labels the public preview for fictional data,
 and removes native form field names so an early submission carries no field
 values. The application still has no backend, persistence, clinical logic,
 approved measurement inventory, or API/database changes.
+
+## Editorial Health Journal visual QA
+
+The approved task specification supplied the design reference for this review.
+The journal theme uses a Cream canvas, Ink reading text, editorial serif
+headings, Forest state panels and Mist notices. History uses divided rows,
+and the narrower application shell uses a native journal navigation disclosure
+with the same six destinations as the desktop sidebar. Landing and Onboarding
+retain media-ready space for approved photography.
+
+Before and after Chromium captures cover Landing, Sign up, Sign in, Onboarding,
+Overview, Add a measurement, Past measurements, Changes over time, Health risk
+summary and Health guides at 1440 × 1024 and 390 × 844. The browser matrix
+also covers 320 px and 768 px layouts and real Chrome 200% zoom. The narrow
+app header retains both Preview and Account indicators. The measurement form
+retains its labels and disabled fields, with short placeholders that fit at
+320 px. Onboarding fields align within each grid row and Landing's decorative
+motif clears the copy and hides at phone widths.
+
+Focused keyboard and browser checks covered skip-to-content, headings and
+landmarks, visible focus, form labels, current-page navigation, disclosure
+operation, touch target sizing, sampled contrast and preview-only actions.
+Browser interactions confirmed that credentials do not submit, setup and guide
+links reach their existing destinations, and sample record details still expand.
+The production-like console review found the existing missing favicon request.
+This was a focused accessibility review. Formal assistive-technology coverage
+remains separate.

@@ -8,10 +8,10 @@ export const metadata: Metadata = { title: "Sign in" };
 export default function SignInPage() {
   return (
     <AuthCard
-      eyebrow="HILERA account access"
-      intro="Enter your email address and password to continue."
-      note="This frontend preview does not create a session. Account recovery is not available until an approved recovery mechanism is implemented."
-      title="Welcome back"
+      eyebrow="Account access"
+      intro="Enter your email address and password."
+      note="This preview does not sign you in. Password recovery is unavailable here."
+      title="Sign in to HILERA"
     >
       <AuthCredentialsForm mode="sign-in" />
     </AuthCard>
