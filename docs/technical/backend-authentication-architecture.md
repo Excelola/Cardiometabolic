@@ -1,7 +1,9 @@
 # HILERA backend and authentication architecture
 
-Proposed for technical, security and product review. The Master PRD is
-authoritative. The approved MVP requirement is email and password through
+The product owner approved the architecture foundation on 9 November 2026.
+The [decision register](auth-security-decisions.md#foundation-approval)
+identifies the approved entries and the remaining review gates. The Master PRD
+is authoritative. The approved MVP requirement is email and password through
 HILERA's own backend, with no paid authentication or network provider in the
 credential path. The password is never persisted in plaintext. Phone
 authentication and SMS, WhatsApp and voice OTP are deferred. Email ownership
@@ -11,7 +13,8 @@ requirement with no mechanism selected. A duplicate email never merges accounts.
 This package consists of the [decision register](auth-security-decisions.md),
 [data model](auth-data-model.md), [server contracts](auth-api-contracts.md),
 [threat model](auth-threat-model.md) and [implementation plan](backend-implementation-plan.md).
-Its technical recommendations do not confer approval to implement or deploy.
+The proposed schema, contracts, security settings and product policies
+remain subject to their respective reviews before implementation or deployment.
 
 ## Repository baseline
 
@@ -37,7 +40,7 @@ credential-in-URL path. Before any real credential collection, test
 progressive enhancement and script-failure cases to ensure only a protected
 POST can carry credentials, with request bodies and URLs excluded from logs.
 
-## Recommended system
+## Approved system direction
 
 Use a modular monolith inside the existing Next.js application. Run auth on
 the Node runtime and mark service, credential, session and database modules

@@ -4,6 +4,15 @@ Reviewed 9 November 2026. This register records technical recommendations for HI
 
 **Decision status** distinguishes a technical recommendation from a gate requiring product, security or privacy review. **PRD Sync Impact** describes potential impact when a decision is implemented. This documentation changes no product behaviour and requires no Master PRD update.
 
+## Foundation approval
+
+On 9 November 2026, the product owner approved the backend architecture
+foundation. That approval covers AUTH-ARCH-001, AUTH-ARCH-002, AUTH-ARCH-003,
+AUTH-ARCH-005, AUTH-ARCH-007, AUTH-ARCH-008, AUTH-ARCH-011 and AUTH-ARCH-013.
+The approved entries establish the technical direction for review and planning.
+The separate security, privacy and product approvals recorded below still apply.
+Implementation and deployment require separate authorization.
+
 See the [architecture overview](backend-authentication-architecture.md), [data model](auth-data-model.md), [server contracts](auth-api-contracts.md), [threat model](auth-threat-model.md) and [implementation plan](backend-implementation-plan.md).
 
 ## AUTH-ARCH-001 — Backend architecture style
@@ -18,7 +27,7 @@ See the [architecture overview](backend-authentication-architecture.md), [data m
 - **Complexity** Low to moderate. Explicit module boundaries and tests are required.
 - **Product behaviour impact** Enables the already-approved authentication method. Login, recovery and session policies are decided separately.
 - **PRD Sync Impact** Not required for the internal service boundary.
-- **Decision status** Recommended
+- **Decision status** Approved
 
 Reference: [Next.js data security guide](https://nextjs.org/docs/app/guides/data-security).
 
@@ -34,7 +43,7 @@ Reference: [Next.js data security guide](https://nextjs.org/docs/app/guides/data
 - **Complexity** Moderate. Pool sizing, schema changes, backup restores and engine upgrades require ownership.
 - **Product behaviour impact** Provides durable account and session storage for the approved workflow. The database engine choice is internal.
 - **PRD Sync Impact** Not required for engine selection. New user-visible data or lifecycle rules require their own review.
-- **Decision status** Recommended
+- **Decision status** Approved
 
 References: [PostgreSQL constraints](https://www.postgresql.org/docs/current/ddl-constraints.html) and [PostgreSQL transactions](https://www.postgresql.org/docs/current/tutorial-transactions.html).
 
@@ -50,7 +59,7 @@ References: [PostgreSQL constraints](https://www.postgresql.org/docs/current/ddl
 - **Complexity** Moderate. The maintained Drizzle 0.x line and separate 1.0 prerelease work make version pinning and migration compatibility checks important. Prisma's separate tooling adds workflow steps, while typed SQL shifts tooling to the team.
 - **Product behaviour impact** Internal developer and operations choice.
 - **PRD Sync Impact** Not required for the library or migration tool.
-- **Decision status** Recommended
+- **Decision status** Approved
 
 References: [Drizzle PostgreSQL drivers](https://orm.drizzle.team/docs/get-started-postgresql), [Drizzle migration generation](https://orm.drizzle.team/docs/drizzle-kit-generate), [Drizzle releases](https://github.com/drizzle-team/drizzle-orm/releases), [node-postgres transactions](https://node-postgres.com/features/transactions), [Prisma migrations](https://www.prisma.io/docs/orm/migrations/how-migrations-work) and [Postgres.js](https://github.com/porsager/postgres).
 
@@ -82,7 +91,7 @@ References: [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.
 - **Complexity** Moderate. Session issuance, lookup and revocation require a shared contract and concurrency tests.
 - **Product behaviour impact** Supports logout and future account-wide revocation. Idle, absolute and concurrent-session policies are AUTH-ARCH-016.
 - **PRD Sync Impact** Not required for the internal representation.
-- **Decision status** Recommended
+- **Decision status** Approved
 
 Reference: [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html).
 
@@ -114,7 +123,7 @@ References: [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owas
 - **Complexity** Moderate. Coordinate protected page, Server Action and data-access entry points.
 - **Product behaviour impact** Unauthenticated visitors get an approved sign-in route once protection is implemented. Return-to and onboarding transitions need explicit agreement.
 - **PRD Sync Impact** Not required for guard implementation. Review material sign-in redirects or changed onboarding journeys for sync.
-- **Decision status** Recommended
+- **Decision status** Approved
 
 References: [Next.js authentication guide](https://nextjs.org/docs/app/guides/authentication) and [Next.js data security guide](https://nextjs.org/docs/app/guides/data-security).
 
@@ -130,7 +139,7 @@ References: [Next.js authentication guide](https://nextjs.org/docs/app/guides/au
 - **Complexity** Moderate. Review all query entry points and transaction boundaries.
 - **Product behaviour impact** Enforces least privilege in the approved consumer flow.
 - **PRD Sync Impact** Not required for implementing ownership. New roles, delegated access or changed permissions require sync if approved.
-- **Decision status** Recommended
+- **Decision status** Approved
 
 References: [OWASP Authorization Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html) and [Next.js authentication guide](https://nextjs.org/docs/app/guides/authentication).
 
@@ -178,7 +187,7 @@ References: [OWASP Authentication Cheat Sheet](https://cheatsheetseries.owasp.or
 - **Complexity** Low to moderate. Contract and browser tests must exercise direct access and progressive form handling.
 - **Product behaviour impact** Transport does not change the approved auth method. Whether sign-up signs the user in and subsequent product-state destinations still need approval.
 - **PRD Sync Impact** Not required for transport selection. Approved changes to sign-up or sign-in journeys may require sync.
-- **Decision status** Recommended
+- **Decision status** Approved
 
 References: [Next.js data security guide](https://nextjs.org/docs/app/guides/data-security) and [OWASP Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html).
 
@@ -210,7 +219,7 @@ Reference: [OWASP Logging Cheat Sheet](https://cheatsheetseries.owasp.org/cheats
 - **Complexity** Moderate. Inventory purposes, restrict access and test key-rotation consequences.
 - **Product behaviour impact** Internal deployment design. Emergency key rotation can invalidate affected forms or credentials and needs an operational runbook.
 - **PRD Sync Impact** Not required for technical secrets management.
-- **Decision status** Recommended
+- **Decision status** Approved
 
 References: [OWASP Secrets Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Secrets_Management_Cheat_Sheet.html) and [Next.js data security guide](https://nextjs.org/docs/app/guides/data-security).
 
