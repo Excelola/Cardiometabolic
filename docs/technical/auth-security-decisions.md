@@ -65,7 +65,7 @@ References: [Drizzle PostgreSQL drivers](https://orm.drizzle.team/docs/get-start
 
 ## AUTH-ARCH-004 — Password hashing
 
-- **Context** Passwords must only be persisted as secure hashes. Password policy and deployment runtime still need review.
+- **Context** Passwords must only be persisted as secure hashes. The Product Owner approved the V1 password policy on 10 November 2026; deployment runtime and final Argon2id cost parameters still need implementation benchmarking.
 - **Options** Argon2id with a maintained Node binding, scrypt as a reviewed fallback, or a future platform-native Argon2 implementation on an approved runtime.
 - **Recommendation** Evaluate the asynchronous `@node-rs/argon2` Argon2id API. Use the library's unique random salt per credential and persist the encoded hash with its algorithm, version and cost parameters. Select costs after benchmarking the target deployment against current OWASP guidance. Rehash on successful authentication when parameters are outdated, using a conditional update so rehash cannot overwrite a concurrently changed credential.
 - **Reasoning** A memory-hard password hash increases the cost of offline guessing. The candidate provides encoded hashes, asynchronous verification and parameter inspection. Validate supported binaries on local, CI and deployment platforms and review the pinned package and its release provenance before adoption.
@@ -73,9 +73,9 @@ References: [Drizzle PostgreSQL drivers](https://orm.drizzle.team/docs/get-start
 - **Privacy impact** A password hash remains sensitive. Confine it to credential access and backups with restricted permissions.
 - **Cost impact** Hashing consumes memory and CPU per attempt. Profile under abuse load so security settings and capacity can be reviewed together.
 - **Complexity** Moderate. Native binary packaging, test vectors and a rehash path need validation.
-- **Product behaviour impact** Hashing is internal. Password length, supported characters, acceptance rules, and any local compromised-password check are open product and security policy decisions.
+- **Product behaviour impact** V1 accepts passwords from 15 through 128 characters, does not impose arbitrary uppercase/lowercase/number/symbol composition rules, permits password-manager-friendly input including spaces and Unicode where technically safe, does not require routine periodic changes, and blocks common or compromised passwords using a reviewed local blocklist or equivalent method that does not send plaintext passwords to an external service.
 - **PRD Sync Impact** Not required for internal hashing parameters. Sync material password acceptance and credential-change rules once approved.
-- **Decision status** Requires security approval
+- **Decision status** Product policy approved; Argon2id implementation parameters remain subject to security benchmarking and review.
 
 References: [OWASP Password Storage Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html), [NIST SP 800-63B-4](https://pages.nist.gov/800-63-4/sp800-63b.html), [node-rs Argon2 binding](https://raw.githubusercontent.com/napi-rs/node-rs/main/packages/argon2/src/lib.rs) and [node-rs releases](https://github.com/napi-rs/node-rs/releases).
 
@@ -169,9 +169,9 @@ References: [OWASP CSRF Prevention Cheat Sheet](https://cheatsheetseries.owasp.o
 - **Privacy impact** Keep raw email addresses, IP addresses and device fingerprints out of security logs. Treat pseudonymous bucket keys as sensitive and retain only for the approved abuse window.
 - **Cost impact** Avoids a dedicated throttling service initially. PostgreSQL counter write load and hash admission need load testing, especially with randomized identifiers and traffic bursts.
 - **Complexity** Moderate. Test concurrent requests, unknown identities, shared networks, spoofed source headers, bucket limits and degraded storage.
-- **Product behaviour impact** Exact thresholds, windows, retry messaging and acceptable shared-network friction remain unresolved. Product approval is required for visible policy.
+- **Product behaviour impact** Product policy approves generic public-safe credential failures and temporary progressive throttling without permanent account lockout. Exact numeric thresholds, windows, and shared-network tuning remain security/operational parameters and must be tested before exposure.
 - **PRD Sync Impact** Required if approved throttling or lockout rules materially change access behaviour. Internal store selection does not require sync.
-- **Decision status** Requires security approval
+- **Decision status** Product behaviour approved; implementation thresholds and source-signal privacy controls remain subject to security/privacy review.
 
 References: [OWASP Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html) and [NIST SP 800-63B-4](https://pages.nist.gov/800-63-4/sp800-63b.html).
 
@@ -185,7 +185,7 @@ References: [OWASP Authentication Cheat Sheet](https://cheatsheetseries.owasp.or
 - **Privacy impact** Form handling and session reads remain first-party. Prevent sensitive request bodies, cookies, action return values and personalized output from entering logs or shared caches.
 - **Cost impact** No additional service or HTTP compatibility surface for MVP.
 - **Complexity** Low to moderate. Contract and browser tests must exercise direct access and progressive form handling.
-- **Product behaviour impact** Transport does not change the approved auth method. Whether sign-up signs the user in and subsequent product-state destinations still need approval.
+- **Product behaviour impact** Successful sign-up creates an authenticated session and routes to Onboarding. Successful sign-in routes to Overview. Transport does not change the approved email-and-password method.
 - **PRD Sync Impact** Not required for transport selection. Approved changes to sign-up or sign-in journeys may require sync.
 - **Decision status** Approved
 
@@ -225,7 +225,7 @@ References: [OWASP Secrets Management Cheat Sheet](https://cheatsheetseries.owas
 
 ## AUTH-ARCH-014 — Account recovery
 
-- **Context** Recovery is an eventual approved capability. The method and identity proof remain unresolved, and email ownership verification is deferred.
+- **Context** Recovery remains deferred from the A–D implementation. The Product Owner approved that a real-user production launch with password-protected health information must not proceed until a secure recovery mechanism is implemented or the residual loss-of-access risk is explicitly accepted after security review. Email ownership verification remains deferred.
 - **Options** Defer implementation until proof, channels, security and access policy are approved. Email links, OTP, security questions, admin resets and recovery codes remain unselected mechanisms.
 - **Recommendation** Reserve a future recovery service boundary and an account-wide revocation primitive. Before implementation, decide proof of ownership, delivery or support model, expiry and replay controls, abuse limits, event logging, post-recovery session handling and fallback UX. Use generic acknowledgement for any eventual recovery request.
 - **Reasoning** An email address used as an identifier does not establish ownership. A recovery mechanism becomes an alternate path into sensitive records and needs independent assurance.
@@ -233,9 +233,9 @@ References: [OWASP Secrets Management Cheat Sheet](https://cheatsheetseries.owas
 - **Privacy impact** New contact data, third-party delivery and support access would need separate privacy review and a minimal data policy.
 - **Cost impact** Unknown until mechanism and operational support are approved. The architecture selects no paid delivery service.
 - **Complexity** High once implemented. Account takeover and loss of access need adversarial testing.
-- **Product behaviour impact** Recovery method, launch timing, experience and post-recovery access remain open.
+- **Product behaviour impact** No recovery UI or behaviour is added in A–D. Any future recovery capability must revoke all active sessions after credential replacement. The recovery method and proof standard remain open.
 - **PRD Sync Impact** Required when an approved recovery flow, proof requirement or session consequence adds product behaviour.
-- **Decision status** Requires product approval
+- **Decision status** Deferred by Product Owner; excluded from A–D.
 
 Reference: [OWASP Authentication Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Authentication_Cheat_Sheet.html).
 
@@ -259,24 +259,27 @@ Reference: [OWASP Authentication Cheat Sheet](https://cheatsheetseries.owasp.org
 
 - **Context** Session model and cookie attributes leave open how long access lasts and which sessions end after account events.
 - **Options** Fixed absolute expiry only, server-enforced idle and absolute expiry, or short-lived access sessions with separately managed refresh credentials.
-- **Recommendation** Enforce both idle and absolute expiry on the server. Revoke the current session for sign-out, with an idempotent invalidation path. Rotate on successful sign-in and reviewed security transitions. Provide a transactional account-wide revocation primitive for future credential changes, recovery and deletion under their approved policies. Leave exact durations, qualifying idle activity, concurrent-session policy and all-device sign-out UX open.
+- **Recommendation** Enforce a 1-hour idle timeout and a 24-hour absolute lifetime on the server. Revoke the current session for sign-out with an idempotent invalidation path. Permit concurrent sessions across devices. Rotate on successful sign-in and reviewed security transitions. Provide a transactional account-wide revocation primitive; future password change, recovery, and account deletion must revoke all active sessions when implemented. Read-only prefetch or background requests must not silently extend the idle deadline unless explicitly classified as qualifying user activity.
 - **Reasoning** Idle expiry reduces exposure from abandoned sessions. Absolute expiry bounds exposure even when an attacker keeps a stolen token active. Account-wide revocation supports incident response without introducing an initial refresh-token flow.
 - **Security impact** Reject expired or revoked sessions on every protected operation. Enforce consistent server time, prevent activity updates from reviving expired sessions, and test competing requests around expiry and revocation. Never extend the absolute deadline on an activity touch. Do not report logout success until the server invalidation succeeds.
 - **Privacy impact** Use only the timestamps and metadata needed for expiry, revocation and approved security review. Approve retention and deletion policy before keeping revoked sessions for diagnostics.
 - **Cost impact** Indexed lookup, bounded writes to renew the idle deadline and expiry cleanup add database work. Measure it under load.
 - **Complexity** Moderate. Test concurrent tabs, multiple sessions, clock boundaries, cleanup and credential-change races.
-- **Product behaviour impact** Users will experience sign-out, timeout and potentially reauthentication. Exact durations, concurrent sessions and lifecycle effects require product and security review before implementation.
+- **Product behaviour impact** Users may remain signed in on multiple devices, are signed out after 1 hour of inactivity or 24 hours absolute session age, and current-session sign-out revokes that server-side session. Future password change, recovery and account deletion revoke all active sessions.
 - **PRD Sync Impact** Required when approved session lifetime, account deletion or credential lifecycle rules materially change the product journey.
-- **Decision status** Requires product approval
+- **Decision status** Approved by Product Owner on 10 November 2026.
 
 References: [OWASP Session Management Cheat Sheet](https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html) and [NIST SP 800-63B-4](https://pages.nist.gov/800-63-4/sp800-63b.html).
 
-## Open product decisions
+## Open product and security decisions
 
-- Decide password policy, including accepted input and how any compromised-password check would work without sending user passwords to another service.
-- Decide whether account creation immediately signs the user in and which approved journey state follows successful registration and sign-in.
-- Set idle and absolute session lifetimes, qualifying activity, concurrent-session behaviour, and any all-device sign-out experience. Read requests and prefetch do not count as renewal.
-- Set failed-login thresholds, retry experience and acceptable shared-network friction.
-- Choose an account recovery mechanism and proof standard in a separate review.
+The Product Owner approved the V1 password policy, post-signup/post-signin routing, session lifetimes, concurrent-session behaviour, current-session logout, future all-session revocation on password change/recovery/deletion, and temporary throttling without permanent lockout on 10 November 2026.
+
+Remaining controlled decisions are:
+
+- Choose an account recovery mechanism and proof standard in a separate review before real-user production launch, unless residual loss-of-access risk is explicitly accepted after security review.
 - Confirm when email ownership verification should be reconsidered and which actions would depend on it.
-- Define account deletion, credential-change and recovery effects on sessions, retention and user access.
+- Finalise implementation-level throttling thresholds, windows, shared-network behaviour and any source-signal privacy controls through security/privacy testing.
+- Finalise what request activity qualifies to renew the 1-hour idle deadline; passive prefetch and background requests must not renew by implication.
+- Define retention and deletion behaviour for revoked sessions and security events.
+- Benchmark and approve final Argon2id parameters on the intended runtime.
