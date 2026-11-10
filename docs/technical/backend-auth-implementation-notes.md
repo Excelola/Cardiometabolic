@@ -86,7 +86,7 @@ The synthetic benchmark ran on Windows x64 and Node v26.13.0 after warm-up.
 Repeat the benchmark on the deployment runtime and review native binary
 provenance, capacity and memory before release.
 
-The runtime was updated to Next.js 16.4.6 to address existing production
+The runtime is pinned exactly to Next.js 16.4.6 to address existing production
 dependency findings, including the Server Actions denial-of-service advisory.
 The `source-map-js` override addresses the indexed source-map advisory. pnpm's
 release-age exception covers only the exact 16.4.6 framework release and its
@@ -109,11 +109,15 @@ Cookies are issued after commit. Sign-in rotates a presented active
 session and issues a fresh one. Other concurrent sessions remain independent.
 
 Session issuance sets a one-hour idle deadline and a 24-hour absolute deadline.
-**No request renews idle expiry in A–D.** Page reads, direct navigation, RSC
-prefetch and background work only validate the session. This conservative
-choice gives a current session up to one hour from issuance until a qualifying
-interactive activity policy is approved. Both deadlines are always enforced
-server-side, including exact-boundary expiry. The absolute deadline never moves.
+Only explicit authenticated user interaction can request idle renewal: pointer
+interaction (including touch through Pointer Events) or a non-repeated keyboard
+event. Passive page reads, direct navigation, RSC prefetch, timers and background
+work do not renew the session. The client coalesces renewal requests and the
+server performs a database write only when at least approximately five minutes
+of the current idle window have elapsed. Concurrent renewal attempts are
+coalesced by the conditional update. Renewal extends idle expiry to at most one
+hour from the qualifying activity and never beyond the fixed 24-hour absolute
+deadline. Expired or revoked sessions cannot be revived.
 
 Sign-out validates the active session and revokes only that owned row before
 clearing the cookie. The internal account-wide primitive locks the user row
@@ -190,6 +194,8 @@ isolation, concurrent throttling, and the backup and restore drill.
   backup retention and restore invalidation before rollout.
 - Review origin and session controls through the actual TLS ingress and inspect
   browser actions, shared caches, database and infrastructure telemetry.
+- Align `eslint-config-next` to the reviewed Next.js 16.4.6 toolchain and
+  regenerate the pnpm lockfile with pnpm before final validation.
 - Review production throttle tuning, native Argon2 compatibility and capacity,
   secret rotation, audit access and event retention.
 - Complete approved recovery or obtain explicit Product Owner and security
