@@ -3,6 +3,7 @@ import {
   type HealthEntry, type HealthHistoryEntry,
 } from "@/domain/health-records";
 import { MeasurementEntryForm } from "./measurement-entry-form";
+import { LocalOccurrenceTime } from "./local-occurrence-time";
 
 function recordedValue(entry: HealthEntry) {
   switch (entry.type) {
@@ -21,14 +22,11 @@ export function MeasurementHistoryRow({ record, csrf }: Readonly<{ record: Healt
   const { entry } = record;
   const label = healthRecordLabels[entry.type];
   const occurrence = "occurredAt" in entry ? entry.occurredAt : entry.occurredOn;
-  const date = new Intl.DateTimeFormat("en", {
-    dateStyle: "medium", timeStyle: "occurredAt" in entry ? "short" : undefined, timeZone: "UTC",
-  }).format(new Date(occurrence));
   return (
     <li className="measurement-history-row">
       <div className="measurement-history-row__summary">
         <div className="measurement-history-row__identity">
-          <span><time dateTime={occurrence}>{date}{"occurredAt" in entry && " UTC"}</time></span>
+          <span><LocalOccurrenceTime value={occurrence} dayOnly={! ("occurredAt" in entry)} /></span>
           <strong>{label}</strong>
         </div>
         <span>Added by you</span>
