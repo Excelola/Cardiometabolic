@@ -28,14 +28,14 @@ export default function DashboardPage() {
         <p>Continue to review your profile and consent.</p>
       </StatusCard>
       <section className="app-section" aria-labelledby="current-picture-heading">
-        <h2 id="current-picture-heading">Review your measurements</h2>
+        <h2 id="current-picture-heading">Review your health information</h2>
         <div className="dashboard-grid">
-          <InformationCard title="Past measurements">
-            <p>This preview shows sample measurement records.</p>
-            <ButtonLink href="/app/measurements/history" variant="text">View past measurements</ButtonLink>
+          <InformationCard title="Past health readings">
+            <p>This preview shows sample health reading records.</p>
+            <ButtonLink href="/app/measurements/history" variant="text">View past health readings</ButtonLink>
           </InformationCard>
           <InformationCard title="Changes over time">
-            <p>This preview has no measurements to compare over time.</p>
+            <p>This preview has no health readings to compare over time.</p>
             <ButtonLink href="/app/trends" variant="text">See changes over time</ButtonLink>
           </InformationCard>
         </div>
