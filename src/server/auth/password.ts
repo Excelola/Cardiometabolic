@@ -16,10 +16,11 @@ export const ARGON2_OPTIONS = {
 
 function normalizedPassword(input: unknown): string | null {
   if (typeof input !== "string" || input.length === 0 || input.length > 256 || !input.isWellFormed()) return null;
-  const normalized = input.normalize("NFC");
-  if ([...normalized].length > 128
-    || [...normalized].some((character) => character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127)) return null;
-  return normalized;
+  return input.normalize("NFC");
+}
+
+function containsDisallowedControlCharacter(password: string): boolean {
+  return [...password].some((character) => character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127);
 }
 
 const lookupKey = (password: string) => password.normalize("NFKC").toLowerCase();
@@ -31,13 +32,16 @@ let activeJobs = 0;
 const dummyHash = "$argon2id$v=19$m=19456,t=2,p=1$19ZwSB2sc7g6ev3RETGRMQ$U8UuEY0HZ7ZnG5oFG2Q+RuDh2VkVZCLLPJUhEhtYG8E";
 
 export function isPasswordInputBounded(input: unknown): input is string {
-  return normalizedPassword(input) !== null;
+  const normalized = normalizedPassword(input);
+  return normalized !== null && [...normalized].length <= 128 && !containsDisallowedControlCharacter(normalized);
 }
 
 export function validateNewPassword(input: unknown): "valid" | "length" | "blocked" | "invalid" {
-  if (typeof input !== "string" || input.length > 256 || !input.isWellFormed()) return "invalid";
-  const normalized = normalizedPassword(input);
-  if (!normalized || [...normalized].length < 15 || [...normalized].length > 128) return "length";
+  if (typeof input !== "string" || !input.isWellFormed()) return "invalid";
+  if (input.length > 256) return "length";
+  const normalized = input.normalize("NFC");
+  if (containsDisallowedControlCharacter(normalized)) return "invalid";
+  if ([...normalized].length < 15 || [...normalized].length > 128) return "length";
   return blockedPasswords.has(lookupKey(normalized)) ? "blocked" : "valid";
 }
 
@@ -53,7 +57,9 @@ async function withHashSlot<T>(work: () => Promise<T>): Promise<T> {
 
 export function hashPassword(password: string): Promise<string> {
   const normalized = normalizedPassword(password);
-  if (!normalized) throw new Error("Invalid authentication input.");
+  if (!normalized || [...normalized].length > 128 || containsDisallowedControlCharacter(normalized)) {
+    throw new Error("Invalid authentication input.");
+  }
   return withHashSlot(() => hash(normalized, { ...ARGON2_OPTIONS, salt: randomBytes(16) }));
 }
 
@@ -71,7 +77,9 @@ function readableParameters(encoded: string | undefined) {
 
 export async function verifyPassword(password: string, encoded?: string): Promise<{ valid: boolean; needsRehash: boolean }> {
   const normalized = normalizedPassword(password);
-  if (!normalized) return { valid: false, needsRehash: false };
+  if (!normalized || [...normalized].length > 128 || containsDisallowedControlCharacter(normalized)) {
+    return { valid: false, needsRehash: false };
+  }
   const parameters = readableParameters(encoded);
   const matches = await withHashSlot(() => verify(parameters && encoded ? encoded : dummyHash, normalized));
   if (!parameters || !matches) return { valid: false, needsRehash: false };
