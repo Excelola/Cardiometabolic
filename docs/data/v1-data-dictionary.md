@@ -6,7 +6,7 @@
 **Source of truth:** HILERA Master PRD, Section 6 — Data Inventory, Field Requirements & Data Governance  
 **Status:** Approved-source transcription / implementation gate  
 **Scope:** Only material data elements already approved in the Master PRD or already implemented under approved authentication policy  
-**Not approved here:** exact V1 health measurement inventory, exact health-profile questionnaire, clinical thresholds/formulas, retention periods, deletion implementation, admin-role matrix, API schema, final database schema, integrations, AI functionality
+**Not approved here:** additional health-information fields beyond the approved first persistence batch, exact health-profile questionnaire, structured food fields, clinical thresholds/formulas, retention periods, deletion implementation, admin-role matrix, API schema, final database schema, integrations, AI functionality
 
 This document does **not** create new product requirements. It translates already-approved PRD requirements into a field-level governance view so later technical specifications can map every implemented material field to an approved purpose.
 
@@ -104,9 +104,9 @@ These categories **must not be translated into production fields** until each fi
 
 Medication information is **not collected by default**.
 
-## E. Health measurement record envelope
+## E. Approved health-information record envelope and first V1 persistence inventory
 
-This defines the required record structure for any **future approved measurement type**. It does **not** approve the measurement type itself.
+The record envelope below applies to the approved first persistence inventory and any future separately approved health-information type.
 
 | Conceptual field | Label | Purpose | Type | Class | Source / provenance | Validation | Sensitivity | Edit/correction | Feature dependency | Clinical dependency | Retention | API mapping | DB mapping |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -118,7 +118,35 @@ This defines the required record structure for any **future approved measurement
 | measurement_context | Context | Capture only approved measurement-specific context | Type-specific structure | R3/R4 | User/system | Only fields approved for that measurement | Sensitive Health | Per Data Dictionary | Type-specific | Clinical Specification if required | TBD | TBD | TBD |
 | entered_at | None | Record when information entered HILERA | Timestamp | S | System generated | Server timestamp | Sensitive Health/Internal | Not ordinary user editable | History/audit | None | TBD | Internal/TBD | TBD |
 | owner_user_id | None | Ownership/authorization | Internal user reference | S | System/session | Server-side owner only | Sensitive Health/Personal | Not user editable | All health-data access | None | TBD | Never browser-controlled | TBD |
-| correction_audit | None | Preserve amendment/correction history | Structured audit reference | S | System/user action | Controlled correction workflow | Sensitive Health/Internal | Append/control, not silent overwrite | History/data rights | None unless clinical output relies on value | TBD | Internal/TBD | TBD |
+| correction_audit | None | Preserve amendment/correction history | Structured audit reference | S | System/user action | Controlled correction workflow | Sensitive Health/Internal | Append/control, not silent overwrite | History/data rights | None unless clinical output relies on value | Health information | Internal/TBD | TBD |
+
+### Approved first manual-persistence inventory
+
+All entry types below are optional at the global product level. Once the user chooses a type, the structural fields for that type are required as applicable. No field below authorizes clinical interpretation.
+
+| Field / record type | User-facing label | Approved data | Supported units / values | Class | Provenance | Sensitivity | Product dependency | Clinical dependency | Retention category |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| blood_pressure | Blood pressure | systolic value + diastolic value | mmHg | R3 | User Entered for manual entry | Sensitive Health | Add Health Information, History | None for persistence; Clinical Specification required for interpretation | Health information |
+| blood_glucose | Blood glucose | glucose value + descriptive context | mmol/L or mg/dL; context: fasting, before meal, after meal, random/other, not specified | R3 | User Entered for manual entry | Sensitive Health | Add Health Information, History | None for persistence; Clinical Specification required for interpretation | Health information |
+| hba1c | HbA1c | HbA1c value | % | R3 | User Entered for manual entry | Sensitive Health | Add Health Information, History | None for persistence; Clinical Specification required for interpretation | Health information |
+| lipid_panel | Cholesterol / Lipid panel | one or more of total cholesterol, HDL, LDL, triglycerides | mmol/L or mg/dL | R3 | User Entered for manual entry | Sensitive Health | Add Health Information, History | None for persistence; Clinical Specification required for interpretation | Health information |
+| weight | Weight | weight value | kg or lb | R3 | User Entered for manual entry | Sensitive Health | Add Health Information, History | None for persistence; Clinical Specification required for interpretation | Health information |
+| waist_circumference | Waist circumference | waist value | cm or in | R3 | User Entered for manual entry | Sensitive Health | Add Health Information, History | None for persistence; Clinical Specification required for interpretation | Health information |
+| physical_activity_duration | Physical activity | total activity duration for selected day | minutes | R3 | User Entered for manual entry | Sensitive Health | Add Health Information, History | None for persistence; any target/interpretation requires separate approval | Health information |
+| sleep_duration | Sleep | total sleep duration for selected sleep period/day | hours/minutes in UX; implementation may store integer minutes | R3 | User Entered for manual entry | Sensitive Health | Add Health Information, History | None for persistence; any target/interpretation requires separate approval | Health information |
+
+### Structural validation approved for the first batch
+
+- The selected record type must be one of the approved types above.
+- The selected unit must be one of the approved units for that type.
+- Blood pressure requires both systolic and diastolic values.
+- Blood glucose requires one approved descriptive context value.
+- A lipid-panel record requires at least one supported lipid component.
+- Physical activity stores duration for a selected calendar day.
+- Sleep stores duration for a selected sleep period/day.
+- Numeric parsing, required-field checks, supported-unit checks, date/time parsing and ownership checks are structural validation.
+- **No clinical plausibility range, threshold, category or target is approved by this dictionary.**
+- Original entered value/unit must remain traceable if deterministic unit conversion is added later.
 
 ## F. Health information presentation categories
 
@@ -128,7 +156,7 @@ Approved user-facing Add Health Information categories:
 - **Body measurements**
 - **Daily habits**
 
-These are presentation/organisation categories only. They **do not approve specific fields**.
+These remain presentation/organisation categories. The specific first-batch fields approved under them are defined in Section E above; additional fields require normal approval and Data Dictionary update.
 
 ## G. Provenance
 
@@ -307,12 +335,10 @@ A production health-data field may be implemented only if:
 
 The following remain **TBD / not approved for implementation**:
 
-- exact V1 health measurement inventory;
+- additional health-information fields beyond the approved first persistence batch;
 - exact health-profile questionnaire;
-- exact daily-habit fields;
-- exact body-measurement fields;
-- exact supported units per health field;
-- measurement-specific context fields;
+- structured food-tracking fields;
+- additional measurement-specific context fields beyond the approved blood-glucose context;
 - clinical plausibility ranges;
 - clinical thresholds/risk categories;
 - risk formulas;
@@ -326,4 +352,4 @@ The following remain **TBD / not approved for implementation**:
 - final API schema;
 - final database schema.
 
-**PRD Sync Status: Not Required.** This document codifies already-approved Section 6 requirements and explicitly preserves deferred decisions.
+**PRD Sync Status: Completed.** The Master PRD was updated on 10 November 2026 for the approved first V1 manual health-information persistence inventory; this Data Dictionary now reflects that approved scope.
