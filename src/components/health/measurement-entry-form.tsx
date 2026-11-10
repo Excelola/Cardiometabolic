@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useId, useState } from "react";
+import { useActionState, useEffect, useId, useState } from "react";
 
 import { correctHealthRecordAction, createHealthRecordAction } from "@/app/health-actions";
 import { Button } from "@/components/ui/button";
@@ -20,11 +20,26 @@ export function MeasurementEntryForm({ type, csrf, correction }: Readonly<EntryF
   const [values, setValues] = useState<Record<string, string>>(() => {
     if (!initial) return {};
     const fields = Object.fromEntries(Object.entries(initial).map(([key, value]) => [key, value == null ? "" : String(value)]));
-    if ("occurredAt" in initial) fields.occurredAt = initial.occurredAt.slice(0, -1);
+    if ("occurredAt" in initial) fields.occurredAt = initial.occurredAt;
     return fields;
   });
+  useEffect(() => {
+    if (!initial || !("occurredAt" in initial)) return;
+    const instant = new Date(initial.occurredAt);
+    const local = new Date(instant.getTime() - instant.getTimezoneOffset() * 60_000);
+    // Browser timezone is unavailable during server rendering.
+    setValues((previous) => ({ ...previous, occurredLocal: local.toISOString().slice(0, 23) }));
+  }, [initial]);
   const habit = type === "physical_activity_duration" || type === "sleep_duration";
   const update = (name: string, value: string) => setValues((previous) => ({ ...previous, [name]: value }));
+  const updateOccurredLocal = (value: string) => {
+    const instant = new Date(value);
+    setValues((previous) => ({
+      ...previous,
+      occurredLocal: value,
+      occurredAt: Number.isFinite(instant.getTime()) ? instant.toISOString() : "",
+    }));
+  };
 
   function field(name: string, label: string, options: { kind?: "date" | "datetime-local"; optional?: boolean; integer?: boolean } = {}) {
     return (
@@ -78,7 +93,19 @@ export function MeasurementEntryForm({ type, csrf, correction }: Readonly<EntryF
         {habit ? <>
           {field("durationMinutes", "Total duration (whole minutes)", { integer: true })}
           {field("occurredOn", type === "sleep_duration" ? "Day of sleep period" : "Day of activity", { kind: "date" })}
-        </> : field("occurredAt", "Date and time taken (UTC)", { kind: "datetime-local" })}
+        </> : <div className="field">
+          <label htmlFor={`${id}-occurred-local`}>Date and time taken</label>
+          <input
+            id={`${id}-occurred-local`}
+            type="datetime-local"
+            step="0.001"
+            required
+            value={values.occurredLocal ?? ""}
+            onChange={(event) => updateOccurredLocal(event.currentTarget.value)}
+          />
+          <input type="hidden" name="occurredAt" value={values.occurredAt ?? ""} />
+          <p className="muted">Enter the time shown on your device. HILERA stores the equivalent instant securely.</p>
+        </div>}
       </div>
       <p className="muted">{correction ? "The corrected entry will replace the current version in History." : "After saving, your entry will appear in History."}</p>
       <Button type="submit" disabled={pending}>{pending ? "Saving…" : correction ? "Save correction" : "Save health information"}</Button>

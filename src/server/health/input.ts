@@ -17,6 +17,7 @@ function numeric(value: string): string | null {
 }
 
 function occurrence(value: string): string | null {
+  if (value.endsWith("Z")) value = value.slice(0, -1);
   if (!time.test(value) || value.startsWith("0000")) return null;
   const [minute, remainder = ""] = value.split(/(?<=T\d{2}:\d{2}):/);
   const [seconds = "00", fractional = ""] = (remainder || "00").split(".");
