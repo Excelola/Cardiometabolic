@@ -5,7 +5,7 @@ import { tmpdir } from "node:os";
 import { join } from "node:path";
 
 import { hash } from "@node-rs/argon2";
-import { eq } from "drizzle-orm";
+import { eq, isNull, sql } from "drizzle-orm";
 import { migrate } from "drizzle-orm/node-postgres/migrator";
 import { Pool } from "pg";
 import { describe, expect, it } from "vitest";
@@ -172,13 +172,14 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL authentication integration", (
     });
   }, 35_000);
 
-  it("dumps a migrated source, destroys it, restores to a new database and checks data and constraints", async () => {
+  it("dumps a migrated source, destroys it, restores to a new database and invalidates restored sessions", async () => {
     const directory = await mkdtemp(join(tmpdir(), "hilera-auth-backup-"));
     const backup = join(directory, "synthetic.dump");
+    let backedUpBearer = "";
     try {
       await disposable(async (db, name, url) => {
         await applyMigrations(db);
-        token(await createAccount(db, config, { email: "restore@example.test", password }));
+        backedUpBearer = token(await createAccount(db, config, { email: "restore@example.test", password }));
         runPgTool("pg_dump", ["--format=custom", "--no-owner", "--no-privileges", "--file", backup], name, url);
       }); // Source is dropped before the restore database is created.
 
@@ -189,6 +190,16 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL authentication integration", (
         expect(await db.$count(authSessions)).toBe(1);
         await expect(db.insert(users).values({ normalizedEmail: "restore@example.test" })).rejects.toThrow();
         await expect(db.insert(passwordCredentials).values({ userId: randomUUID(), passwordHash: "$argon2id$synthetic" })).rejects.toThrow();
+
+        // A restored database can resurrect a bearer that was valid at the backup point.
+        expect(await findActiveSession(db, backedUpBearer)).not.toBeNull();
+
+        // Recovery must invalidate restored active sessions before user traffic resumes.
+        await db.update(authSessions)
+          .set({ revokedAt: sql`greatest(${authSessions.createdAt}, clock_timestamp())` })
+          .where(isNull(authSessions.revokedAt));
+        expect(await findActiveSession(db, backedUpBearer)).toBeNull();
+
         expect((await authenticateAccount(db, config, { email: "restore@example.test", password })).kind).toBe("success");
       });
     } finally {
