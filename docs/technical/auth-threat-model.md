@@ -1,6 +1,6 @@
 # HILERA authentication threat model
 
-Proposed for architecture, security and privacy review. The controls describe a future email/password build. The current frontend preview uses synthetic content and has no live accounts, authentication, protected records or database. See the [architecture](backend-authentication-architecture.md), [contracts](auth-api-contracts.md) and [decision register](auth-security-decisions.md).
+Updated for draft implementation review in PR #6. The branch now contains first-party email/password authentication, PostgreSQL schema/migrations, revocable sessions, server-side route protection and abuse controls, but it is not approved for real-user production exposure. Health-facing screens still use synthetic preview data and no health information is persisted. See the [architecture](backend-authentication-architecture.md), [contracts](auth-api-contracts.md), [decision register](auth-security-decisions.md) and [production-readiness checklist](auth-production-readiness.md).
 
 ## Scope and trust boundaries
 
@@ -49,7 +49,7 @@ Rate state and security events have different purposes. Use shared atomic Postgr
 2. Test expiry boundaries, shared counter concurrency, denial of service resilience, malformed and oversized input, injection and mass assignment, and safe failure when the session or throttle database is unavailable.
 3. Exercise exact-origin, foreign-origin and same-site sibling-origin actions, present invalid versus absent `Origin`, exact `Referer` fallback, replay of an expired or rotated CSRF proof, and anonymous login/signup CSRF. Verify ingress strips spoofed forwarded headers.
 4. Exercise the protected app routes through hard refresh, prefetch, direct action invocation and client navigation. Verify a second synthetic consumer cannot read or write another user's resources. Check responses and caches for cross-user disclosure, and inspect all log sinks for forbidden data.
-5. Resolve launch policy before enabling real accounts. Record the owner decisions on password policy, immediate sign-in, idle and absolute lifetime, concurrent sessions, throttle behaviour, email ownership, recovery and account lifecycle. If a release proceeds without verification or recovery, document the accepted operational impact and its support boundary.
+5. Before enabling real accounts, verify the approved password/session/throttle behavior and close the remaining release gates. Recovery and email ownership verification remain unresolved. Real-user production exposure must not proceed without approved recovery unless the Product Owner and security review explicitly accept the residual loss-of-access risk.
 
 ## Reference baseline
 
