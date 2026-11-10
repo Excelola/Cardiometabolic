@@ -1,7 +1,7 @@
 import "server-only";
 
 import { createHash, randomBytes } from "node:crypto";
-import { and, eq, gt, isNull, lte, sql } from "drizzle-orm";
+import { and, eq, gt, isNull, lt, lte, sql } from "drizzle-orm";
 
 import type { AuthDb, AuthTransaction } from "../db/auth-db";
 import { authSessions, users } from "../db/schema";
@@ -9,6 +9,7 @@ import { recordAuthSecurityEvent } from "./security-events";
 
 export const IDLE_SESSION_MS = 60 * 60 * 1000;
 export const ABSOLUTE_SESSION_MS = 24 * IDLE_SESSION_MS;
+export const SESSION_ACTIVITY_WRITE_INTERVAL_MS = 5 * 60 * 1000;
 
 export type SessionPrincipal = Readonly<{ sessionId: string; userId: string }>;
 
@@ -47,6 +48,28 @@ export async function findActiveSession(db: AuthDb, token: unknown, at = new Dat
     .from(authSessions).innerJoin(users, eq(users.id, authSessions.userId))
     .where(and(eq(authSessions.tokenHash, digest), activeSession(at))).limit(1);
   return session ?? null;
+}
+
+export async function renewSessionActivity(
+  db: AuthDb,
+  principal: SessionPrincipal,
+  now = new Date(),
+): Promise<boolean> {
+  const renewalThreshold = new Date(now.getTime() + IDLE_SESSION_MS - SESSION_ACTIVITY_WRITE_INTERVAL_MS);
+  const candidateExpiry = new Date(now.getTime() + IDLE_SESSION_MS);
+
+  const [renewed] = await db.update(authSessions)
+    .set({ idleExpiresAt: sql`least(${authSessions.absoluteExpiresAt}, ${candidateExpiry.toISOString()}::timestamptz)` })
+    .where(and(
+      eq(authSessions.id, principal.sessionId),
+      eq(authSessions.userId, principal.userId),
+      activeSession(now),
+      lte(authSessions.idleExpiresAt, renewalThreshold),
+      lt(authSessions.idleExpiresAt, authSessions.absoluteExpiresAt),
+    ))
+    .returning({ id: authSessions.id });
+
+  return Boolean(renewed);
 }
 
 export async function replacePresentedSession(tx: AuthTransaction, previous: unknown, now: Date): Promise<void> {
