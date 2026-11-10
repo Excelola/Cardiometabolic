@@ -73,6 +73,8 @@ The conservative default is to revoke all sessions restored from a backup and re
 
 ## Synthetic restore drill
 
+Use a currently supported PostgreSQL release at a current security-patched minor version. Keep the pg_dump/pg_restore client patched as well; backup files are security-sensitive input to restore tooling.
+
 The development drill is:
 
 1. create a disposable loopback PostgreSQL database;
