@@ -3,7 +3,7 @@
 ## Status
 
 Artifact type: Product/privacy/security recommendation
-Status: Not yet approved as product policy
+Status: Approved V1 product policy on 10 November 2026; Nigerian DPO/legal validation remains required before public production
 Scope: Nigeria-first V1 account, profile, health information, consent/audit, security logs, backups and future document uploads
 Legal note: This is a product-policy recommendation informed by the Nigeria Data Protection Act 2023 and NDPC GAID 2025. It is not a substitute for Nigerian legal/DPO review.
 
@@ -19,13 +19,13 @@ The GAID states that once the specified purpose for retaining personal data has 
 
 Because HILERA processes Sensitive Health information and is production-intent software, DPIA/DPO review is a production-launch gate.
 
-## Recommended policy model
+## Approved policy model
 
 Use purpose-based retention with explicit category triggers, not indefinite retention and not one blanket period for all data.
 
 ### 1. Active account and profile
 
-Recommended rule: retain account/profile data while the account is active and the data remains necessary to provide the approved HILERA service.
+Approved rule: retain account/profile data while the account is active and the data remains necessary to provide the approved HILERA service.
 
 On account-deletion initiation:
 - immediately revoke all active sessions;
@@ -33,7 +33,7 @@ On account-deletion initiation:
 - stop ordinary product processing;
 - begin the deletion workflow.
 
-Recommended live-system deletion SLA: complete normal deletion/anonymisation within 30 days unless a valid legal, security, dispute, or regulatory hold applies.
+Approved live-system deletion SLA: complete normal deletion/anonymisation within 30 days unless a valid legal, security, dispute, or regulatory hold applies.
 
 ### 2. Health information
 
@@ -46,19 +46,19 @@ On approved account deletion:
 
 ### 3. Consent/privacy records
 
-Recommended operational default: retain a minimal compliance record for 36 months after account closure/deletion, subject to Nigerian DPO/legal review before launch.
+Approved operational default: retain a minimal compliance record for 36 months after account closure/deletion, subject to Nigerian DPO/legal review before launch.
 
 Do not retain the user's full health history merely to prove consent.
 
 ### 4. Authentication/security events
 
-Recommended operational default: retain for 12 months unless an active investigation or legal/regulatory obligation justifies longer retention.
+Approved operational default: retain for 12 months unless an active investigation or legal/regulatory obligation justifies longer retention.
 
 Do not retain passwords, raw session tokens, or unnecessary sensitive content in these logs.
 
 ### 5. Technical logs
 
-Recommended default: 30 days or less, with longer retention only for specifically justified security/availability needs.
+Approved default: 30 days or less, with longer retention only for specifically justified security/availability needs.
 
 Raw Sensitive Health data must not enter ordinary logs at all.
 
@@ -79,13 +79,13 @@ Recommended controls:
 - documented RPO/RTO;
 - deletion/tombstone reconciliation so restored backups cannot silently reactivate deleted users/data.
 
-Recommended maximum routine backup retention target: 35 days for the initial consumer MVP, subject to provider, RPO/RTO, legal, and DPO review.
+Approved maximum routine backup retention target: 35 days for the initial consumer MVP, subject to provider, RPO/RTO, legal, and DPO review.
 
 ### 8. Future uploaded health documents
 
-Privacy-minimising recommendation: do not retain raw uploaded health documents by default after extraction/review is complete.
+Approved privacy-minimising rule: do not retain raw uploaded health documents beyond the temporary processing lifecycle.
 
-Proposed lifecycle:
+Approved lifecycle:
 - raw document lives only in encrypted temporary storage;
 - candidate extraction remains temporary;
 - after user confirms supported values, save only the confirmed structured HILERA health data and approved source/provenance metadata;
@@ -99,9 +99,9 @@ Any persistent document vault would be a separate product capability requiring e
 
 A hold must be scoped to the minimum necessary data, record its purpose/owner/review date, restrict ordinary product access, and be released when no longer justified.
 
-## Proposed V1 retention matrix
+## Approved V1 retention matrix
 
-| Category | Active retention | Post-deletion recommendation | Proposed default |
+| Category | Active retention | Post-deletion recommendation | Approved default |
 | --- | --- | --- | --- |
 | Account/profile | While account active/purpose continues | Delete/anonymise from live systems | 30 days after confirmed deletion |
 | Health records + correction lineage | While account active/purpose continues | Delete from live systems unless lawful hold | 30 days after confirmed deletion |
@@ -115,7 +115,7 @@ A hold must be scoped to the minimum necessary data, record its purpose/owner/re
 ## Production gates
 
 Before real health data production:
-- Product Owner approval of the retention matrix;
+- Product Owner approval of the retention matrix — completed 10 November 2026;
 - Nigerian DPO/legal review;
 - DPIA;
 - privacy-notice alignment;
@@ -123,8 +123,8 @@ Before real health data production:
 - restore/deletion reconciliation testing;
 - implementation of account-deletion workflow before promising user deletion behavior.
 
-## Recommendation
+## Approval status
 
-Adopt the matrix above as HILERA's default V1 policy, subject to Nigerian DPO/legal validation before public launch.
+The matrix above is the approved HILERA V1 default retention/deletion policy. Nigerian DPO/legal validation remains required before public launch.
 
-PRD Sync Status: Required only after Product Owner approves the exact retention/deletion policy.
+PRD Sync Status: Completed.
