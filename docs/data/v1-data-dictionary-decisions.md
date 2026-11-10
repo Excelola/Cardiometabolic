@@ -77,9 +77,19 @@ The existence of the profile is approved; exact questions/answers are not.
 
 ### DD-004 — Retention categories and production retention rules
 
-**Status:** Required before production launch.
+**Status:** Resolved / approved 10 November 2026.
 
-Exact periods remain deferred. Architecture must not hard-code indefinite retention.
+Approved defaults:
+- live account/profile/health deletion within 30 days of confirmed account deletion unless a documented lawful hold applies;
+- minimum consent/privacy compliance record for 36 months after closure/deletion;
+- authentication/security events for 12 months by default where still necessary;
+- ordinary technical logs for 30 days or less;
+- routine backups for 35 days or less by default;
+- raw uploaded documents and unconfirmed candidates for 24 hours or less after confirmation, cancellation, failure or abandonment.
+
+Nigerian DPO/legal review remains a production-launch gate.
+
+**PRD Sync Status:** Completed.
 
 ### DD-005 — Correction model
 
@@ -91,25 +101,39 @@ Recommendation: preserve correction lineage rather than silently overwriting his
 
 ### DD-006 — Document-assisted provenance
 
-**Status:** Required before document-upload implementation.
+**Status:** Resolved / approved 10 November 2026.
 
-Need exact source label/linkage for:
-manual entry vs extracted-from-upload, with user confirmation not implying clinical verification.
+Approved provenance label: **Document Assisted**.
+
+Document Assisted:
+- distinguishes extracted-and-user-confirmed values from manual User Entered data;
+- is not Verified;
+- is not Imported;
+- does not imply clinical accuracy.
+
+Provider-specific technical source-artifact linkage remains an implementation detail.
+
+**PRD Sync Status:** Completed.
 
 ### DD-007 — Raw uploaded document lifecycle
 
-**Status:** Required before document-upload implementation.
+**Status:** Resolved at product-policy level / approved 10 November 2026.
 
-Need approved:
-- formats;
-- limits;
-- storage;
-- malware/content checks;
-- OCR/extraction provider;
-- raw-document retention/deletion;
-- candidate-value retention;
-- error UX;
-- privacy/security controls.
+Approved initial rules:
+- PDF, JPEG/JPG, PNG;
+- one file per upload;
+- maximum 10 MB;
+- maximum 15 PDF pages for the initial synchronous flow;
+- reject password-protected/encrypted PDFs;
+- reject Office documents, archives and unsupported formats;
+- raw document temporary only;
+- unconfirmed candidate data temporary only;
+- both raw documents and unconfirmed candidates deleted within 24 hours of confirmation, cancellation, failure or abandonment;
+- no persistent V1 document vault.
+
+Implementation still requires approved private storage and malware-scanning controls.
+
+**PRD Sync Status:** Completed.
 
 ### DD-008 — Clinical validation/interpretation
 
@@ -146,13 +170,13 @@ These technical decisions must map back to the approved Data Dictionary and may 
 
 ## Next unresolved approval areas
 
-The first manual-persistence inventory no longer blocks implementation. Remaining material product/governance decisions include:
+The first manual-persistence inventory and the retention/document-upload policy no longer block their respective specifications. Remaining material product/governance decisions include:
 
 1. exact cardiometabolic health-profile questionnaire;
 2. structured food-tracking model;
-3. production retention periods and deletion behavior;
-4. document-assisted provenance/source linkage;
-5. raw uploaded-document lifecycle;
-6. any clinical thresholds, risk formulas, targets or escalation logic through approved Clinical Specifications.
+3. exact technical account-deletion implementation/grace behavior;
+4. private object-storage provider and malware-scanning implementation;
+5. any clinical thresholds, risk formulas, targets or escalation logic through approved Clinical Specifications;
+6. external integrations other than the approved initial Google Document AI OCR integration.
 
-**Current PRD Sync Status: Completed for DD-001/DD-002.**
+**Current PRD Sync Status: Completed for DD-001, DD-002, DD-004, DD-006 and DD-007.**
