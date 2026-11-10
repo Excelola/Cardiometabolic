@@ -112,8 +112,8 @@ session and issues a fresh one. Other concurrent sessions remain independent.
 
 Session issuance sets a one-hour idle deadline and a 24-hour absolute deadline.
 Only explicit authenticated user interaction can request idle renewal: browser-trusted pointer
-interaction (including touch through Pointer Events) or a browser-trusted, non-repeated keyboard
-event. Script-generated synthetic events are ignored. Passive page reads, direct navigation, RSC prefetch, timers and background
+interaction (including touch through Pointer Events), trusted wheel/trackpad scrolling, or a
+browser-trusted, non-repeated keyboard event. Script-generated synthetic events are ignored. Passive page reads, direct navigation, RSC prefetch, timers and background
 work do not renew the session. The client coalesces renewal requests and the
 server performs a database write only when at least approximately five minutes
 of the current idle window have elapsed. Concurrent renewal attempts are
