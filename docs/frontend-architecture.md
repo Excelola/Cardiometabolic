@@ -75,7 +75,7 @@ preview modes and keep the LAN listener off public networks and the internet.
 | `/onboarding` | Progressive onboarding | Approved basic profile field shell plus deferred consent and image-ready areas |
 | `/app` | Application entry | Redirects to the dashboard shell |
 | `/app/dashboard` | Overview | Synthetic workflow state, one setup action, recent-information and monitoring sections, and a workflow-state disclosure |
-| `/app/measurements/new` | Add a measurement | Placeholder measurement, date and source context with a direct link to Past measurements. Saving is disabled |
+| `/app/measurements/new` | Add Health Information | Category chooser with a disabled sample measurement form under Health readings. Body measurements and Daily habits show availability notices |
 | `/app/measurements/history` | Past measurements | Newest-first synthetic records with recorded date, identity, provenance and inline details |
 | `/app/trends` | Changes over time | Insufficient-history panel with an existing action and no fabricated trend |
 | `/app/risk-summary` | Health risk summary | Structural readiness shell with no score or clinical interpretation |
@@ -105,6 +105,17 @@ History search and filtering (HIL-RD-002) remain a separate decision.
 The preview uses synthetic display metadata. Backend, API, database, migration,
 persistence, clinical rules and the production measurement inventory remain
 outside Bundle 1.
+
+### Add Health Information preview
+
+The existing entry route now opens with Health readings, Body measurements and
+Daily habits. The cards use grouped native disclosures so selecting a category
+reveals its content and closes the previous one without saving a selection.
+Health readings shows the existing generic, disabled measurement form and a
+link to the sample records in Past measurements. Body measurements and Daily
+habits have no fields in the preview. Approved type and field definitions are
+required before real entry is possible. The preview warning stays visible
+above the choices, and the preview does not collect or save information.
 
 ## Component structure
 

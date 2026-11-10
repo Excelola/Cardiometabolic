@@ -186,3 +186,18 @@ links reach their existing destinations, and sample record details still expand.
 The production-like console review found the existing missing favicon request.
 This was a focused accessibility review. Formal assistive-technology coverage
 remains separate.
+
+### Add Health Information preview QA
+
+The existing entry route opens with three category cards and a fictional-data
+warning. Health readings reveals the disabled generic measurement form and
+the sample history link. Body measurements and Daily habits disclose their
+availability without showing entry fields.
+
+Production-like Edge Chromium checks covered Add Health Information, Overview,
+Past measurements and Changes over time at 1440, 390 and 320 px. All four
+screens fit without horizontal overflow. Keyboard checks covered the skip
+link, visible focus, mobile navigation and opening each category. Selecting a
+category closed the previous one. The disabled form could not save, and the
+category checks produced no write requests or browser storage changes. No
+new console errors were observed.

@@ -5,7 +5,7 @@ export function TrendEmptyState() {
   return (
     <div className="trend-empty-state">
       <EmptyState
-        action={<ButtonLink href="/app/measurements/new">Add a measurement</ButtonLink>}
+        action={<ButtonLink href="/app/measurements/new">Add Health Information</ButtonLink>}
         title="Not enough measurements to show changes yet"
       >
         <p>This view needs more supported measurements recorded over time.</p>

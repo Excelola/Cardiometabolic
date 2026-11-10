@@ -13,9 +13,9 @@ type MeasurementEntryFormProps = Readonly<{
 export function MeasurementEntryForm({ definition }: MeasurementEntryFormProps) {
   return (
     <NonSubmittingForm aria-labelledby="measurement-entry-title" className="measurement-form">
-      <h2 id="measurement-entry-title">Measurement details</h2>
+      <h3 id="measurement-entry-title">Sample measurement form</h3>
       <Notice title="Preview only">
-        <p>Measurement entry is unavailable in this preview. You can view sample records in Past measurements.</p>
+        <p>This form shows how measurement entry could look. The fields and Save action are unavailable. You can view sample records in Past measurements.</p>
       </Notice>
       <div className="measurement-form__grid">
         <SelectField disabled id="measurement-type" label="Measurement type">

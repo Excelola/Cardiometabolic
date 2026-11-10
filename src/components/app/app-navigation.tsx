@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 
 export const APP_LINKS = [
   { href: "/app/dashboard", label: "Overview" },
-  { href: "/app/measurements/new", label: "Add a measurement" },
+  { href: "/app/measurements/new", label: "Add Health Information" },
   { href: "/app/measurements/history", label: "Past measurements" },
   { href: "/app/trends", label: "Changes over time" },
   { href: "/app/risk-summary", label: "Health risk summary" },

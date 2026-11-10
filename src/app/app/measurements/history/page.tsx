@@ -16,7 +16,7 @@ export default function MeasurementHistoryPage() {
           See what was recorded, when it was recorded, and where the information came from.
         </p>
         <div className="page-actions">
-          <ButtonLink href="/app/measurements/new">Add a measurement</ButtonLink>
+          <ButtonLink href="/app/measurements/new">Add Health Information</ButtonLink>
         </div>
       </PageTitle>
       <Card className="history-surface">
