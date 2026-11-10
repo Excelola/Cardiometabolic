@@ -2,7 +2,10 @@
 
 This branch implements A–D from the [approved specification](backend-auth-implementation-spec.md).
 The Master PRD governs product behaviour. This implementation is for review and
-synthetic validation. Real-user exposure requires the release gates below.
+synthetic validation. Real-user exposure requires the release gates below and the
+[production-readiness checklist](auth-production-readiness.md). Operational monitoring
+must follow the [observability boundaries](auth-observability-boundaries.md), and
+database recovery follows the [incident and restore runbook](database-incident-recovery-runbook.md).
 
 ## A. PostgreSQL and migration safety
 
@@ -53,7 +56,7 @@ merging or modifying an existing account. Successful sign-up goes to
 `/onboarding`; successful sign-in goes to `/app/dashboard`.
 
 New passwords accept 15–128 Unicode code points, including spaces. Ill-formed
-Unicode and ASCII control characters are rejected. Passwords are normalized to Unicode NFC before hashing and verification so canonically equivalent Unicode input has stable authentication semantics. The version-pinned `@zxcvbn-ts/language-common` package
+Unicode and ASCII control characters are rejected. Passwords are normalized to Unicode NFC before hashing and verification so canonically equivalent Unicode input has stable authentication semantics, consistent with current NIST password-verifier guidance. The version-pinned `@zxcvbn-ts/language-common` package
 provides 49,233 common-password entries from the package's documented public-domain
 Burnett corpus. Only the password dictionary is used. The application checks
 whole-password equality against local NFKC and lowercase comparison keys and
@@ -108,9 +111,9 @@ Cookies are issued after commit. Sign-in rotates a presented active
 session and issues a fresh one. Other concurrent sessions remain independent.
 
 Session issuance sets a one-hour idle deadline and a 24-hour absolute deadline.
-Only explicit authenticated user interaction can request idle renewal: pointer
-interaction (including touch through Pointer Events) or a non-repeated keyboard
-event. Passive page reads, direct navigation, RSC prefetch, timers and background
+Only explicit authenticated user interaction can request idle renewal: browser-trusted pointer
+interaction (including touch through Pointer Events) or a browser-trusted, non-repeated keyboard
+event. Script-generated synthetic events are ignored. Passive page reads, direct navigation, RSC prefetch, timers and background
 work do not renew the session. The client coalesces renewal requests and the
 server performs a database write only when at least approximately five minutes
 of the current idle window have elapsed. Concurrent renewal attempts are
@@ -189,7 +192,9 @@ isolation, concurrent throttling, and the backup and restore drill.
 ## Remaining release gates
 
 - Run the migration replay, two-account and concurrency tests, and synthetic
-  dump/destroy/restore drill against disposable PostgreSQL. Review runtime grants,
+  dump/destroy/restore drill against disposable PostgreSQL. The restore test must
+  demonstrate that a backed-up bearer can be resurrected by restore and then prove
+  restored sessions are invalidated before traffic resumes. Review runtime grants,
   backup retention and restore invalidation before rollout.
 - Review origin and session controls through the actual TLS ingress and inspect
   browser actions, shared caches, database and infrastructure telemetry.
