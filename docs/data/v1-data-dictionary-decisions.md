@@ -23,27 +23,49 @@ The following can be treated as approved requirements:
 - general analytics must not receive raw health values/clinical outputs by default;
 - engineers must not use real health data for routine development/testing;
 - exact retention periods must exist before production launch but are not yet approved;
-- the final production data model cannot be implemented without a governed Data Dictionary.
+- the final production data model cannot be implemented without a governed Data Dictionary;
+- the first manual-persistence inventory is approved: blood pressure, blood glucose, HbA1c, lipid panel, weight, waist circumference, physical-activity duration and sleep duration;
+- approved first-batch units/context are recorded in the Data Dictionary; structured food tracking remains deferred.
 
 ## Product decisions still required before Phase 2 manual health persistence
 
 ### DD-001 — Exact V1 health-information inventory
 
-**Status:** Required / not approved.
+**Status:** Resolved / approved 10 November 2026.
 
-We must approve exactly which health readings, body measurements and daily habits HILERA V1 will collect.
+Approved first manual-persistence inventory:
 
-The current product description mentions examples such as blood pressure, blood sugar, cholesterol, weight/waist, food, physical activity and sleep, but the Master PRD explicitly states that this wording does **not** approve the exact V1 inventory.
+- Blood pressure — systolic + diastolic.
+- Blood glucose — value + descriptive context.
+- HbA1c.
+- Lipid panel — one or more of total cholesterol, HDL, LDL and triglycerides.
+- Weight.
+- Waist circumference.
+- Physical-activity duration.
+- Sleep duration.
 
-**PRD Sync Status if approved:** Required.
+Structured food tracking remains part of HILERA's broader direction but is deferred from the first persistence batch.
+
+**PRD Sync Status:** Completed.
 
 ### DD-002 — Supported units and structural context per field
 
-**Status:** Required after DD-001.
+**Status:** Resolved for the approved first persistence batch.
 
-Examples include unit choices and any measurement-specific context. These must not be guessed by Engineering.
+Approved:
+- blood pressure: mmHg;
+- blood glucose: mmol/L or mg/dL;
+- blood-glucose context: fasting, before meal, after meal, random/other, not specified;
+- HbA1c: %;
+- lipid components: mmol/L or mg/dL;
+- weight: kg or lb;
+- waist: cm or in;
+- physical activity: minutes;
+- sleep: hours/minutes in UX, with integer-minute technical storage permitted.
 
-**Clinical Specification dependency:** Possible, depending on field/context.
+No clinical plausibility ranges or interpretation rules were approved.
+
+**Clinical Specification dependency:** Required only when clinical meaning, thresholds, targets or interpretation are introduced.
 
 ### DD-003 — Health-profile questionnaire
 
@@ -122,17 +144,15 @@ After DD-001/DD-002 are approved:
 
 These technical decisions must map back to the approved Data Dictionary and may not introduce fields by convenience.
 
-## Recommended next approval bundle
+## Next unresolved approval areas
 
-For speed, approve the next product decision as one coordinated bundle:
+The first manual-persistence inventory no longer blocks implementation. Remaining material product/governance decisions include:
 
-1. exact V1 Health readings;
-2. exact V1 Body measurements;
-3. exact V1 Daily habits;
-4. supported units/context for each;
-5. which are required vs optional for manual entry;
-6. which are only tracking data vs candidates for future clinically governed interpretation.
+1. exact cardiometabolic health-profile questionnaire;
+2. structured food-tracking model;
+3. production retention periods and deletion behavior;
+4. document-assisted provenance/source linkage;
+5. raw uploaded-document lifecycle;
+6. any clinical thresholds, risk formulas, targets or escalation logic through approved Clinical Specifications.
 
-Do **not** include thresholds, risk formulas or clinical escalation in the same approval unless a separate Clinical Specification is ready.
-
-**Current PRD Sync Status: Not Required.** No new field inventory has been approved in this register.
+**Current PRD Sync Status: Completed for DD-001/DD-002.**
