@@ -3,12 +3,12 @@
 ## Status
 
 Artifact type: Research / recommendation
-Status: Not approved for integration
+Status: Approved initial OCR provider for implementation on 10 November 2026; production use remains gated by privacy/security/DPO/DPIA/cross-border/contractual review
 Purpose: Recommend the privacy-first OCR candidate for the approved health-document upload flow
 
-## Recommendation
+## Approved decision
 
-Preferred candidate for the first provider-backed prototype: Google Cloud Document AI Enterprise Document OCR in an EU processing location.
+Google Cloud Document AI Enterprise Document OCR in an EU processing location is the approved initial OCR provider for HILERA's health-document extraction flow.
 
 Use it only as an OCR/text-layout provider. HILERA must retain its own allowlist mapping, structural validation, candidate review, and canonical save logic.
 
@@ -104,14 +104,12 @@ Therefore the implementation should either:
 - cap synchronous first-version PDFs to the provider-supported limit; or
 - route longer allowed PDFs through a reviewed asynchronous flow.
 
-Recommendation for fastest first implementation: align the initial PDF maximum to 15 pages for the synchronous prototype, then expand only after the async workflow is implemented and tested.
-
-This differs from the earlier architecture draft recommendation of 25 pages and therefore requires Product Owner approval before implementation.
+Approved first implementation constraint: maximum 15 PDF pages for the synchronous flow. Expansion beyond 15 pages requires a separately reviewed asynchronous workflow and product/spec update.
 
 ## Required commercial/privacy gates
 
 Before integration:
-- Product Owner approves Google Document AI as the provider;
+- Product Owner approval of Google Document AI as the provider — completed 10 November 2026;
 - budget approval;
 - Google Cloud account/project and billing established;
 - EU processor location configured;
@@ -125,6 +123,4 @@ Before integration:
 
 ## PRD Sync Status
 
-Not Required for this research recommendation.
-
-Provider approval and any user-visible file/page constraints may require PRD/Data Dictionary/technical-spec sync before implementation.
+Completed on 10 November 2026 for provider approval and the initial 15-page synchronous PDF constraint.
