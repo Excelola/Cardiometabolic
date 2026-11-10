@@ -151,7 +151,7 @@ Treat this as controlled security implementation subject to final security revie
 
 ## Session activity
 
-Implement an explicit, testable idle-renewal policy. Absolute expiry never extends; expired/revoked sessions cannot revive; passive Next.js prefetch/background requests do not silently renew; qualifying activity is documented and tested; touch writes are bounded. If framework behavior makes prefetch distinction ambiguous, choose the safer non-renewal behavior and report the tradeoff.
+Implement the approved idle-renewal policy. Qualifying activity is explicit authenticated pointer interaction (including touch through Pointer Events) or non-repeated keyboard input. Passive page reads, direct navigation, Next.js prefetch, timers and background work must not renew. Coalesce client renewal requests and bound server writes to approximately one write per five minutes per active session. Absolute expiry never extends; expired or revoked sessions cannot revive. Concurrent renewal attempts must be safe and tested.
 
 ## Security events and logging
 
