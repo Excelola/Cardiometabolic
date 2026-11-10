@@ -356,7 +356,7 @@ OCR can extract information HILERA never approved.
 
 ## Recommendation
 
-Proceed after PR #6 merges with a **Data Dictionary + manual health-persistence specification** as the next controlled backend package.
+Proceed from the merged authentication foundation with a **Data Dictionary + manual health-persistence specification** as the next controlled backend package.
 
 Do not start with document upload, AI/OCR, trends interpretation or Risk Awareness logic. Establish secure owner-scoped persistence first.
 
