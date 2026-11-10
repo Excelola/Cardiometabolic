@@ -6,7 +6,7 @@
 **Source of truth:** HILERA Master PRD, Section 6 — Data Inventory, Field Requirements & Data Governance  
 **Status:** Approved-source transcription / implementation gate  
 **Scope:** Only material data elements already approved in the Master PRD or already implemented under approved authentication policy  
-**Not approved here:** additional health-information fields beyond the approved first persistence batch, exact health-profile questionnaire, structured food fields, clinical thresholds/formulas, retention periods, deletion implementation, admin-role matrix, API schema, final database schema, integrations, AI functionality
+**Not approved here:** additional health-information fields beyond the approved first persistence batch, exact health-profile questionnaire, structured food fields, clinical thresholds/formulas, deletion implementation details, admin-role matrix, final API/database schema, external integrations other than the approved initial Google Document AI OCR integration, AI functionality
 
 This document does **not** create new product requirements. It translates already-approved PRD requirements into a field-level governance view so later technical specifications can map every implemented material field to an approved purpose.
 
@@ -168,16 +168,15 @@ Approved provenance concepts:
 | Imported | Information received from a separately approved external source/integration | Category approved; no integration approved by implication |
 | Verified | Information that passed a separately approved verification process | Must never be inferred from user entry/confirmation alone |
 | System Derived | Deterministically generated from approved inputs | Allowed only for approved derivations; clinical derivations require Clinical Specification |
+| Document Assisted | Candidate information extracted from an approved user-uploaded health document and explicitly confirmed by the user before canonical save | Approved for the health-document flow; not Verified and not Imported |
 
 ### Document-assisted entry
 
-The product must retain enough source metadata to distinguish:
-- manual user entry; and
-- information extracted from a user-uploaded health document.
+The approved provenance label is **Document Assisted**.
 
-User confirmation of extracted information **does not make it clinically Verified**.
+The product must retain enough source metadata to distinguish manual user entry from information extracted from a user-uploaded health document. The raw document must not be retained beyond its approved temporary lifecycle merely to preserve provenance.
 
-The exact document provenance label/source-artifact linkage remains TBD before document-upload implementation.
+User confirmation of extracted information **does not make it clinically Verified**. Document Assisted is also distinct from Imported unless a future product decision changes that semantics.
 
 ## H. Derived/system data
 
@@ -299,22 +298,24 @@ For longitudinal/clinically relevant information, distinguish where applicable:
 
 Exact timestamp-storage implementation remains technical design.
 
-## O. Retention status
+## O. Approved V1 retention categories
 
-Exact retention periods are **not yet approved**.
+The approved default V1 retention policy is purpose-based and remains subject to Nigerian DPO/legal validation before public launch.
 
-Before production launch, retention/deletion rules must be defined for:
-- account/authentication;
-- profile;
-- health profile;
-- measurements;
-- clinical outputs;
-- consent/acknowledgements;
-- audit;
-- analytics;
-- operational/security logs.
+| Category | Approved default |
+| --- | --- |
+| Active account/profile | Retain while active and necessary; delete/anonymise from normal live systems within 30 days of confirmed account deletion unless a documented lawful hold applies |
+| Health records/correction lineage | Retain while active and necessary; remove from normal live product storage within 30 days of confirmed account deletion unless a documented lawful hold applies |
+| Consent/privacy compliance record | Minimum necessary record for 36 months after account closure/deletion |
+| Authentication/security events | 12 months by default where still necessary |
+| Ordinary technical logs | 30 days or less by default; raw Sensitive Health data prohibited |
+| Routine database backups | 35 days or less by default, subject to provider/RPO/RTO/legal review |
+| Raw uploaded health document | Temporary only; delete within 24 hours of confirmation, cancellation, failure or abandonment |
+| Unconfirmed extracted candidates | Temporary only; delete within 24 hours of confirmation, cancellation, failure or abandonment |
 
-No product copy or implementation may promise immediate/complete deletion until behavior is confirmed against privacy, legal, security, audit, backup and clinical-governance requirements.
+A persistent document vault is not approved.
+
+User-facing copy must not promise immediate deletion everywhere. Live-system deletion, backup expiry and any justified legal/security hold must remain distinguishable.
 
 ## P. Implementation gate
 
@@ -344,12 +345,12 @@ The following remain **TBD / not approved for implementation**:
 - risk formulas;
 - clinical escalation rules;
 - medication fields/logic;
-- exact document-upload provenance label/linkage;
-- raw-document retention/deletion policy;
-- exact retention periods;
+- provider-specific technical source-artifact linkage for Document Assisted provenance;
+- provider-specific enforcement mechanics for the approved raw-document/candidate lifecycle;
+- provider-specific enforcement mechanics for the approved retention periods;
 - exact deletion implementation;
 - internal admin role/permission matrix;
 - final API schema;
 - final database schema.
 
-**PRD Sync Status: Completed.** The Master PRD was updated on 10 November 2026 for the approved first V1 manual health-information persistence inventory; this Data Dictionary now reflects that approved scope.
+**PRD Sync Status: Completed.** The Master PRD was updated on 10 November 2026 for both the approved first V1 manual health-information inventory and the approved retention/document-upload bundle.
