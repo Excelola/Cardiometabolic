@@ -9,7 +9,7 @@ export default function TrendsPage() {
   return (
     <>
       <PageTitle title="Changes over time">
-        <p className="lede">Compare supported measurements over time.</p>
+        <p className="lede">Compare supported health readings over time.</p>
       </PageTitle>
       <TrendEmptyState />
     </>
