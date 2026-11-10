@@ -16,7 +16,7 @@ import { readAuthConfig } from "./config";
 import { authenticateAccount, createAccount } from "./credentials";
 import { normalizeEmail } from "./input";
 import { ARGON2_OPTIONS } from "./password";
-import { findActiveSession, revokeAllUserSessions, revokeCurrentSession, sessionDigest } from "./sessions";
+import { findActiveSession, renewSessionActivity, revokeAllUserSessions, revokeCurrentSession, sessionDigest } from "./sessions";
 import { reserveAuthAdmission } from "./throttle";
 
 const adminUrl = process.env.HILERA_TEST_DATABASE_ADMIN_URL;
@@ -92,7 +92,26 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL authentication integration", (
       const owner = (await findActiveSession(db, first))!;
       const [savedSession] = await db.select().from(authSessions).where(eq(authSessions.id, owner.sessionId));
       expect(savedSession.tokenHash.equals(sessionDigest(first)!)).toBe(true);
-      expect(await findActiveSession(db, first, savedSession.idleExpiresAt)).toBeNull();
+
+      const tooSoon = new Date(savedSession.createdAt.getTime() + 4 * 60 * 1000);
+      expect(await renewSessionActivity(db, owner, tooSoon)).toBe(false);
+      const [unchangedSession] = await db.select().from(authSessions).where(eq(authSessions.id, owner.sessionId));
+      expect(unchangedSession.idleExpiresAt).toEqual(savedSession.idleExpiresAt);
+
+      const activeAtTenMinutes = new Date(savedSession.createdAt.getTime() + 10 * 60 * 1000);
+      const concurrentRenewals = await Promise.all([
+        renewSessionActivity(db, owner, activeAtTenMinutes),
+        renewSessionActivity(db, owner, activeAtTenMinutes),
+      ]);
+      expect(concurrentRenewals.filter(Boolean)).toHaveLength(1);
+
+      const [renewedSession] = await db.select().from(authSessions).where(eq(authSessions.id, owner.sessionId));
+      expect(renewedSession.idleExpiresAt.toISOString()).toBe(
+        new Date(activeAtTenMinutes.getTime() + 60 * 60 * 1000).toISOString(),
+      );
+      expect(await findActiveSession(db, first, savedSession.idleExpiresAt)).toEqual(owner);
+      expect(await findActiveSession(db, first, renewedSession.idleExpiresAt)).toBeNull();
+
       await db.update(authSessions).set({ idleExpiresAt: savedSession.absoluteExpiresAt }).where(eq(authSessions.id, owner.sessionId));
       expect(await findActiveSession(db, first, savedSession.absoluteExpiresAt)).toBeNull();
       expect(await findActiveSession(db, first, new Date(savedSession.absoluteExpiresAt.getTime() - 1))).toEqual(owner);
