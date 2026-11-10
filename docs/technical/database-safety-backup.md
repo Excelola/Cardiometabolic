@@ -29,7 +29,9 @@ Before any risky production migration or material data operation:
 
 ## Local PostgreSQL role
 
-A local PostgreSQL installation or container is recommended for:
+A local PostgreSQL installation or container is recommended. Use a currently supported PostgreSQL major at a current security-patched minor release; do not use an end-of-life server or outdated pg_dump/pg_restore client. Re-run compatibility tests against the eventual production major before launch.
+
+Use the local database for:
 
 - application development;
 - migration rehearsal;
