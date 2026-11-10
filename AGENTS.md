@@ -187,8 +187,6 @@ Production database safety rules:
 
 For schema changes:
 
-For schema changes:
-
 1. identify affected entities
 2. identify migration requirements
 3. preserve existing data where appropriate
