@@ -25,10 +25,12 @@ export function SessionActivity({ csrf }: Readonly<{ csrf: string }>) {
     };
 
     window.addEventListener("pointerdown", requestRenewal, { passive: true });
+    window.addEventListener("wheel", requestRenewal, { passive: true });
     window.addEventListener("keydown", requestRenewal);
 
     return () => {
       window.removeEventListener("pointerdown", requestRenewal);
+      window.removeEventListener("wheel", requestRenewal);
       window.removeEventListener("keydown", requestRenewal);
     };
   }, [csrf]);
