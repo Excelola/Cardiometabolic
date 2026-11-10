@@ -331,3 +331,11 @@ Use synthetic canary health values and verify they do not appear in:
 ## PRD Sync Status
 
 **Completed before implementation.** Master PRD Section 6 and relevant deferred-decision references were updated on 10 November 2026 for the approved first persistence inventory.
+
+## Implementation notes
+
+- Migration `0001_manual_health_persistence.sql` adds six enums, the health envelope and eight subtype tables. Subtype foreign keys include a fixed type discriminator. Correction links include owner and type. A partial owner-and-occurrence index serves current History and a separate owner index includes historical rows.
+- Each Server Action checks the exact trusted origin, active session and session-bound CSRF proof. The actions accept only the fields for the selected type. Record IDs travel in the correction POST body. They serve as lookup keys and never establish authorization.
+- The correction transaction locks the owned current record, inserts a replacement and its subtype, then links both versions. If two requests target the same current version, one succeeds and the other gets the same unavailable result as a missing or foreign record.
+- Timed entries use explicitly labeled UTC in the form and History. Daily habits use the selected calendar day. Both durations are entered directly as whole minutes. Decimal values and original units remain intact through persistence. PostgreSQL's native numeric and integer types set the storage limits.
+- Current History contains real entries. Trends stays empty pending a separate descriptive-series implementation. The preview has no production rollout in this phase.

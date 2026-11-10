@@ -1,4 +1,3 @@
-import { execFileSync } from "node:child_process";
 import { randomUUID } from "node:crypto";
 import { mkdtemp, rmdir, unlink } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -6,11 +5,10 @@ import { join } from "node:path";
 
 import { hash } from "@node-rs/argon2";
 import { eq, isNull, sql } from "drizzle-orm";
-import { migrate } from "drizzle-orm/node-postgres/migrator";
-import { Pool } from "pg";
 import { describe, expect, it } from "vitest";
 
-import { createAuthDb, type AuthDb } from "../db/auth-db";
+import type { AuthDb } from "../db/auth-db";
+import { adminUrl, applyMigrations, disposable, runPgTool } from "../db/disposable-postgres";
 import { authSecurityEvents, authSessions, passwordCredentials, users } from "../db/schema";
 import { readAuthConfig } from "./config";
 import { authenticateAccount, createAccount } from "./credentials";
@@ -19,55 +17,9 @@ import { ARGON2_OPTIONS } from "./password";
 import { findActiveSession, renewSessionActivity, revokeAllUserSessions, revokeCurrentSession, sessionDigest } from "./sessions";
 import { reserveAuthAdmission } from "./throttle";
 
-const adminUrl = process.env.HILERA_TEST_DATABASE_ADMIN_URL;
 const config = readAuthConfig({ NODE_ENV: "test", HILERA_AUTH_CSRF_SECRET: Buffer.alloc(32, 1).toString("base64url"),
   HILERA_AUTH_THROTTLE_SECRET: Buffer.alloc(32, 2).toString("base64url") });
 const password = "Synthetïc integration passphrase 731 🪴";
-
-function loopbackAdmin(): URL {
-  const url = adminUrl ? URL.parse(adminUrl) : null;
-  if (!url || !["postgres:", "postgresql:"].includes(url.protocol) || !["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)
-    || url.pathname !== "/postgres" || url.search || url.hash || !url.username || !url.password) {
-    throw new Error("Provide an explicitly local disposable PostgreSQL administrator URL ending in /postgres.");
-  }
-  return url;
-}
-
-async function disposable<T>(work: (db: AuthDb, name: string, url: URL) => Promise<T>): Promise<T> {
-  const url = loopbackAdmin();
-  const admin = new Pool({ connectionString: url.href, connectionTimeoutMillis: 3000 });
-  const name = `hilera_auth_test_${randomUUID().replaceAll("-", "")}`;
-  const identifier = `"${name}"`; // Name is generated here, never from an external argument.
-  try {
-    await admin.query(`CREATE DATABASE ${identifier}`);
-    const target = new URL(url);
-    target.pathname = `/${name}`;
-    const pool = new Pool({ connectionString: target.href, connectionTimeoutMillis: 3000 });
-    try {
-      return await work(createAuthDb(pool), name, url);
-    } finally {
-      await pool.end();
-      await admin.query(`DROP DATABASE ${identifier}`);
-    }
-  } finally {
-    await admin.end();
-  }
-}
-
-async function applyMigrations(db: AuthDb) {
-  await migrate(db, { migrationsFolder: "./drizzle" });
-}
-
-function runPgTool(program: "pg_dump" | "pg_restore", args: string[], name: string, url: URL) {
-  try {
-    execFileSync(program, ["--dbname", name, ...args], { env: {
-      NODE_ENV: "test", SystemRoot: process.env.SystemRoot, PATH: process.env.PATH, PGHOST: url.hostname.replace(/^\[|\]$/g, ""),
-      PGPORT: url.port || "5432", PGUSER: decodeURIComponent(url.username), PGPASSWORD: decodeURIComponent(url.password),
-    }, timeout: 25_000, stdio: "pipe" });
-  } catch {
-    throw new Error(`${program} failed on the disposable synthetic database. Verify the local PostgreSQL CLI is installed and compatible.`);
-  }
-}
 
 function token(outcome: Awaited<ReturnType<typeof createAccount>>): string {
   if (outcome.kind !== "success") throw new Error(`Expected successful synthetic authentication, got ${outcome.kind}.`);

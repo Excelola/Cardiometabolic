@@ -8,5 +8,5 @@ if (!process.env.HILERA_TEST_DATABASE_ADMIN_URL) {
 
 export default defineConfig({
   ...base,
-  test: { ...base.test, include: ["src/server/auth/auth.integration.test.ts"] },
+  test: { ...base.test, include: ["src/server/**/*.integration.test.ts"] },
 });

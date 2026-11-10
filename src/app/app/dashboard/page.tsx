@@ -34,11 +34,11 @@ export default async function DashboardPage() {
         <h2 id="current-picture-heading">Review your health information</h2>
         <div className="dashboard-grid">
           <InformationCard title="Past health readings">
-            <p>This preview shows sample health reading records.</p>
+            <p>Review the health information you’ve added.</p>
             <ButtonLink href="/app/measurements/history" variant="text">View past health readings</ButtonLink>
           </InformationCard>
           <InformationCard title="Changes over time">
-            <p>This preview has no health readings to compare over time.</p>
+            <p>Comparisons over time are unavailable in this phase.</p>
             <ButtonLink href="/app/trends" variant="text">See changes over time</ButtonLink>
           </InformationCard>
         </div>

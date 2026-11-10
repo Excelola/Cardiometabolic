@@ -1,54 +1,87 @@
+"use client";
+
+import { useActionState, useId, useState } from "react";
+
+import { correctHealthRecordAction, createHealthRecordAction } from "@/app/health-actions";
 import { Button } from "@/components/ui/button";
-import { ButtonLink } from "@/components/ui/button-link";
-import { FormField } from "@/components/ui/form-field";
-import { NonSubmittingForm } from "@/components/ui/non-submitting-form";
 import { Notice } from "@/components/ui/notice";
-import { SelectField } from "@/components/ui/select-field";
-import type { MeasurementDefinition } from "@/domain/health";
+import {
+  concentrationUnits, glucoseContexts, glucoseContextLabels, healthRecordLabels, lipidComponents, lipidLabels,
+  unitLabels, waistUnits, weightUnits, type HealthHistoryEntry, type HealthRecordType,
+} from "@/domain/health-records";
 
-type MeasurementEntryFormProps = Readonly<{
-  definition: MeasurementDefinition;
-}>;
+type EntryFormProps = { type: HealthRecordType; csrf: string; correction?: HealthHistoryEntry };
 
-export function MeasurementEntryForm({ definition }: MeasurementEntryFormProps) {
+export function MeasurementEntryForm({ type, csrf, correction }: Readonly<EntryFormProps>) {
+  const title = healthRecordLabels[type];
+  const id = useId();
+  const [state, action, pending] = useActionState(correction ? correctHealthRecordAction : createHealthRecordAction, null);
+  const initial = correction?.entry;
+  const [values, setValues] = useState<Record<string, string>>(() => {
+    if (!initial) return {};
+    const fields = Object.fromEntries(Object.entries(initial).map(([key, value]) => [key, value == null ? "" : String(value)]));
+    if ("occurredAt" in initial) fields.occurredAt = initial.occurredAt.slice(0, -1);
+    return fields;
+  });
+  const habit = type === "physical_activity_duration" || type === "sleep_duration";
+  const update = (name: string, value: string) => setValues((previous) => ({ ...previous, [name]: value }));
+
+  function field(name: string, label: string, options: { kind?: "date" | "datetime-local"; optional?: boolean; integer?: boolean } = {}) {
+    return (
+      <div className="field" key={name}>
+        <label htmlFor={`${id}-${name}`}>{label}</label>
+        <input
+          id={`${id}-${name}`} name={name} type={options.kind ?? "text"}
+          step={options.kind === "datetime-local" ? "0.001" : undefined}
+          inputMode={options.kind ? undefined : options.integer ? "numeric" : "decimal"}
+          required={!options.optional} value={values[name] ?? ""}
+          onChange={(event) => update(name, event.currentTarget.value)}
+        />
+      </div>
+    );
+  }
+
+  function select<T extends string>(name: string, label: string, options: readonly T[], labels: Record<T, string>) {
+    return (
+      <div className="field">
+        <label htmlFor={`${id}-${name}`}>{label}</label>
+        <select id={`${id}-${name}`} name={name} required value={values[name] ?? ""}
+          onChange={(event) => update(name, event.currentTarget.value)}>
+          <option value="" disabled>Choose {label.toLowerCase()}</option>
+          {options.map((option) => <option key={option} value={option}>{labels[option]}</option>)}
+        </select>
+      </div>
+    );
+  }
+
   return (
-    <NonSubmittingForm aria-labelledby="measurement-entry-title" className="measurement-form">
-      <h3 id="measurement-entry-title">Sample health reading form</h3>
-      <Notice title="Preview only">
-        <p>This form shows how health reading entry could look. The fields and Save action are unavailable. You can view sample records in Past health readings.</p>
-      </Notice>
+    <form action={action} className="measurement-form" aria-labelledby={`${id}-title`} aria-busy={pending}>
+      <h3 id={`${id}-title`}>{correction ? `Correct ${title}` : title}</h3>
+      <input type="hidden" name="csrf" value={csrf} />
+      <input type="hidden" name="type" value={type} />
+      {correction && <input type="hidden" name="recordId" value={correction.id} />}
+      {state?.error && <Notice tone="critical">{state.error}</Notice>}
+      {type === "lipid_panel" && <p>Enter at least one lipid result. Use the same unit for all results in this entry.</p>}
       <div className="measurement-form__grid">
-        <SelectField disabled id="measurement-type" label="Reading type">
-          <option>Select reading type</option>
-        </SelectField>
-        <FormField
-          disabled
-          helperText={definition.fields[0]?.helperText}
-          id="measurement-value"
-          inputMode={definition.fields[0]?.inputMode}
-          label="Value and unit"
-          placeholder="Select a health reading first"
-        />
-        <FormField
-          disabled
-          helperText="This identifies when the health reading was taken."
-          id="measurement-time"
-          label="Date and time taken"
-          placeholder="Date and time"
-        />
-        <SelectField
-          disabled
-          helperText="Manual entries appear with this source label in Past health readings."
-          id="measurement-source"
-          label="Source"
-        >
-          <option>User Entered</option>
-        </SelectField>
+        {type === "blood_pressure" && <>{field("systolic", "Systolic (mmHg)")}{field("diastolic", "Diastolic (mmHg)")}</>}
+        {type === "blood_glucose" && <>
+          {field("value", "Glucose value")}{select("unit", "Unit", concentrationUnits, unitLabels)}
+          {select("context", "Glucose context", glucoseContexts, glucoseContextLabels)}
+        </>}
+        {type === "hba1c" && field("value", "HbA1c (%)")}
+        {type === "lipid_panel" && <>
+          {select("unit", "Unit", concentrationUnits, unitLabels)}
+          {lipidComponents.map((component) => field(component, lipidLabels[component], { optional: true }))}
+        </>}
+        {type === "weight" && <>{field("value", "Weight")}{select("unit", "Unit", weightUnits, unitLabels)}</>}
+        {type === "waist_circumference" && <>{field("value", "Waist circumference")}{select("unit", "Unit", waistUnits, unitLabels)}</>}
+        {habit ? <>
+          {field("durationMinutes", "Total duration (whole minutes)", { integer: true })}
+          {field("occurredOn", type === "sleep_duration" ? "Day of sleep period" : "Day of activity", { kind: "date" })}
+        </> : field("occurredAt", "Date and time taken (UTC)", { kind: "datetime-local" })}
       </div>
-      <div className="page-actions">
-        <ButtonLink href="/app/measurements/history">View past health readings</ButtonLink>
-        <Button disabled type="submit" variant="secondary">Save health reading</Button>
-      </div>
-    </NonSubmittingForm>
+      <p className="muted">{correction ? "The corrected entry will replace the current version in History." : "After saving, your entry will appear in History."}</p>
+      <Button type="submit" disabled={pending}>{pending ? "Saving…" : correction ? "Save correction" : "Save health information"}</Button>
+    </form>
   );
 }
