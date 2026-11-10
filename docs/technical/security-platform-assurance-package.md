@@ -4,7 +4,7 @@
 
 This package prepares the next security, operations and backend-design decisions without adding unapproved product behavior.
 
-It is intentionally separated from PR #6 implementation work. The branch is stacked on the authentication branch so its documents can use the current auth architecture while remaining independently reviewable.
+It was prepared separately from PR #6 implementation work and is now carried onto the merged authentication foundation in `main`.
 
 ## Included artifacts
 
@@ -16,8 +16,8 @@ It is intentionally separated from PR #6 implementation work. The branch is stac
 
 2. **Software Supply-Chain Review**
    - Reviews current direct dependency risk.
-   - Records Vitest 4.1.11 security-patch status.
-   - Identifies Next.js/eslint-config-next alignment as a PR #6 blocker.
+   - Records the post-PR #6 development-dependency remediation state.
+   - Captures the remaining Moderate development-tooling follow-ups.
    - Recommends frozen installs, exact reviewed direct pins, advisory monitoring and release SBOM.
 
 3. **Secrets and Environment Architecture**
@@ -76,17 +76,16 @@ The following remain unapproved:
 - production alert thresholds;
 - SBOM/CI tooling vendor.
 
-## Recommended sequence after PR #6
+## Recommended sequence from the merged authentication foundation
 
-1. Complete local PostgreSQL/auth validation and merge PR #6 after review.
-2. Product Owner reviews account-recovery research; approve or defer mechanism.
-3. Build/approve V1 Data Dictionary.
-4. Write Phase 2 manual health-persistence technical specification.
-5. Implement manual health persistence on a new scoped branch.
-6. Run security/privacy/data-quality tests.
-7. Merge only after evidence review.
-8. Specify document upload/extraction separately.
-9. Add clinical behavior only from approved Clinical Specifications.
+1. Product Owner reviews account-recovery research; approve or defer mechanism.
+2. Build/approve the V1 Data Dictionary.
+3. Write the Phase 2 manual health-persistence technical specification.
+4. Implement manual health persistence on a new scoped branch.
+5. Run security/privacy/data-quality tests.
+6. Merge only after evidence review.
+7. Specify document upload/extraction separately.
+8. Add clinical behavior only from approved Clinical Specifications.
 
 ## PRD Sync Status
 
