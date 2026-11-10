@@ -13,8 +13,7 @@ requirement with no mechanism selected. A duplicate email never merges accounts.
 This package consists of the [decision register](auth-security-decisions.md),
 [data model](auth-data-model.md), [server contracts](auth-api-contracts.md),
 [threat model](auth-threat-model.md) and [implementation plan](backend-implementation-plan.md).
-The proposed schema, contracts, security settings and product policies
-remain subject to their respective reviews before implementation or deployment.
+The architecture is now implemented on draft PR #6 for review. Deployment and real-user exposure remain subject to PostgreSQL integration/restore validation, ingress/TLS review, observability and retention review, recovery policy, and the other gates documented in the implementation notes and production-readiness checklist.
 
 ## Repository baseline
 
@@ -220,12 +219,7 @@ approved. Never link or transfer accounts based on an email match. Leave a
 server-side recovery seam disabled until product, security and privacy approve
 a specific method and abuse controls.
 
-Open decisions include password acceptance policy, duplicate sign-up
-presentation and auto sign-in, idle and absolute session durations,
-concurrent sessions, login throttle effects, recovery, email verification
-timing, account deletion and session revocation behavior. Hosting, regional
-placement, cryptographic cost and key rotation, logging retention, access
-governance and safety review are separate technical and privacy decisions.
+The Product Owner has approved the V1 password policy, immediate sign-in after account creation, sign-in routing, 1-hour idle / 24-hour absolute session policy, concurrent sessions, current-session logout, future all-session revocation after credential/account lifecycle changes, and temporary progressive throttling without permanent lockout. Remaining controlled decisions include recovery, email ownership verification timing, exact production throttle tuning, account deletion implementation, security-event retention/access, production hosting/region, secret rotation and final deployment security review.
 For a Nigeria-first MVP, one same-origin form round trip, a password-manager
 compatible UX, and no paid messaging dependency keep the credential path
 usable on slower connections and simpler to operate. Validate actual latency
