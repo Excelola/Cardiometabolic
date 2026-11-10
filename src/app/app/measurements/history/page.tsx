@@ -6,12 +6,12 @@ import { Card } from "@/components/ui/card";
 import { PageTitle } from "@/components/ui/page-title";
 import { MOCK_MEASUREMENT_HISTORY } from "@/domain/health";
 
-export const metadata: Metadata = { title: "Past measurements" };
+export const metadata: Metadata = { title: "Past health readings" };
 
 export default function MeasurementHistoryPage() {
   return (
     <>
-      <PageTitle title="Past measurements">
+      <PageTitle title="Past health readings">
         <p className="lede">
           See what was recorded, when it was recorded, and where the information came from.
         </p>
@@ -21,7 +21,7 @@ export default function MeasurementHistoryPage() {
       </PageTitle>
       <Card className="history-surface">
         <header className="history-surface__heading">
-          <h2>Sample measurements</h2>
+          <h2>Sample health readings</h2>
           <p className="muted">Newest first</p>
         </header>
         <ol className="history-list" role="list">
