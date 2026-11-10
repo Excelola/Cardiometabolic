@@ -45,4 +45,11 @@ describe("manual health entry validation", () => {
     data.append("unit", "lb");
     expect(parseHealthForm(data, false)).toBeNull();
   });
+
+  it("accepts a browser-submitted UTC instant and rejects malformed offsets", () => {
+    const data = form({ type: "weight", occurredAt: "2026-10-15T03:04:05.120Z", value: "12", unit: "kg" });
+    expect(parseHealthForm(data, false)).toMatchObject({ occurredAt: "2026-10-15T03:04:05.120Z" });
+    data.set("occurredAt", "2026-10-15T03:04:05+01:00");
+    expect(parseHealthForm(data, false)).toBeNull();
+  });
 });

@@ -18,6 +18,8 @@ export function LocalOccurrenceTime({ value, dayOnly }: Readonly<{ value: string
   useEffect(() => {
     const date = new Date(dayOnly ? `${value}T00:00:00.000Z` : value);
     if (!Number.isFinite(date.getTime())) return;
+    // Browser timezone is unavailable during server rendering.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setLabel(new Intl.DateTimeFormat(undefined, {
       dateStyle: "medium",
       timeStyle: dayOnly ? undefined : "short",

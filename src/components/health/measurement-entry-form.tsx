@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useId, useState } from "react";
+import { useActionState, useEffect, useId, useState } from "react";
 
 import { correctHealthRecordAction, createHealthRecordAction } from "@/app/health-actions";
 import { Button } from "@/components/ui/button";
@@ -20,14 +20,16 @@ export function MeasurementEntryForm({ type, csrf, correction }: Readonly<EntryF
   const [values, setValues] = useState<Record<string, string>>(() => {
     if (!initial) return {};
     const fields = Object.fromEntries(Object.entries(initial).map(([key, value]) => [key, value == null ? "" : String(value)]));
-    if ("occurredAt" in initial) {
-      const instant = new Date(initial.occurredAt);
-      const local = new Date(instant.getTime() - instant.getTimezoneOffset() * 60_000);
-      fields.occurredLocal = local.toISOString().slice(0, 23);
-      fields.occurredAt = initial.occurredAt;
-    }
+    if ("occurredAt" in initial) fields.occurredAt = initial.occurredAt;
     return fields;
   });
+  useEffect(() => {
+    if (!initial || !("occurredAt" in initial)) return;
+    const instant = new Date(initial.occurredAt);
+    const local = new Date(instant.getTime() - instant.getTimezoneOffset() * 60_000);
+    // Browser timezone is unavailable during server rendering.
+    setValues((previous) => ({ ...previous, occurredLocal: local.toISOString().slice(0, 23) }));
+  }, [initial]);
   const habit = type === "physical_activity_duration" || type === "sleep_duration";
   const update = (name: string, value: string) => setValues((previous) => ({ ...previous, [name]: value }));
   const updateOccurredLocal = (value: string) => {
