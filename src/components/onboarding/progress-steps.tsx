@@ -5,9 +5,14 @@ type ProgressStepsProps = Readonly<{
 const STEPS = ["Consent", "About you", "Health context", "Baseline"] as const;
 
 export function ProgressIndicator({ currentStep }: ProgressStepsProps) {
+  const currentStepName = STEPS[currentStep - 1];
+
   return (
-    <nav aria-label="Onboarding progress">
-      <ol className="progress-steps">
+    <section aria-label="Onboarding progress">
+      <p className="progress-steps__position">
+        Step {currentStep} of {STEPS.length}{currentStepName && ` · ${currentStepName}`}
+      </p>
+      <ol className="progress-steps" role="list">
         {STEPS.map((step, index) => {
           const stepNumber = index + 1;
           return (
@@ -22,7 +27,7 @@ export function ProgressIndicator({ currentStep }: ProgressStepsProps) {
           );
         })}
       </ol>
-    </nav>
+    </section>
   );
 }
 

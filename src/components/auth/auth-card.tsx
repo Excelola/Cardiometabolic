@@ -26,8 +26,8 @@ export function AuthCard({
           <p className="lede">{intro}</p>
         </header>
         <Card className="auth-card">
-          {children}
           {note ? <div className="auth-card__note muted">{note}</div> : null}
+          {children}
         </Card>
       </div>
     </main>

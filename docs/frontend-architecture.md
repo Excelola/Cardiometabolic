@@ -3,7 +3,7 @@
 ## Purpose and authority
 
 This document describes implementation decisions for the Next.js frontend
-foundation and approved HILERA visual system. The Google Drive Master PRD
+foundation and approved HILERA Editorial Health Journal. The Google Drive Master PRD
 remains authoritative for product vision, requirements, journeys, rules,
 permissions, scope, and approved decisions. Master PRD sections 1–6 were stated
 as approved for this task.
@@ -74,12 +74,12 @@ preview modes and keep the LAN listener off public networks and the internet.
 | `/auth/verify` | Legacy verification route | Retained inactive shell; verification codes are not in the MVP journey |
 | `/onboarding` | Progressive onboarding | Approved basic profile field shell plus deferred consent and image-ready areas |
 | `/app` | Application entry | Redirects to the dashboard shell |
-| `/app/dashboard` | Dashboard | Synthetic workflow state, one setup action, recent-information and monitoring sections, and a workflow-state disclosure |
-| `/app/measurements/new` | Generic measurement entry | Placeholder measurement, date and source context with a direct link to History. Saving is disabled |
-| `/app/measurements/history` | Measurement history | Chronological synthetic records with date, identity, provenance and inline details |
-| `/app/trends` | Trend view | Polished insufficient-history shell with no fabricated trend |
-| `/app/risk-summary` | Risk Awareness Summary | Structural readiness shell with no score or clinical interpretation |
-| `/app/education` | P0 Education shell | Product-use guidance with an action to review History. Medical content awaits approval |
+| `/app/dashboard` | Overview | Synthetic workflow state, one setup action, recent-information and monitoring sections, and a workflow-state disclosure |
+| `/app/measurements/new` | Add Health Information | Category chooser with a disabled sample measurement form under Health readings. Body measurements and Daily habits show availability notices |
+| `/app/measurements/history` | Past measurements | Newest-first synthetic records with recorded date, identity, provenance and inline details |
+| `/app/trends` | Changes over time | Insufficient-history panel with an existing action and no fabricated trend |
+| `/app/risk-summary` | Health risk summary | Structural readiness shell with no score or clinical interpretation |
+| `/app/education` | Health guides | Product-use guidance with an action to review past measurements. Medical content awaits approval |
 
 The `/app` prefix is an organizational route in this foundation, not an access
 control boundary. Real authentication and authorization must be enforced on the
@@ -105,6 +105,17 @@ History search and filtering (HIL-RD-002) remain a separate decision.
 The preview uses synthetic display metadata. Backend, API, database, migration,
 persistence, clinical rules and the production measurement inventory remain
 outside Bundle 1.
+
+### Add Health Information preview
+
+The existing entry route now opens with Health readings, Body measurements and
+Daily habits. The cards use grouped native disclosures so selecting a category
+reveals its content and closes the previous one without saving a selection.
+Health readings shows the existing generic, disabled measurement form and a
+link to the sample records in Past measurements. Body measurements and Daily
+habits have no fields in the preview. Approved type and field definitions are
+required before real entry is possible. The preview warning stays visible
+above the choices, and the preview does not collect or save information.
 
 ## Component structure
 
@@ -178,6 +189,30 @@ touch target sizing, reduced-motion handling, responsive navigation, and text
 alternatives for placeholder visualizations. Formal accessibility testing and
 assistive-technology review remain required.
 
+### Editorial Health Journal presentation
+
+The journal theme shares one Cream canvas, display serif scale and sans-serif
+interface across the ten existing screens. The root layout loads
+`editorial-journal.css` after the base styles. The theme reuses PageTitle,
+Card, MediaFrame, StatusCard, Notice, EmptyState, form controls and native
+disclosures. A Forest panel signals the main Overview and summary states. Mist
+distinguishes notices and insufficient history. White is reserved for surfaces
+that benefit from a visible boundary, such as forms. Measurement lists use
+dividers and spacing to separate records.
+
+The desktop rail and mobile bottom bar share paths from AppNavigation. At
+820 px and below, the bar shows Overview, Add Health, History, Risk Summary
+and More. More uses a native popover for Changes over time and Health guides.
+The current link uses `aria-current="page"`. More also indicates when it
+contains the current destination. Both views retain keyboard access and the
+global skip link. Compact labels do not rename routes or product states.
+
+Landing reserves a media-ready aside and uses one decorative botanical line
+motif. Onboarding retains a media-ready consent aside. The application screens
+are information-first. Production photography remains dependent on approved
+licensed assets. The repository has no global preview banner, so the existing
+external milestone preview was outside this local design change.
+
 ## Configurable approved product name
 
 `src/config/product.ts` reads the display-safe
@@ -197,9 +232,10 @@ configuration; no route embeds an alternate product name.
   approved HILERA imagery can be inserted without restructuring either route.
   No stock imagery or decorative imagery was added to health-data screens.
 - Desktop grids collapse deliberately at tablet and mobile breakpoints. Forms,
-  state cards, history rows, navigation, and actions stack without horizontal
-  page overflow; application navigation becomes a keyboard-accessible wrapping
-  grid on narrow viewports.
+  state cards, history rows and actions stack on narrow viewports. The app
+  shell reserves the fixed bar's height and bottom safe-area inset below the
+  footer and in the viewport's scroll padding. The application layout enables
+  edge-to-edge rendering so devices can supply those insets.
 
 ## Mocked and deferred behavior
 

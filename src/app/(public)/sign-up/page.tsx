@@ -8,9 +8,9 @@ export const metadata: Metadata = { title: "Sign up" };
 export default function SignUpPage() {
   return (
     <AuthCard
-      eyebrow="Create your HILERA account"
-      intro="Use your email address and a password to begin."
-      note="This frontend preview does not create an account or store your email address or password."
+      eyebrow="Sign up"
+      intro="Enter your email address and a password."
+      note="This preview does not create an account or save your email address or password."
       title="Create your account"
     >
       <AuthCredentialsForm mode="sign-up" />

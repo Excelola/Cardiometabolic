@@ -4,25 +4,25 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
 import { PageTitle } from "@/components/ui/page-title";
 
-export const metadata: Metadata = { title: "Education" };
+export const metadata: Metadata = { title: "Health guides" };
 
 export default function EducationPage() {
   return (
     <>
-      <PageTitle title="Education">
-        <p className="lede">Learn how to use your HILERA workspace and find the next relevant task.</p>
+      <PageTitle title="Health guides">
+        <p className="lede">Learn how to use HILERA to review your health information.</p>
       </PageTitle>
-      <Card>
+      <Card className="education-guide">
         <p className="eyebrow">Using HILERA</p>
-        <h2>Review your health history</h2>
+        <h2>How to review past health readings</h2>
         <p className="muted">
-          History puts records in date order. Open a sample record to see its details and source.
+          Open a record to see its details and where the information came from.
         </p>
         <div className="page-actions">
-          <ButtonLink href="/app/measurements/history">Review history</ButtonLink>
+          <ButtonLink href="/app/measurements/history">View past health readings</ButtonLink>
         </div>
       </Card>
-      <p className="muted app-section">Health education topics will appear here after content approval.</p>
+      <p className="muted app-section">More health guides are unavailable in this preview.</p>
     </>
   );
 }

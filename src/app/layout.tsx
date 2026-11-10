@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import { productConfig } from "@/config/product";
 
 import "./globals.css";
+import "./editorial-journal.css";
 
 export const metadata: Metadata = {
   title: {

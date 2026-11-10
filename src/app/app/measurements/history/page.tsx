@@ -6,23 +6,24 @@ import { Card } from "@/components/ui/card";
 import { PageTitle } from "@/components/ui/page-title";
 import { MOCK_MEASUREMENT_HISTORY } from "@/domain/health";
 
-export const metadata: Metadata = { title: "Measurement history" };
+export const metadata: Metadata = { title: "Past health readings" };
 
 export default function MeasurementHistoryPage() {
   return (
     <>
-      <PageTitle title="Measurement history">
+      <PageTitle title="Past health readings">
         <p className="lede">
-          See what was recorded, when it was recorded, and where it came from.
+          See what was recorded, when it was recorded, and where the information came from.
         </p>
         <div className="page-actions">
-          <ButtonLink href="/app/measurements/new">Add health information</ButtonLink>
+          <ButtonLink href="/app/measurements/new">Add Health Information</ButtonLink>
         </div>
       </PageTitle>
-      <Card>
-        <p className="eyebrow">Preview records</p>
-        <h2>Recorded information</h2>
-        <p className="muted">Newest first. These examples use sample dates and sources.</p>
+      <Card className="history-surface">
+        <header className="history-surface__heading">
+          <h2>Sample health readings</h2>
+          <p className="muted">Newest first</p>
+        </header>
         <ol className="history-list" role="list">
           {MOCK_MEASUREMENT_HISTORY.map((item) => (
             <MeasurementHistoryRow item={item} key={item.id} />

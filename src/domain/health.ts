@@ -38,7 +38,7 @@ export const MOCK_MEASUREMENT_DEFINITION: MeasurementDefinition = {
       id: "placeholder-value",
       label: "Value",
       inputMode: "decimal",
-      helperText: "Measurement definitions and units are awaiting approval.",
+      helperText: "Health reading definitions and units are awaiting approval.",
     },
   ],
 };
