@@ -6,9 +6,9 @@ export function TrendEmptyState() {
     <div className="trend-empty-state">
       <EmptyState
         action={<ButtonLink href="/app/measurements/new">Add Health Information</ButtonLink>}
-        title="Not enough health readings to show changes yet"
+        title="Changes over time are unavailable"
       >
-        <p>This view needs more supported health readings recorded over time.</p>
+        <p>Use History to review your entries in their original units.</p>
       </EmptyState>
       <div aria-hidden="true" className="trend-empty-state__canvas" />
     </div>

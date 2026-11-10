@@ -978,6 +978,20 @@ fieldset {
   margin-bottom: 0;
 }
 
+.measurement-form {
+  display: grid;
+  gap: 1rem;
+  margin-block-start: 1rem;
+}
+
+.measurement-form > button {
+  justify-self: start;
+}
+
+.health-history-value {
+  overflow-wrap: anywhere;
+}
+
 .history-list {
   display: grid;
   gap: var(--space-3);
