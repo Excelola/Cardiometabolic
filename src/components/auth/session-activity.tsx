@@ -12,7 +12,7 @@ export function SessionActivity({ csrf }: Readonly<{ csrf: string }>) {
     let requestInFlight = false;
 
     const requestRenewal = (event: Event) => {
-      if (event instanceof KeyboardEvent && event.repeat) return;
+      if (!event.isTrusted || (event instanceof KeyboardEvent && event.repeat)) return;
 
       const now = Date.now();
       if (requestInFlight || now - lastRequestAt < CLIENT_ACTIVITY_REQUEST_INTERVAL_MS) return;
