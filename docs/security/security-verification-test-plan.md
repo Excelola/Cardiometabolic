@@ -190,9 +190,9 @@ Required cases will include:
 
 ## Execution phases
 
-### Phase 1 — Before PR #6 can merge
+### Phase 1 — Authentication-foundation evidence baseline
 
-Execute AUTH, SES, CSRF, AUTHZ, DB, ABUSE, LOG, REC and SUP tests applicable to the implemented auth foundation. PostgreSQL-dependent tests must run, not skip.
+This phase was executed for PR #6 before merge. The final evidence included real PostgreSQL integration, backup/restore, authenticated browser flows, security/runtime checks and dependency remediation. Retain these tests as the regression baseline for future authentication changes.
 
 ### Phase 2 — Production-like deployment review
 
@@ -202,8 +202,8 @@ Repeat cookie/origin/cache/TLS/logging and database-role tests through the actua
 
 Extend authorization/privacy tests to the approved health-data model, Data Dictionary, correction behavior, retention/deletion behavior, and document upload architecture.
 
-## Exit criteria for PR #6
+## Authentication regression criteria
 
-PR #6 remains draft until all merge-blocking tests in the PR #6 security review are executed successfully or a documented reviewed exception is approved. There must be no Critical or High finding left open without explicit security/Product Owner acceptance.
+For any future material authentication change, rerun the applicable PR #6 regression evidence. Do not accept an unresolved Critical or High authentication/security finding without explicit Product Owner and security review.
 
 **PRD Sync Status: Not Required.** This plan verifies approved behavior and technical controls.
