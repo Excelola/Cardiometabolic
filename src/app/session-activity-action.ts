@@ -8,10 +8,15 @@ import { sessionCookieName } from "@/server/auth/request-session";
 import { findActiveSession, renewSessionActivity } from "@/server/auth/sessions";
 import { getAuthDb } from "@/server/db/auth-db";
 
-export async function recordSessionActivity(csrf: string): Promise<void> {
+export async function recordSessionActivity(csrf: unknown): Promise<void> {
+  if (typeof csrf !== "string" || !/^[A-Za-z0-9_-]{43}$/.test(csrf)) return;
+
   try {
+    const request = await headers();
+    if (request.has("next-router-prefetch") || request.has("next-router-segment-prefetch")
+      || /\b(prefetch|prerender)\b/i.test(request.get("sec-purpose") ?? "")) return;
     const config = getAuthConfig();
-    if (!isTrustedAuthOrigin(await headers(), config)) return;
+    if (!isTrustedAuthOrigin(request, config)) return;
 
     const jar = await cookies();
     const bearer = jar.get(sessionCookieName(config))?.value;

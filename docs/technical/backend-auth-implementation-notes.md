@@ -117,9 +117,11 @@ browser-trusted, non-repeated keyboard event. Script-generated synthetic events 
 work do not renew the session. The client coalesces renewal requests and the
 server performs a database write only when at least approximately five minutes
 of the current idle window have elapsed. Concurrent renewal attempts are
-coalesced by the conditional update. Renewal extends idle expiry to at most one
-hour from the qualifying activity and never beyond the fixed 24-hour absolute
-deadline. Expired or revoked sessions cannot be revived.
+serialized on the owned session row. The database clock is sampled after the
+row lock so a request queued across expiry cannot revive the session. Renewal
+sets idle expiry to at most one hour from the qualifying activity and never
+beyond the fixed 24-hour absolute deadline. Revoked sessions cannot be revived.
+Renewal neither reissues the cookie nor writes a routine security event.
 
 Sign-out validates the active session and revokes only that owned row before
 clearing the cookie. The internal account-wide primitive locks the user row
@@ -185,9 +187,11 @@ sign-in. Raw prefetches returned private route metadata without protected
 content. Synthetic credential canaries were absent from the inspected local
 application log. The audited production lockfile reported zero advisories.
 
-The disposable PostgreSQL suite was unavailable on this machine. Its tests
-remain a release gate for schema replay, real account transactions, two-user
-isolation, concurrent throttling, and the backup and restore drill.
+Run `pnpm test:postgres` against an explicitly disposable loopback PostgreSQL
+cluster with synthetic data, patched `pg_dump` and `pg_restore` tooling, and
+`HILERA_TEST_DATABASE_ADMIN_URL` pointing to that cluster's `/postgres` database.
+The dedicated command fails without that setting. A regular `pnpm test` run
+without PostgreSQL skips the integration suite and does not satisfy the gate.
 
 ## Remaining release gates
 
@@ -198,8 +202,6 @@ isolation, concurrent throttling, and the backup and restore drill.
   backup retention and restore invalidation before rollout.
 - Review origin and session controls through the actual TLS ingress and inspect
   browser actions, shared caches, database and infrastructure telemetry.
-- Align `eslint-config-next` to the reviewed Next.js 16.4.6 toolchain and
-  regenerate the pnpm lockfile with pnpm before final validation.
 - Review production throttle tuning, native Argon2 compatibility and capacity,
   secret rotation, audit access and event retention.
 - Complete approved recovery or obtain explicit Product Owner and security

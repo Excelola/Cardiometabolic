@@ -1,7 +1,7 @@
 import "server-only";
 
 import { createHash, randomBytes } from "node:crypto";
-import { and, eq, gt, isNull, lt, lte, sql } from "drizzle-orm";
+import { and, eq, gt, isNull, lte, sql, type SQL } from "drizzle-orm";
 
 import type { AuthDb, AuthTransaction } from "../db/auth-db";
 import { authSessions, users } from "../db/schema";
@@ -37,7 +37,7 @@ export async function issueSession(tx: AuthTransaction, userId: string, now = ne
   return token;
 }
 
-function activeSession(at: Date) {
+function activeSession(at: Date | SQL) {
   return and(lte(authSessions.createdAt, at), isNull(authSessions.revokedAt), gt(authSessions.idleExpiresAt, at), gt(authSessions.absoluteExpiresAt, at));
 }
 
@@ -50,26 +50,40 @@ export async function findActiveSession(db: AuthDb, token: unknown, at = new Dat
   return session ?? null;
 }
 
-export async function renewSessionActivity(
-  db: AuthDb,
-  principal: SessionPrincipal,
-  now = new Date(),
-): Promise<boolean> {
-  const renewalThreshold = new Date(now.getTime() + IDLE_SESSION_MS - SESSION_ACTIVITY_WRITE_INTERVAL_MS);
-  const candidateExpiry = new Date(now.getTime() + IDLE_SESSION_MS);
+type SessionWindow = Pick<typeof authSessions.$inferSelect, "createdAt" | "idleExpiresAt" | "absoluteExpiresAt" | "revokedAt">;
 
-  const [renewed] = await db.update(authSessions)
-    .set({ idleExpiresAt: sql`least(${authSessions.absoluteExpiresAt}, ${candidateExpiry.toISOString()}::timestamptz)` })
-    .where(and(
-      eq(authSessions.id, principal.sessionId),
-      eq(authSessions.userId, principal.userId),
-      activeSession(now),
-      lte(authSessions.idleExpiresAt, renewalThreshold),
-      lt(authSessions.idleExpiresAt, authSessions.absoluteExpiresAt),
-    ))
-    .returning({ id: authSessions.id });
+export function nextIdleExpiry(session: SessionWindow, at: Date): Date | null {
+  if (session.revokedAt || at < session.createdAt || at >= session.idleExpiresAt || at >= session.absoluteExpiresAt) return null;
 
-  return Boolean(renewed);
+  const currentDeadline = session.idleExpiresAt.getTime();
+  const fullWindow = at.getTime() + IDLE_SESSION_MS;
+  if (fullWindow - currentDeadline < SESSION_ACTIVITY_WRITE_INTERVAL_MS) return null;
+
+  const deadline = Math.min(fullWindow, session.absoluteExpiresAt.getTime());
+  return deadline > currentDeadline ? new Date(deadline) : null;
+}
+
+export async function renewSessionActivity(db: AuthDb, principal: SessionPrincipal, at?: Date): Promise<boolean> {
+  const owner = and(eq(authSessions.id, principal.sessionId), eq(authSessions.userId, principal.userId));
+  return db.transaction(async (tx) => {
+    const [session] = await tx.select({
+      createdAt: authSessions.createdAt,
+      idleExpiresAt: authSessions.idleExpiresAt,
+      absoluteExpiresAt: authSessions.absoluteExpiresAt,
+      revokedAt: authSessions.revokedAt,
+    }).from(authSessions).where(owner).for("update");
+    if (!session) return false;
+
+    // A queued request can expire while waiting for the row lock.
+    const activityAt = at ?? (await tx.execute<{ at: Date }>(sql`select clock_timestamp() as "at"`)).rows[0].at;
+    const deadline = nextIdleExpiry(session, activityAt);
+    if (!deadline) return false;
+
+    const [renewed] = await tx.update(authSessions).set({ idleExpiresAt: deadline })
+      .where(and(owner, activeSession(at ?? sql`statement_timestamp()`)))
+      .returning({ id: authSessions.id });
+    return Boolean(renewed);
+  });
 }
 
 export async function replacePresentedSession(tx: AuthTransaction, previous: unknown, now: Date): Promise<void> {

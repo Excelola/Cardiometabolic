@@ -72,6 +72,15 @@ Sign-up uses the approved email/password identifier model and approved 15–128 
 | Rate limit | Bound request volume at the server and query layer. A request-local check can be reused during a single render. Never share session results across users or requests. |
 | Security events and sensitive output | Routine reads need no persistent security event. Use bounded, reviewed anomaly signals rather than recording each read. Omit the bearer, digest and session internals from browser outputs. |
 
+## Record session activity
+
+The authenticated `recordSessionActivity(csrf)` Server Action requires the exact
+trusted origin, an active cookie-backed session and a valid session-bound CSRF
+proof. It rejects prefetch and prerender markers. The caller supplies neither
+an identity nor a clock value. The action returns no session data and leaves
+the cookie unchanged. Concurrent requests serialize on the session row and
+may advance only idle expiry, subject to the existing absolute deadline.
+
 ## Get current user
 
 | Contract element | Proposed design |

@@ -99,6 +99,10 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL authentication integration", (
       expect(unchangedSession.idleExpiresAt).toEqual(savedSession.idleExpiresAt);
 
       const activeAtTenMinutes = new Date(savedSession.createdAt.getTime() + 10 * 60 * 1000);
+      expect(await findActiveSession(db, first, activeAtTenMinutes)).toEqual(owner);
+      const [afterPassiveRead] = await db.select().from(authSessions).where(eq(authSessions.id, owner.sessionId));
+      expect(afterPassiveRead.idleExpiresAt).toEqual(savedSession.idleExpiresAt);
+
       const concurrentRenewals = await Promise.all([
         renewSessionActivity(db, owner, activeAtTenMinutes),
         renewSessionActivity(db, owner, activeAtTenMinutes),
@@ -111,9 +115,17 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL authentication integration", (
       );
       expect(await findActiveSession(db, first, savedSession.idleExpiresAt)).toEqual(owner);
       expect(await findActiveSession(db, first, renewedSession.idleExpiresAt)).toBeNull();
+      expect(await renewSessionActivity(db, owner, renewedSession.idleExpiresAt)).toBe(false);
 
-      await db.update(authSessions).set({ idleExpiresAt: savedSession.absoluteExpiresAt }).where(eq(authSessions.id, owner.sessionId));
+      const nearAbsolute = new Date(savedSession.absoluteExpiresAt.getTime() - 30 * 60 * 1000);
+      const priorIdleDeadline = new Date(savedSession.absoluteExpiresAt.getTime() - 10 * 60 * 1000);
+      await db.update(authSessions).set({ idleExpiresAt: priorIdleDeadline }).where(eq(authSessions.id, owner.sessionId));
+      expect(await renewSessionActivity(db, owner, nearAbsolute)).toBe(true);
+      const [cappedSession] = await db.select().from(authSessions).where(eq(authSessions.id, owner.sessionId));
+      expect(cappedSession.idleExpiresAt).toEqual(savedSession.absoluteExpiresAt);
+      expect(cappedSession.absoluteExpiresAt).toEqual(savedSession.absoluteExpiresAt);
       expect(await findActiveSession(db, first, savedSession.absoluteExpiresAt)).toBeNull();
+      expect(await renewSessionActivity(db, owner, savedSession.absoluteExpiresAt)).toBe(false);
       expect(await findActiveSession(db, first, new Date(savedSession.absoluteExpiresAt.getTime() - 1))).toEqual(owner);
 
       const wrong = await authenticateAccount(db, config, { email, password: "incorrect synthetic passphrase" });
@@ -134,6 +146,7 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL authentication integration", (
       const otherToken = token(await createAccount(db, config, { email: "another@example.test", password }));
       const other = (await findActiveSession(db, otherToken))!;
       expect(other.userId !== owner.userId).toBe(true);
+      expect(await renewSessionActivity(db, { sessionId: owner.sessionId, userId: other.userId }, nearAbsolute)).toBe(false);
       await revokeCurrentSession(db, { sessionId: owner.sessionId, userId: other.userId });
       expect(await findActiveSession(db, first)).toEqual(owner);
       const rotated = token(await authenticateAccount(db, config, { email, password, previousToken: second }));
@@ -141,6 +154,7 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL authentication integration", (
       await revokeCurrentSession(db, owner);
       await revokeCurrentSession(db, owner);
       expect(await findActiveSession(db, first)).toBeNull();
+      expect(await renewSessionActivity(db, owner, nearAbsolute)).toBe(false);
       expect(await findActiveSession(db, rotated)).not.toBeNull();
       await db.transaction((tx) => revokeAllUserSessions(tx, owner.userId));
       expect(await findActiveSession(db, rotated)).toBeNull();
