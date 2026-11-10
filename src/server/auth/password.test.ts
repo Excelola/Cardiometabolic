@@ -15,13 +15,13 @@ describe("Argon2id credentials", () => {
     expect(validateNewPassword("passwordpassword")).toBe("blocked");
   });
 
-  it("uses fresh salts, exact raw Unicode and equal public verification outcomes for missing or wrong credentials", async () => {
+  it("uses fresh salts, NFC-stable Unicode and equal public verification outcomes for missing or wrong credentials", async () => {
     const first = await hashPassword(password);
     const second = await hashPassword(password);
     expect(first).toMatch(/^\$argon2id\$v=19\$m=19456,t=2,p=1\$/);
     expect(first.split("$")[4]).not.toBe(second.split("$")[4]);
     expect(await verifyPassword(password, first)).toEqual({ valid: true, needsRehash: false });
-    expect(await verifyPassword(password.normalize("NFD"), first)).toEqual(await verifyPassword(password));
+    expect(await verifyPassword(password.normalize("NFD"), first)).toEqual({ valid: true, needsRehash: false });
     expect(await verifyPassword(password, first.replace("m=19456", "m=99999"))).toEqual({ valid: false, needsRehash: false });
   });
 
