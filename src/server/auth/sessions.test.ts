@@ -41,7 +41,7 @@ describe("session idle renewal policy", () => {
   it("samples the database clock after acquiring the row lock and refuses a queued expired renewal", async () => {
     const rowLock = Promise.withResolvers<(typeof session)[]>();
     const lockRow = vi.fn().mockReturnValue(rowLock.promise);
-    const readClock = vi.fn().mockResolvedValue({ rows: [{ at: session.idleExpiresAt }] });
+    const readClock = vi.fn().mockResolvedValue({ rows: [{ epoch_ms: session.idleExpiresAt.getTime() }] });
     const update = vi.fn();
     const transaction = {
       select: () => ({ from: () => ({ where: () => ({ for: lockRow }) }) }),

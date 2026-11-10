@@ -69,6 +69,8 @@ Thresholds are deployment/traffic decisions, not product requirements. Establish
 
 Use metrics for volume, latency, saturation and availability wherever possible. Use logs for bounded diagnostic events. Use traces only when configured to exclude credential and sensitive request bodies.
 
+Next.js development Server Function logging is disabled because it includes invocation arguments, such as the session activity CSRF proof. Keep request bodies and authentication mutation arguments out of development logs as well as deployment logs.
+
 Prefer an opaque operational request/correlation identifier when diagnosis needs cross-service correlation. It must not be a session token, user email, health record identifier or other reusable credential.
 
 ## Database visibility

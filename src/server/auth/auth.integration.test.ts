@@ -151,6 +151,14 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL authentication integration", (
       expect(await findActiveSession(db, first)).toEqual(owner);
       const rotated = token(await authenticateAccount(db, config, { email, password, previousToken: second }));
       expect(await findActiveSession(db, second)).toBeNull();
+      const rotatedPrincipal = (await findActiveSession(db, rotated))!;
+      const [beforeLiveRenewal] = await db.update(authSessions)
+        .set({ idleExpiresAt: sql`clock_timestamp() + interval '30 minutes'` })
+        .where(eq(authSessions.id, rotatedPrincipal.sessionId)).returning();
+      expect(await renewSessionActivity(db, rotatedPrincipal)).toBe(true);
+      const [afterLiveRenewal] = await db.select().from(authSessions).where(eq(authSessions.id, rotatedPrincipal.sessionId));
+      expect(afterLiveRenewal.idleExpiresAt.getTime()).toBeGreaterThan(beforeLiveRenewal.idleExpiresAt.getTime());
+      expect(afterLiveRenewal.absoluteExpiresAt).toEqual(beforeLiveRenewal.absoluteExpiresAt);
       await revokeCurrentSession(db, owner);
       await revokeCurrentSession(db, owner);
       expect(await findActiveSession(db, first)).toBeNull();

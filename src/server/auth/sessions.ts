@@ -75,7 +75,9 @@ export async function renewSessionActivity(db: AuthDb, principal: SessionPrincip
     if (!session) return false;
 
     // A queued request can expire while waiting for the row lock.
-    const activityAt = at ?? (await tx.execute<{ at: Date }>(sql`select clock_timestamp() as "at"`)).rows[0].at;
+    const activityAt = at ?? new Date((await tx.execute<{ epoch_ms: number }>(sql`
+      select (extract(epoch from clock_timestamp()) * 1000)::double precision as epoch_ms
+    `)).rows[0].epoch_ms);
     const deadline = nextIdleExpiry(session, activityAt);
     if (!deadline) return false;
 
