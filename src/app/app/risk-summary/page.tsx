@@ -3,9 +3,12 @@ import type { Metadata } from "next";
 import { RiskSummaryState } from "@/components/health/risk-summary-state";
 import { PageTitle } from "@/components/ui/page-title";
 
+import { requireSession } from "@/server/auth/request-session";
+
 export const metadata: Metadata = { title: "Health risk summary" };
 
-export default function RiskSummaryPage() {
+export default async function RiskSummaryPage() {
+  await requireSession();
   return (
     <>
       <PageTitle title="Health risk summary">

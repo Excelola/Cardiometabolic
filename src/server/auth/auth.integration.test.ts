@@ -1,0 +1,180 @@
+import { execFileSync } from "node:child_process";
+import { randomUUID } from "node:crypto";
+import { mkdtemp, rmdir, unlink } from "node:fs/promises";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+
+import { hash } from "@node-rs/argon2";
+import { eq } from "drizzle-orm";
+import { migrate } from "drizzle-orm/node-postgres/migrator";
+import { Pool } from "pg";
+import { describe, expect, it } from "vitest";
+
+import { createAuthDb, type AuthDb } from "../db/auth-db";
+import { authSecurityEvents, authSessions, passwordCredentials, users } from "../db/schema";
+import { readAuthConfig } from "./config";
+import { authenticateAccount, createAccount } from "./credentials";
+import { normalizeEmail } from "./input";
+import { ARGON2_OPTIONS } from "./password";
+import { findActiveSession, revokeAllUserSessions, revokeCurrentSession, sessionDigest } from "./sessions";
+import { reserveAuthAdmission } from "./throttle";
+
+const adminUrl = process.env.HILERA_TEST_DATABASE_ADMIN_URL;
+const config = readAuthConfig({ NODE_ENV: "test", HILERA_AUTH_CSRF_SECRET: Buffer.alloc(32, 1).toString("base64url"),
+  HILERA_AUTH_THROTTLE_SECRET: Buffer.alloc(32, 2).toString("base64url") });
+const password = "Synthetïc integration passphrase 731 🪴";
+
+function loopbackAdmin(): URL {
+  const url = adminUrl ? URL.parse(adminUrl) : null;
+  if (!url || !["postgres:", "postgresql:"].includes(url.protocol) || !["localhost", "127.0.0.1", "[::1]"].includes(url.hostname)
+    || url.pathname !== "/postgres" || url.search || url.hash || !url.username || !url.password) {
+    throw new Error("Provide an explicitly local disposable PostgreSQL administrator URL ending in /postgres.");
+  }
+  return url;
+}
+
+async function disposable<T>(work: (db: AuthDb, name: string, url: URL) => Promise<T>): Promise<T> {
+  const url = loopbackAdmin();
+  const admin = new Pool({ connectionString: url.href, connectionTimeoutMillis: 3000 });
+  const name = `hilera_auth_test_${randomUUID().replaceAll("-", "")}`;
+  const identifier = `"${name}"`; // Name is generated here, never from an external argument.
+  try {
+    await admin.query(`CREATE DATABASE ${identifier}`);
+    const target = new URL(url);
+    target.pathname = `/${name}`;
+    const pool = new Pool({ connectionString: target.href, connectionTimeoutMillis: 3000 });
+    try {
+      return await work(createAuthDb(pool), name, url);
+    } finally {
+      await pool.end();
+      await admin.query(`DROP DATABASE ${identifier}`);
+    }
+  } finally {
+    await admin.end();
+  }
+}
+
+async function applyMigrations(db: AuthDb) {
+  await migrate(db, { migrationsFolder: "./drizzle" });
+}
+
+function runPgTool(program: "pg_dump" | "pg_restore", args: string[], name: string, url: URL) {
+  try {
+    execFileSync(program, ["--dbname", name, ...args], { env: {
+      NODE_ENV: "test", SystemRoot: process.env.SystemRoot, PATH: process.env.PATH, PGHOST: url.hostname.replace(/^\[|\]$/g, ""),
+      PGPORT: url.port || "5432", PGUSER: decodeURIComponent(url.username), PGPASSWORD: decodeURIComponent(url.password),
+    }, timeout: 25_000, stdio: "pipe" });
+  } catch {
+    throw new Error(`${program} failed on the disposable synthetic database. Verify the local PostgreSQL CLI is installed and compatible.`);
+  }
+}
+
+function token(outcome: Awaited<ReturnType<typeof createAccount>>): string {
+  if (outcome.kind !== "success") throw new Error(`Expected successful synthetic authentication, got ${outcome.kind}.`);
+  return outcome.token;
+}
+
+describe.skipIf(!adminUrl)("disposable PostgreSQL authentication integration", () => {
+  it("migrates an empty database, handles duplicate races, upgrades credentials, isolates users and revokes sessions", async () => {
+    await disposable(async (db) => {
+      await applyMigrations(db);
+      const email = normalizeEmail("person@EXAMPLE.TEST")!;
+      const parallel = await Promise.all([
+        createAccount(db, config, { email, password }),
+        createAccount(db, config, { email: normalizeEmail("person@example.test")!, password }),
+      ]);
+      expect(parallel.map((result) => result.kind).sort()).toEqual(["registration_failed", "success"]);
+      expect(await db.$count(users)).toBe(1);
+      expect(await db.$count(passwordCredentials)).toBe(1);
+      expect(await db.$count(authSessions)).toBe(1);
+
+      const first = token(parallel.find((result) => result.kind === "success")!);
+      const owner = (await findActiveSession(db, first))!;
+      const [savedSession] = await db.select().from(authSessions).where(eq(authSessions.id, owner.sessionId));
+      expect(savedSession.tokenHash.equals(sessionDigest(first)!)).toBe(true);
+      expect(await findActiveSession(db, first, savedSession.idleExpiresAt)).toBeNull();
+      await db.update(authSessions).set({ idleExpiresAt: savedSession.absoluteExpiresAt }).where(eq(authSessions.id, owner.sessionId));
+      expect(await findActiveSession(db, first, savedSession.absoluteExpiresAt)).toBeNull();
+      expect(await findActiveSession(db, first, new Date(savedSession.absoluteExpiresAt.getTime() - 1))).toEqual(owner);
+
+      const wrong = await authenticateAccount(db, config, { email, password: "incorrect synthetic passphrase" });
+      const missing = await authenticateAccount(db, config, { email: "absent@example.test", password });
+      expect(wrong.kind).toBe("invalid_credentials");
+      expect(missing.kind).toBe(wrong.kind);
+
+      const weaker = await hash(password, { ...ARGON2_OPTIONS, memoryCost: 12288 });
+      const [before] = await db.select().from(passwordCredentials).where(eq(passwordCredentials.userId, owner.userId));
+      await db.update(passwordCredentials).set({ passwordHash: weaker }).where(eq(passwordCredentials.userId, owner.userId));
+      const second = token(await authenticateAccount(db, config, { email, password }));
+      const [after] = await db.select().from(passwordCredentials).where(eq(passwordCredentials.userId, owner.userId));
+      expect(after.passwordHash.startsWith("$argon2id$v=19$m=19456,t=2,p=1$") && after.passwordHash !== password).toBe(true);
+      expect(after.passwordChangedAt).toEqual(before.passwordChangedAt);
+      expect(second !== first).toBe(true);
+      expect(await findActiveSession(db, first)).toEqual(owner);
+
+      const otherToken = token(await createAccount(db, config, { email: "another@example.test", password }));
+      const other = (await findActiveSession(db, otherToken))!;
+      expect(other.userId !== owner.userId).toBe(true);
+      await revokeCurrentSession(db, { sessionId: owner.sessionId, userId: other.userId });
+      expect(await findActiveSession(db, first)).toEqual(owner);
+      const rotated = token(await authenticateAccount(db, config, { email, password, previousToken: second }));
+      expect(await findActiveSession(db, second)).toBeNull();
+      await revokeCurrentSession(db, owner);
+      await revokeCurrentSession(db, owner);
+      expect(await findActiveSession(db, first)).toBeNull();
+      expect(await findActiveSession(db, rotated)).not.toBeNull();
+      await db.transaction((tx) => revokeAllUserSessions(tx, owner.userId));
+      expect(await findActiveSession(db, rotated)).toBeNull();
+      expect(await findActiveSession(db, otherToken)).toEqual(other);
+
+      const events = await db.select().from(authSecurityEvents);
+      const allowed = ["id", "userId", "eventType", "occurredAt"].sort();
+      expect(events.every((event) => Object.keys(event).sort().join() === allowed.join())).toBe(true);
+      expect(events.filter((event) => event.eventType === "sign_in_failed").every((event) => event.userId === null)).toBe(true);
+      expect(JSON.stringify(events).includes(password)).toBe(false);
+    });
+  }, 35_000);
+
+  it("reserves shared concurrent budgets, recovers after cooldown and fails closed on storage error", async () => {
+    await disposable(async (db) => {
+      await applyMigrations(db);
+      const now = new Date("2026-11-10T00:00:00Z");
+      const fleet = { ...config, throttle: { ...config.throttle, globalLimit: 4, identityLimit: 1 } };
+      const results = await Promise.all(Array.from({ length: 12 }, (_, index) => reserveAuthAdmission(db, fleet, `test${index}@example.test`, now)));
+      expect(results.filter((result) => result === "admitted")).toHaveLength(4);
+      expect(results.filter((result) => result === "throttled")).toHaveLength(8);
+      const later = new Date(now.getTime() + fleet.throttle.globalWindowMs);
+      expect(await reserveAuthAdmission(db, fleet, "cooldown@example.test", later)).toBe("admitted");
+      expect(await reserveAuthAdmission(db, fleet, "cooldown@example.test", later)).toBe("admitted");
+      expect(await reserveAuthAdmission(db, fleet, "cooldown@example.test", later)).toBe("throttled");
+      expect(await reserveAuthAdmission(db, fleet, "cooldown@example.test", new Date(later.getTime() + 1000))).toBe("admitted");
+      const broken = { transaction: () => Promise.reject(new Error("synthetic storage outage")) } as unknown as AuthDb;
+      expect(await reserveAuthAdmission(broken, fleet, "test@example.test", now)).toBe("unavailable");
+    });
+  }, 35_000);
+
+  it("dumps a migrated source, destroys it, restores to a new database and checks data and constraints", async () => {
+    const directory = await mkdtemp(join(tmpdir(), "hilera-auth-backup-"));
+    const backup = join(directory, "synthetic.dump");
+    try {
+      await disposable(async (db, name, url) => {
+        await applyMigrations(db);
+        token(await createAccount(db, config, { email: "restore@example.test", password }));
+        runPgTool("pg_dump", ["--format=custom", "--no-owner", "--no-privileges", "--file", backup], name, url);
+      }); // Source is dropped before the restore database is created.
+
+      await disposable(async (db, name, url) => {
+        runPgTool("pg_restore", ["--exit-on-error", "--no-owner", "--no-privileges", backup], name, url);
+        expect(await db.$count(users)).toBe(1);
+        expect(await db.$count(passwordCredentials)).toBe(1);
+        expect(await db.$count(authSessions)).toBe(1);
+        await expect(db.insert(users).values({ normalizedEmail: "restore@example.test" })).rejects.toThrow();
+        await expect(db.insert(passwordCredentials).values({ userId: randomUUID(), passwordHash: "$argon2id$synthetic" })).rejects.toThrow();
+        expect((await authenticateAccount(db, config, { email: "restore@example.test", password })).kind).toBe("success");
+      });
+    } finally {
+      await unlink(backup).catch((error: NodeJS.ErrnoException) => { if (error.code !== "ENOENT") throw error; });
+      await rmdir(directory);
+    }
+  }, 70_000);
+});

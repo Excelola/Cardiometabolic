@@ -1,5 +1,8 @@
 import { redirect } from "next/navigation";
 
-export default function ApplicationIndexPage() {
+import { requireSession } from "@/server/auth/request-session";
+
+export default async function ApplicationIndexPage() {
+  await requireSession();
   redirect("/app/dashboard");
 }

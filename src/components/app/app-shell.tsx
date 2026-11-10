@@ -5,12 +5,12 @@ import { AppHeader } from "./app-header";
 import { AppMobileNavigation } from "./app-navigation";
 import { AppSidebar } from "./app-sidebar";
 
-type AppShellProps = Readonly<{ children: ReactNode }>;
+type AppShellProps = Readonly<{ children: ReactNode; csrf: string }>;
 
-export function AppShell({ children }: AppShellProps) {
+export function AppShell({ children, csrf }: AppShellProps) {
   return (
     <div className="app-frame">
-      <AppHeader />
+      <AppHeader csrf={csrf} />
       <AppMobileNavigation />
       <div className="app-frame__body">
         <AppSidebar />

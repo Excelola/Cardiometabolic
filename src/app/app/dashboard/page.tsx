@@ -8,9 +8,12 @@ import { PageTitle } from "@/components/ui/page-title";
 import { StatusCard } from "@/components/ui/status-card";
 import { MOCK_CURRENT_PRODUCT_STATE } from "@/domain/product-state";
 
+import { requireSession } from "@/server/auth/request-session";
+
 export const metadata: Metadata = { title: "Overview" };
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  await requireSession();
   const status = MOCK_CURRENT_PRODUCT_STATE === "Setup In Progress"
     ? "Setup in progress"
     : MOCK_CURRENT_PRODUCT_STATE;

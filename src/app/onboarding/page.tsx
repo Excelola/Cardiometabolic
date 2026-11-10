@@ -9,9 +9,12 @@ import { NonSubmittingForm } from "@/components/ui/non-submitting-form";
 import { Notice } from "@/components/ui/notice";
 import { SelectField } from "@/components/ui/select-field";
 
+import { requireSession } from "@/server/auth/request-session";
+
 export const metadata: Metadata = { title: "Set up your health profile" };
 
-export default function OnboardingPage() {
+export default async function OnboardingPage() {
+  await requireSession();
   return (
     <main className="onboarding-page" id="main-content">
       <div className="container">

@@ -18,21 +18,22 @@ policy, field inventory, or clinical semantics have been approved.
   Server Components, error handling, and production builds.
 - TypeScript uses strict mode. Domain strings are modeled as readonly literal
   unions so unapproved values cannot be introduced casually.
-- Pages and display components are Server Components by default. The route
-  shells and generic measurement form remain Server Components. Two small Client
-  Components handle current-route navigation state and prevent preview forms
-  from submitting sensitive values; only serializable content crosses those
-  boundaries.
-- There is no backend, database, authentication provider, session, API route,
-  persistence, analytics, or external integration in this foundation.
+- Pages and display components are Server Components by default. Client
+  components handle navigation, authentication action feedback, and the
+  non-submitting health and onboarding previews.
+- First-party email-and-password authentication uses Server Actions and
+  PostgreSQL. The journal and onboarding still use synthetic display data.
+  There is no health-data persistence, analytics, external authentication
+  provider or public REST auth API. See the [auth implementation notes](technical/backend-auth-implementation-notes.md).
 - The UI does not log identifiers, health data, secrets, or form values.
 
 ## HILERA development preview workflow
 
-1. **Local development.** Run `pnpm dev --hostname 127.0.0.1 --port 3011`
-   from the repository root and open `http://127.0.0.1:3011/`. Next.js
+1. **Local development.** Run `pnpm dev --hostname localhost --port 3011`
+   from the repository root and open `http://localhost:3011/`. Next.js
    applies supported edits through hot reload. Use this mode for everyday
-   implementation and browser QA.
+   implementation and browser QA. See the auth implementation notes for
+   synthetic database and authentication configuration.
 2. **Local production-like preview.** Run `pnpm build`, then run
    `pnpm start --hostname 127.0.0.1 --port 3012`. Open
    `http://127.0.0.1:3012/` to verify the built app before a milestone review.
@@ -45,7 +46,7 @@ policy, field inventory, or clinical semantics have been approved.
 5. **Merge and release.** Merge after the required review. Production deployment
    is a separate release decision.
 
-### Optional phone testing on trusted Wi-Fi
+### Optional public layout testing on trusted Wi-Fi
 
 Connect the computer and phone to the same trusted local network. In Windows
 PowerShell, run `ipconfig` and find the IPv4 address for the computer's active
@@ -58,6 +59,9 @@ pnpm dev --hostname $lanIp --port 3011
 ```
 
 Open `http://<computer-LAN-IPv4>:3011/` on both the computer and the phone.
+HTTP on a LAN address is suitable only for inspecting public layouts. The
+authentication configuration accepts HTTP only on loopback. Use an approved
+isolated HTTPS environment and synthetic credentials for device-level auth QA.
 If Windows asks about network access, allow it only on a trusted Private
 network. Stop the server when testing ends. Use synthetic information in all
 preview modes and keep the LAN listener off public networks and the internet.
@@ -67,12 +71,12 @@ preview modes and keep the LAN listener off public networks and the internet.
 | Route | Purpose | Current behavior |
 | --- | --- | --- |
 | `/` | Landing page | HILERA public shell with image-ready hero media |
-| `/sign-up` | Sign-up entry | Email-and-password account-creation shell; no persistence |
-| `/sign-in` | Sign-in entry | Email-and-password sign-in shell; no session creation |
+| `/sign-up` | Sign-up entry | First-party account creation and session issuance, then Onboarding |
+| `/sign-in` | Sign-in entry | First-party credential verification and fresh session, then Overview |
 | `/auth` | Legacy authentication route | Inactive notice with links to the approved sign-in and sign-up routes |
 | `/auth/identifier/[channel]` | Legacy identifier route | Retained inactive shell for old `phone` and `email` deep links |
 | `/auth/verify` | Legacy verification route | Retained inactive shell; verification codes are not in the MVP journey |
-| `/onboarding` | Progressive onboarding | Approved basic profile field shell plus deferred consent and image-ready areas |
+| `/onboarding` | Progressive onboarding | Session required. Basic profile field shell plus deferred consent and image-ready areas |
 | `/app` | Application entry | Redirects to the dashboard shell |
 | `/app/dashboard` | Overview | Synthetic workflow state, one setup action, recent-information and monitoring sections, and a workflow-state disclosure |
 | `/app/measurements/new` | Add Health Information | Category chooser with a disabled sample measurement form under Health readings. Body measurements and Daily habits show availability notices |
@@ -81,9 +85,9 @@ preview modes and keep the LAN listener off public networks and the internet.
 | `/app/risk-summary` | Health risk summary | Structural readiness shell with no score or clinical interpretation |
 | `/app/education` | Health guides | Product-use guidance with an action to review past measurements. Medical content awaits approval |
 
-The `/app` prefix is an organizational route in this foundation, not an access
-control boundary. Real authentication and authorization must be enforced on the
-server once approved session and permission requirements exist.
+The `/app` prefix groups the journal routes. Each page validates the database
+session on the server before rendering. The shared app header provides current
+session sign-out. The URL prefix does not itself grant access.
 
 The active MVP authentication journey begins directly at `/sign-up` or
 `/sign-in`. No current navigation links to the legacy `/auth` routes. Those
@@ -102,9 +106,9 @@ context with native HTML disclosure. Entry retains the shared non-submitting
 form and generic measurement definition. Education uses static product guidance.
 History search and filtering (HIL-RD-002) remain a separate decision.
 
-The preview uses synthetic display metadata. Backend, API, database, migration,
-persistence, clinical rules and the production measurement inventory remain
-outside Bundle 1.
+Bundle 1 uses synthetic display metadata. The separate A–D authentication
+implementation adds identity and session storage only. Clinical rules and
+the production measurement inventory remain outside these bundles.
 
 ### Add Health Information preview
 
@@ -226,8 +230,8 @@ configuration; no route embeds an alternate product name.
   and footer. The footer exposes Privacy and Terms areas and a concise product
   boundary without inventing legal policy or claims.
 - `/app` routes share a responsive application header, current-route navigation,
-  sidebar, content frame, and compact legal strip. `/app` remains a frontend
-  namespace rather than an authorization boundary.
+  sidebar, content frame, and compact legal strip. Protected page rendering
+  depends on the validated server session.
 - Landing and onboarding use the shared `MediaFrame` architecture so future
   approved HILERA imagery can be inserted without restructuring either route.
   No stock imagery or decorative imagery was added to health-data screens.
@@ -242,11 +246,10 @@ configuration; no route embeds an alternate product name.
 All displayed records and current-state values are synthetic. The following are
 intentionally absent or non-functional:
 
-- Account creation, authentication, password persistence, sessions, and authorization
-- Password complexity, expiry, recovery, lockout, and rate-limit behavior
+- Password recovery, password change and account deletion
 - Email ownership verification
 - Phone authentication and network-delivered verification codes
-- Data persistence, APIs, imports, verification, and derivation
+- Health-data persistence, APIs, imports, verification, and derivation
 - Consent document text, versioning, jurisdiction rules, recording, and withdrawal
 - Approved country/market inventory and market-specific behavior
 - Exact measurement types, fields, units, validation, and history semantics
@@ -274,12 +277,9 @@ and traceable backend implementation.
 Implementation beyond the shells depends on approval or provision of:
 
 1. Approved production imagery and any final asset-delivery requirements.
-2. HILERA backend authentication contracts, password hashing and storage
-   implementation, production session infrastructure, and authorization design.
-   Plaintext passwords must never be stored by that future implementation.
-3. Password policy, session duration, account recovery, email ownership
-   verification, account lockout, rate-limit, role/permission, and account
-   deletion behavior.
+2. Authentication production configuration and the security, database and
+   recovery gates in the [auth implementation notes](technical/backend-auth-implementation-notes.md).
+3. Account recovery, email ownership verification, and account deletion behaviour.
 4. Consent content, versioning, jurisdiction mapping, audit requirements, and
    withdrawal behavior.
 5. Supported country/market inventory and localization requirements.

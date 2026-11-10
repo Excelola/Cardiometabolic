@@ -3,11 +3,11 @@ import { describe, expect, it } from "vitest";
 import { mvpAuthenticationConfig } from "./auth";
 
 describe("MVP authentication configuration", () => {
-  it("uses the approved email and password frontend shell", () => {
+  it("uses first-party email and password authentication", () => {
     expect(mvpAuthenticationConfig).toEqual({
       identifier: "email",
       credential: "password",
-      implementation: "frontend-shell",
+      implementation: "first-party",
       recoveryAvailable: false,
     });
   });

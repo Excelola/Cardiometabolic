@@ -4,9 +4,12 @@ import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
 import { PageTitle } from "@/components/ui/page-title";
 
+import { requireSession } from "@/server/auth/request-session";
+
 export const metadata: Metadata = { title: "Health guides" };
 
-export default function EducationPage() {
+export default async function EducationPage() {
+  await requireSession();
   return (
     <>
       <PageTitle title="Health guides">

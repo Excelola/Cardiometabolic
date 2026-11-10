@@ -10,7 +10,7 @@ export default function SignInPage() {
     <AuthCard
       eyebrow="Account access"
       intro="Enter your email address and password."
-      note="This preview does not sign you in. Password recovery is unavailable here."
+      note="Password recovery is unavailable."
       title="Sign in to HILERA"
     >
       <AuthCredentialsForm mode="sign-in" />

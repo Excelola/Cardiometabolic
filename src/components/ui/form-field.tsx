@@ -2,6 +2,7 @@ import type { HTMLInputTypeAttribute } from "react";
 
 type FormFieldProps = Readonly<{
   id: string;
+  name?: string;
   label: string;
   type?: HTMLInputTypeAttribute;
   inputMode?: "decimal" | "email" | "numeric" | "search" | "tel" | "text";
@@ -14,6 +15,7 @@ type FormFieldProps = Readonly<{
 
 export function FormField({
   id,
+  name = id,
   label,
   type = "text",
   inputMode,
@@ -37,7 +39,7 @@ export function FormField({
         disabled={disabled}
         id={id}
         inputMode={inputMode}
-        name={id}
+        name={name}
         placeholder={placeholder}
         required={required}
         type={type}
