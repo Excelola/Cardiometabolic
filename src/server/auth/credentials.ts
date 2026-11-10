@@ -5,7 +5,8 @@ import { and, eq } from "drizzle-orm";
 import type { AuthDb } from "../db/auth-db";
 import { passwordCredentials, users } from "../db/schema";
 import type { AuthConfig } from "./config";
-import { hashPassword, verifyPassword } from "./password";
+import { normalizeEmail } from "./input";
+import { hashPassword, isPasswordInputBounded, validateNewPassword, verifyPassword } from "./password";
 import { recordAuthSecurityEvent } from "./security-events";
 import { findActiveSession, issueSession, replacePresentedSession } from "./sessions";
 import { reserveAuthAdmission } from "./throttle";
@@ -15,13 +16,16 @@ type Outcome = { kind: "success"; token: string }
   | { kind: "registration_failed" | "invalid_credentials" | "throttled" | "unavailable" };
 
 export async function createAccount(db: AuthDb, config: AuthConfig, input: CredentialInput): Promise<Outcome> {
-  const admission = await reserveAuthAdmission(db, config, input.email);
+  const email = normalizeEmail(input.email);
+  if (!email || validateNewPassword(input.password) !== "valid") return { kind: "registration_failed" };
+
+  const admission = await reserveAuthAdmission(db, config, email);
   if (admission !== "admitted") return { kind: admission };
   if (await findActiveSession(db, input.previousToken)) return { kind: "registration_failed" };
   const passwordHash = await hashPassword(input.password);
 
   return db.transaction(async (tx) => {
-    const [user] = await tx.insert(users).values({ normalizedEmail: input.email })
+    const [user] = await tx.insert(users).values({ normalizedEmail: email })
       .onConflictDoNothing({ target: users.normalizedEmail }).returning({ id: users.id });
     if (!user) return { kind: "registration_failed" };
 
@@ -33,12 +37,15 @@ export async function createAccount(db: AuthDb, config: AuthConfig, input: Crede
 }
 
 export async function authenticateAccount(db: AuthDb, config: AuthConfig, input: CredentialInput): Promise<Outcome> {
-  const admission = await reserveAuthAdmission(db, config, input.email);
+  const email = normalizeEmail(input.email);
+  if (!email || !isPasswordInputBounded(input.password)) return { kind: "invalid_credentials" };
+
+  const admission = await reserveAuthAdmission(db, config, email);
   if (admission !== "admitted") return { kind: admission };
 
   const [credential] = await db.select({ userId: users.id, hash: passwordCredentials.passwordHash })
     .from(users).innerJoin(passwordCredentials, eq(passwordCredentials.userId, users.id))
-    .where(eq(users.normalizedEmail, input.email)).limit(1);
+    .where(eq(users.normalizedEmail, email)).limit(1);
   const verification = await verifyPassword(input.password, credential?.hash);
   if (!credential || !verification.valid) {
     await recordAuthSecurityEvent(db, { type: "sign_in_failed" });
