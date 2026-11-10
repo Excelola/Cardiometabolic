@@ -1,12 +1,12 @@
-# HILERA Health Document Upload & Extraction Architecture — Draft
+# HILERA Health Document Upload & Extraction Architecture — Approved Baseline
 
 ## Status
 
 Artifact type: Technical/privacy/security architecture
-Status: Draft / not approved for implementation
-Product feature: Manual health-document upload is already approved in the Master PRD, but exact implementation details remain deferred.
+Status: Approved implementation baseline on 10 November 2026
+Product feature: Manual health-document upload and the material V1 constraints in this document are approved in the Master PRD.
 
-This document does not approve a provider, paid service, file limit, retention rule, OCR engine, or new health field.
+This document approves the product-level upload limits, temporary lifecycle, Document Assisted provenance, and Google Cloud Document AI Enterprise Document OCR in EU processing as the initial OCR provider. Private object-storage and malware-scanning implementation remain controlled technical/provider decisions.
 
 ## Objective
 
@@ -43,19 +43,17 @@ Candidate values:
 
 Only explicit user confirmation writes supported structured values through the existing health-record service.
 
-## Recommended architecture
+## Approved architecture direction
 
 Browser → short-lived authenticated upload authorization → private temporary object storage → extraction job record in PostgreSQL → provider adapter/extractor → allowlist mapper → temporary candidate table → authenticated review screen → explicit confirmation → existing health-record creation service → cleanup.
 
 Avoid a new microservice for V1. If extraction cannot complete within a normal web-request lifetime, use a small database-backed job worker in the existing deployment.
 
-## Recommended first-version upload constraints
-
-Pending Product Owner approval:
+## Approved first-version upload constraints
 - PDF, JPEG/JPG, PNG only;
 - one file per upload;
 - maximum file size: 10 MB;
-- maximum PDF length: 25 pages;
+- maximum PDF length: 15 pages for the initial synchronous flow;
 - reject password-protected/encrypted PDFs in V1;
 - reject archives and Office documents in V1;
 - verify MIME type server-side;
@@ -76,7 +74,7 @@ Before extraction:
 
 Raw documents are Sensitive Health data.
 
-Recommended:
+Required baseline:
 - encrypted private object storage;
 - server-side access only;
 - short-lived signed access where necessary;
@@ -84,7 +82,7 @@ Recommended:
 - no browser localStorage/sessionStorage persistence;
 - no file content in logs or analytics.
 
-Recommended lifecycle:
+Approved lifecycle:
 - delete raw document within 24 hours of confirmation, cancel, or failure;
 - delete abandoned uploads automatically;
 - no permanent raw-document library in V1.
@@ -95,7 +93,7 @@ Create an internal provider adapter so the domain layer does not depend directly
 
 Provider selection is controlled because it affects Sensitive Health data transfer, cross-border processing, data residency, subprocessors, retention/training policy, security, cost, latency, and availability.
 
-Do not select or integrate a provider until privacy/security/DPO review is complete.
+Approved initial OCR provider: Google Cloud Document AI Enterprise Document OCR using EU processing. Integration may proceed for controlled development/testing, but real-user production credentials/use remain gated by privacy/security/DPO/DPIA/cross-border/contractual review.
 
 ## Cross-border/privacy review
 
@@ -182,15 +180,11 @@ On confirmation:
 
 Do not create a second canonical health validation path.
 
-## Provenance recommendation
+## Approved provenance
 
-Before implementation, approve a distinct document-assisted provenance category so HILERA can distinguish manual entry from extracted-and-user-confirmed data.
+Canonical provenance: `document_assisted` / user-facing **Document Assisted**.
 
-Recommended semantics: document_assisted.
-
-Do not label this data Verified. Do not label it Imported unless Product explicitly approves that meaning.
-
-This provenance decision requires Data Dictionary/PRD review before implementation.
+Do not label this data Verified. Do not label it Imported. User confirmation means only that the candidate looks correct to the user; it does not establish clinical verification.
 
 ## Error behavior
 
@@ -233,9 +227,9 @@ Required tests include valid supported files, MIME mismatch, oversized/corrupt f
 ## Production gates
 
 Before provider-backed coding:
-- approve retention/deletion matrix;
-- approve file constraints and document-assisted provenance;
-- select storage and extraction providers through privacy/security/cost review;
+- approved retention/deletion matrix — completed;
+- approved file constraints and Document Assisted provenance — completed;
+- Google Document AI OCR provider selection — completed for controlled implementation; private object-storage provider remains to be selected;
 - complete DPA/subprocessor/cross-border review;
 - update DPIA;
 - approve malware-scanning approach;
@@ -244,4 +238,4 @@ Before provider-backed coding:
 
 ## PRD Sync Status
 
-Not Required for this draft. Approval of exact file rules, document-assisted provenance, raw-document lifecycle, provider/integration behavior, or new collected metadata may require PRD/Data Dictionary sync before implementation.
+Completed on 10 November 2026 for upload limits, Document Assisted provenance, raw-document/candidate lifecycle, retention policy, and Google Document AI OCR provider selection.
