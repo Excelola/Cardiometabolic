@@ -33,13 +33,16 @@ Current key development dependencies include Drizzle Kit 0.31.11, Vitest 4.1.11,
 
 ## Current positive findings
 
-1. **Next.js is exactly pinned to 16.4.6** after the PR #6 hardening pass.
+1. **Next.js and eslint-config-next are exactly pinned to 16.4.6** after the authentication hardening work.
 2. **Argon2, pg, Drizzle ORM, Drizzle Kit and the password dictionary are exact pins.**
-3. **pnpm lockfile is committed.**
-4. **Vitest 4.1.11 is the patched release for GHSA-82fw-gwwq-j7x9**, a 2026 path traversal/arbitrary file-read issue affecting Vitest/@vitest/mocker before 4.1.11.
-5. **source-map-js 1.2.2 is overridden** to the reviewed patched version in the branch.
-6. Native Argon2 is isolated as a server external package and its production runtime compatibility is already a release gate.
-7. Package changes are reviewed through Git and are not intended to self-update in production.
+3. **pnpm lockfile is committed and frozen-install validation passed during PR #6 evidence review.**
+4. **Vitest is on 4.1.12 and Vite is resolved to 8.2.4** after the PR #6 development-dependency remediation.
+5. **brace-expansion high-severity advisories were remediated** to patched 1.1.21 and 5.0.12 lines.
+6. **Zod was resolved to 4.6.7**, clearing the previously reported High lint-tooling advisory.
+7. **source-map-js 1.2.2 is overridden** to the reviewed patched version.
+8. The final PR #6 production audit reported zero findings; the full audit retained only two documented Moderate development-tooling findings.
+9. Native Argon2 is isolated as a server external package and its production runtime compatibility remains a production-deployment gate.
+10. Package changes are reviewed through Git and are not intended to self-update in production.
 
 ## Current gaps / actions
 
@@ -143,8 +146,10 @@ Before production, generate an SBOM for each release containing direct and trans
 
 ## Current conclusion
 
-The direct dependency set is intentionally small and generally well-controlled. The immediate blocker is toolchain alignment/regeneration around Next.js 16.4.6. The highest ongoing risks are framework/native/database dependencies and any drift caused by semver ranges or unreviewed transitive updates.
+The direct dependency set is intentionally small and generally well-controlled. PR #6 cleared all Critical/High development findings and the production audit was clean. Two Moderate development-tooling advisories remain documented in `docs/technical/pr6-development-dependency-audit.md`; they are not part of the production runtime graph and should be revisited when compatible upstream fixes are available.
 
-No claim of “zero vulnerabilities” is made. Final release evidence requires local pnpm audit results and continuous monitoring after deployment.
+The highest ongoing risks are framework/native/database dependencies and drift caused by semver ranges or unreviewed transitive updates.
+
+No claim of “zero vulnerabilities” is made. Continuous advisory monitoring remains required after deployment.
 
 **PRD Sync Status: Not Required.** Dependency governance is technical/security implementation.
