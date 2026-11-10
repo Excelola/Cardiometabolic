@@ -14,12 +14,12 @@ export default function EducationPage() {
       </PageTitle>
       <Card className="education-guide">
         <p className="eyebrow">Using HILERA</p>
-        <h2>How to review past measurements</h2>
+        <h2>How to review past health readings</h2>
         <p className="muted">
           Open a record to see its details and where the information came from.
         </p>
         <div className="page-actions">
-          <ButtonLink href="/app/measurements/history">View past measurements</ButtonLink>
+          <ButtonLink href="/app/measurements/history">View past health readings</ButtonLink>
         </div>
       </Card>
       <p className="muted app-section">More health guides are unavailable in this preview.</p>
