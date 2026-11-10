@@ -53,8 +53,7 @@ merging or modifying an existing account. Successful sign-up goes to
 `/onboarding`; successful sign-in goes to `/app/dashboard`.
 
 New passwords accept 15–128 Unicode code points, including spaces. Ill-formed
-Unicode and ASCII control characters are rejected. Verification uses the exact
-accepted string. The version-pinned `@zxcvbn-ts/language-common` package
+Unicode and ASCII control characters are rejected. Passwords are normalized to Unicode NFC before hashing and verification so canonically equivalent Unicode input has stable authentication semantics. The version-pinned `@zxcvbn-ts/language-common` package
 provides 49,233 common-password entries from the package's documented public-domain
 Burnett corpus. Only the password dictionary is used. The application checks
 whole-password equality against local NFKC and lowercase comparison keys and
