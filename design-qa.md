@@ -201,3 +201,18 @@ link, visible focus, mobile navigation and opening each category. Selecting a
 category closed the previous one. The disabled form could not save, and the
 category checks produced no write requests or browser storage changes. No
 new console errors were observed.
+
+### Mobile bottom navigation QA
+
+The journal uses a fixed bar at the existing compact breakpoint. The four
+primary destinations show icons and compact text labels. More opens Changes
+over time and Health guides in a native popover. The desktop rail retains its
+full labels and order.
+
+Edge Chromium checks covered all six destinations at 320, 390, 768 and 1440 px,
+and at native 200% browser zoom. The compact bar retained visible keyboard
+focus and active states. More supported keyboard navigation, Escape, explicit
+Close and outside-click dismissal. The footer remained above the bar at the
+end of the page, including with an emulated 34 px bottom safe-area inset.
+There was no horizontal overflow. The only console issue was the existing
+favicon 404.

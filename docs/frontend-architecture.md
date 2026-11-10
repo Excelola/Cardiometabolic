@@ -200,12 +200,12 @@ distinguishes notices and insufficient history. White is reserved for surfaces
 that benefit from a visible boundary, such as forms. Measurement lists use
 dividers and spacing to separate records.
 
-The sidebar and the compact journal disclosure use the same labels and paths
-from AppNavigation. At 820 px and below, the native disclosure presents the
-current destination before the six expandable links. At wider widths, the
-destinations are visible in the desktop rail. The current link uses
-`aria-current="page"`. Both views retain keyboard access and the global skip
-link. Display labels do not rename routes or product states.
+The desktop rail and mobile bottom bar share paths from AppNavigation. At
+820 px and below, the bar shows Overview, Add Health, History, Risk Summary
+and More. More uses a native popover for Changes over time and Health guides.
+The current link uses `aria-current="page"`. More also indicates when it
+contains the current destination. Both views retain keyboard access and the
+global skip link. Compact labels do not rename routes or product states.
 
 Landing reserves a media-ready aside and uses one decorative botanical line
 motif. Onboarding retains a media-ready consent aside. The application screens
@@ -232,8 +232,10 @@ configuration; no route embeds an alternate product name.
   approved HILERA imagery can be inserted without restructuring either route.
   No stock imagery or decorative imagery was added to health-data screens.
 - Desktop grids collapse deliberately at tablet and mobile breakpoints. Forms,
-  state cards, history rows and actions stack on narrow viewports. A
-  keyboard-accessible disclosure exposes the journal navigation at those widths.
+  state cards, history rows and actions stack on narrow viewports. The app
+  shell reserves the fixed bar's height and bottom safe-area inset below the
+  footer and in the viewport's scroll padding. The application layout enables
+  edge-to-edge rendering so devices can supply those insets.
 
 ## Mocked and deferred behavior
 
