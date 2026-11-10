@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { ProgressSteps } from "@/components/onboarding/progress-steps";
+import { SessionActivity } from "@/components/auth/session-activity";
 import { ButtonLink } from "@/components/ui/button-link";
 import { Card } from "@/components/ui/card";
 import { FormField } from "@/components/ui/form-field";
@@ -9,14 +10,18 @@ import { NonSubmittingForm } from "@/components/ui/non-submitting-form";
 import { Notice } from "@/components/ui/notice";
 import { SelectField } from "@/components/ui/select-field";
 
+import { getAuthConfig } from "@/server/auth/config";
+import { issueSessionCsrf } from "@/server/auth/mutation-security";
 import { requireSession } from "@/server/auth/request-session";
 
 export const metadata: Metadata = { title: "Set up your health profile" };
 
 export default async function OnboardingPage() {
-  await requireSession();
+  const { sessionId } = await requireSession();
+  const csrf = issueSessionCsrf(sessionId, getAuthConfig().csrfSecret);
   return (
     <main className="onboarding-page" id="main-content">
+      <SessionActivity csrf={csrf} />
       <div className="container">
         <header className="onboarding-page__heading">
           <p className="eyebrow">Profile setup</p>
