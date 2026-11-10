@@ -11,7 +11,7 @@ export default function LandingPage() {
             <p className="eyebrow">Your health journal</p>
             <h1>Understand your <em>health information</em></h1>
             <p className="lede">
-              Keep track of your measurements, see how they change over time, and learn
+              Keep track of your health information, see how it changes over time, and learn
               what HILERA can help you do next.
             </p>
             <div className="hero__actions">
