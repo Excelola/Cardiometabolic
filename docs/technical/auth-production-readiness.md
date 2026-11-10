@@ -18,6 +18,7 @@ A release item is not complete because code exists. The evidence must be recorde
 
 ## 2. PostgreSQL schema and migration
 
+- [ ] Local/integration PostgreSQL uses a currently supported, security-patched release; pg_dump/pg_restore are from a patched supported client release.
 - [ ] Initial authentication migration replays successfully into an empty disposable PostgreSQL database.
 - [ ] Generated SQL has been reviewed for destructive operations, locks, constraints, indexes, foreign keys and unintended cascades.
 - [ ] Canonical email uniqueness is enforced at the database.
@@ -25,7 +26,7 @@ A release item is not complete because code exists. The evidence must be recorde
 - [ ] Session timestamp-order constraints are enforced.
 - [ ] Runtime and migration credentials/roles are separate or the deployment exception is explicitly reviewed.
 - [ ] Runtime connection pool and statement timeout are sized for the selected deployment.
-- [ ] Production PostgreSQL version/provider/region are explicitly selected and reviewed before production deployment.
+- [ ] Production PostgreSQL version/provider/region are explicitly selected and reviewed before production deployment, and migration/integration tests are rerun against that production major.
 
 ## 3. Backup and restore
 
