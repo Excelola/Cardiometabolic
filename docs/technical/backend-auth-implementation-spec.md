@@ -21,7 +21,7 @@ Account recovery, email ownership verification, health-information persistence, 
 - Minimum 15 characters.
 - Maximum 128 characters.
 - No arbitrary uppercase/lowercase/number/symbol composition rule.
-- Support password-manager-friendly input, including spaces and Unicode where technically safe.
+- Support password-manager-friendly input, including spaces and Unicode where technically safe. Normalize accepted Unicode passwords to NFC before hashing and verification.
 - No routine periodic password-change requirement.
 - Block common or compromised passwords using a reviewed local/offline blocklist or equivalent approach.
 - Plaintext passwords must never be sent to an external password-checking service.
