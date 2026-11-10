@@ -5,6 +5,8 @@ import { Notice } from "@/components/ui/notice";
 import { PageTitle } from "@/components/ui/page-title";
 import { MOCK_MEASUREMENT_DEFINITION } from "@/domain/health";
 
+import { requireSession } from "@/server/auth/request-session";
+
 export const metadata: Metadata = { title: "Add Health Information" };
 
 const ENTRY_CATEGORIES = [
@@ -13,7 +15,8 @@ const ENTRY_CATEGORIES = [
   { id: "daily-habits", title: "Daily habits", description: "Everyday routines you want to keep track of." },
 ] as const;
 
-export default function HealthInformationEntryPage() {
+export default async function HealthInformationEntryPage() {
+  await requireSession();
   return (
     <>
       <PageTitle title="Add Health Information">

@@ -171,7 +171,19 @@ Apply least-privilege access.
 
 ## 8. Database Changes
 
-Database changes must be intentional and reviewable.
+Database changes must be intentional, reviewable, and recoverable.
+
+Production database safety rules:
+
+- Never drop, truncate, reset, overwrite, bulk-delete, or destructively migrate a production database without explicit approval.
+- Never experiment against production health or identity data.
+- Keep development, test/staging, and production databases and credentials separate.
+- Use synthetic data for local development, automated tests, migration rehearsal, and restore drills.
+- Use read-only production credentials for investigation where feasible; use write/admin credentials only for an approved operation that requires them.
+- Before a risky production migration or material data operation, confirm the applicable backup or recovery point and document the rollback or forward-repair plan.
+- Automated production backups, point-in-time recovery where supported, failure monitoring, and periodic restore verification are required before real health data is entrusted to the production database.
+- A backup is not considered operationally verified until it has been successfully restored and checked in an isolated environment.
+- Do not routinely copy real production health data to a developer workstation. Restore testing on local machines must use synthetic data or a separately approved sanitized dataset.
 
 For schema changes:
 

@@ -1,6 +1,6 @@
 # HILERA authentication server contracts
 
-Proposed for architecture review. Today `/sign-up` and `/sign-in` render email/password preview forms that prevent submission after hydration. The legacy `/auth` routes are informational and `/app` serves synthetic frontend screens. The Master PRD remains authoritative for product behaviour.
+Implemented for draft review in PR #6. `/sign-up` and `/sign-in` use first-party Server Actions backed by PostgreSQL authentication services; `/app` and `/onboarding` are protected by server-side session validation. Health-facing screens still use synthetic preview data. The Master PRD remains authoritative for product behaviour, and real-user exposure remains blocked by the release gates in the implementation notes and production-readiness checklist.
 
 ## Transport and trust boundary
 
@@ -34,7 +34,7 @@ Use three Server Actions as thin adapters around reusable server-only authentica
 | Rate limit | Shared registration attempt budget keyed independently of whether the identity exists, plus an approved coarse source or service budget and hash-capacity guard. |
 | Security events and sensitive output | Record `account_created` after commit, plus minimal registration rejection or throttling signal if approved. Omit password, hash, session internals, entered email on errors and any indicator of existing account ownership. |
 
-Sign-up uses the approved email/password identifier model. Exact password rules, immediate session creation, product-state redirect and duplicate failure copy still require decisions. Email ownership verification, paid provider calls, phone verification and OTP are outside this contract.
+Sign-up uses the approved email/password identifier model and approved 15–128 character password policy. Successful sign-up creates a session and routes to `/onboarding`. Duplicate registration returns a generic failure and never modifies or merges an existing account. Email ownership verification, paid provider calls, phone verification, OTP and recovery remain outside this contract.
 
 ## Sign in
 
@@ -43,7 +43,7 @@ Sign-up uses the approved email/password identifier model. Exact password rules,
 | Purpose and request | Authenticate from `/sign-in` with email and password only. The browser does not supply the user ID or requested product state. |
 | Validation | Check origin, shape and bounds. Apply shared abuse admission before expensive verification. Resolve the normalized identifier on the server. Verify using the stored Argon2id representation or perform equivalent dummy verification for a missing credential. Measure observable differences across missing, incorrect and ineligible cases under representative load. |
 | Authentication and authorization | Public entry point. Create a session only after verifying the credential and confirming account eligibility. Protect against a concurrent credential change or account disable between verification and issuance by rechecking the verified credential version and account inside the session-creation transaction. |
-| Success | Generate a fresh random token and persist its digest in a revocable session. Rotate the session presented by this browser at the authentication boundary where applicable, and issue the cookie after commit. Determine routing from existing approved product state. Other active sessions are governed by the separate concurrency policy. An eligible older hash can be rehashed after successful verification with a conditional update that cannot overwrite a newer credential. |
+| Success | Generate a fresh random token and persist its digest in a revocable session. Rotate the session presented by this browser at the authentication boundary where applicable, and issue the cookie after commit. Route successful sign-in to `/app/dashboard` (Overview). Other active sessions remain valid because concurrent sessions are approved. An eligible older hash can be rehashed after successful verification with a conditional update that cannot overwrite a newer credential. |
 | Safe errors | Invalid input, generic sign-in failure for unknown identity, wrong password or ineligible account, retry later, or temporary unavailable. Compare copy, status, redirects, headers, response body shape and timing for account-existence discrepancies. |
 | Rate limit | Multi-key, shared login budgets with atomic accounting, bounded work and a reviewable retry policy. Keep retries and throttle behaviour independent of account existence where practical. Avoid irreversible lockout triggered by unauthenticated traffic. |
 | Security events and sensitive output | `login_succeeded`, `login_failed` or a minimal throttling signal as approved. Use a user ID only where necessary and justified. Omit credential representations, entered email, session internals and account eligibility or existence details. |
@@ -71,6 +71,15 @@ Sign-up uses the approved email/password identifier model. Exact password rules,
 | Safe errors | Anonymous or temporary unavailable. Distinguish infrastructure failure from invalid credentials internally and fail closed for protected reads. |
 | Rate limit | Bound request volume at the server and query layer. A request-local check can be reused during a single render. Never share session results across users or requests. |
 | Security events and sensitive output | Routine reads need no persistent security event. Use bounded, reviewed anomaly signals rather than recording each read. Omit the bearer, digest and session internals from browser outputs. |
+
+## Record session activity
+
+The authenticated `recordSessionActivity(csrf)` Server Action requires the exact
+trusted origin, an active cookie-backed session and a valid session-bound CSRF
+proof. It rejects prefetch and prerender markers. The caller supplies neither
+an identity nor a clock value. The action returns no session data and leaves
+the cookie unchanged. Concurrent requests serialize on the session row and
+may advance only idle expiry, subject to the existing absolute deadline.
 
 ## Get current user
 

@@ -347,6 +347,19 @@ h2 {
   display: inline-flex;
 }
 
+.sign-out-form .account-placeholder {
+  cursor: pointer;
+  min-height: 2.75rem;
+}
+
+.sign-out-form__error {
+  color: var(--color-ink);
+  font-size: 0.875rem;
+  margin: var(--space-1) 0 0;
+  max-width: 10rem;
+  white-space: normal;
+}
+
 .app-frame {
   padding-block-start: env(safe-area-inset-top, 0px);
   padding-inline: env(safe-area-inset-left, 0px) env(safe-area-inset-right, 0px);

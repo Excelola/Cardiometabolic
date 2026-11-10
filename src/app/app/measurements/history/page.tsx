@@ -6,9 +6,12 @@ import { Card } from "@/components/ui/card";
 import { PageTitle } from "@/components/ui/page-title";
 import { MOCK_MEASUREMENT_HISTORY } from "@/domain/health";
 
+import { requireSession } from "@/server/auth/request-session";
+
 export const metadata: Metadata = { title: "Past health readings" };
 
-export default function MeasurementHistoryPage() {
+export default async function MeasurementHistoryPage() {
+  await requireSession();
   return (
     <>
       <PageTitle title="Past health readings">

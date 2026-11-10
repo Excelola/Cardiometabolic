@@ -6,7 +6,6 @@ export function AppSidebar() {
       <AppNavigation />
       <div className="app-sidebar__secondary" aria-label="Unavailable preview navigation" role="group">
         <span aria-disabled="true">Settings</span>
-        <span aria-disabled="true">Sign out</span>
       </div>
     </aside>
   );

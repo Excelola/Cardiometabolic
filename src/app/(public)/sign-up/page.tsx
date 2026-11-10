@@ -10,7 +10,6 @@ export default function SignUpPage() {
     <AuthCard
       eyebrow="Sign up"
       intro="Enter your email address and a password."
-      note="This preview does not create an account or save your email address or password."
       title="Create your account"
     >
       <AuthCredentialsForm mode="sign-up" />
