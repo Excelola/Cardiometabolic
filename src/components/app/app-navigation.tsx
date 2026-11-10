@@ -7,7 +7,7 @@ import { useRef } from "react";
 export const APP_LINKS = [
   { href: "/app/dashboard", label: "Overview", mobileLabel: "Overview", icon: "overview" },
   { href: "/app/measurements/new", label: "Add Health Information", mobileLabel: "Add Health", icon: "entry" },
-  { href: "/app/measurements/history", label: "Past measurements", mobileLabel: "History", icon: "history" },
+  { href: "/app/measurements/history", label: "Past health readings", mobileLabel: "History", icon: "history" },
   { href: "/app/trends", label: "Changes over time" },
   { href: "/app/risk-summary", label: "Health risk summary", mobileLabel: "Risk Summary", icon: "summary" },
   { href: "/app/education", label: "Health guides" },
