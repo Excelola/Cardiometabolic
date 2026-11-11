@@ -63,9 +63,13 @@ export class GoogleDocumentAiOcr implements DocumentOcrProvider {
   }
 }
 
+export function isDevelopmentDocumentUploadEnabled(): boolean {
+  return process.env.NODE_ENV !== "production" && ["ready", "empty"].includes(process.env.HILERA_DOCUMENT_DEV_FAKE_OCR ?? "");
+}
+
 export function developmentProviders(): { scanner: MalwareScanner; ocr: DocumentOcrProvider } | null {
   const fixture = process.env.HILERA_DOCUMENT_DEV_FAKE_OCR;
-  if (process.env.NODE_ENV === "production" || !["ready", "empty"].includes(fixture ?? "")) return null;
+  if (!isDevelopmentDocumentUploadEnabled()) return null;
   return {
     scanner: new FakeScanner("clean"),
     ocr: new FakeOcrProvider([{ number: 1, text: fixture === "ready" ? "Blood pressure: 120/80 mmHg\nWeight: 70 kg" : "Unsupported synthetic text" }]),
