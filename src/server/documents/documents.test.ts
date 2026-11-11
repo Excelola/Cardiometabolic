@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from "vitest";
 
 import { MAX_DOCUMENT_BYTES, classifyPdfFailure, validateDocument } from "./file-validation";
 import { mapOcrCandidates } from "./mapper";
-import { developmentProviders, FakeOcrProvider, FakeScanner, GoogleDocumentAiOcr, MemoryDocumentStore } from "./providers";
+import { developmentProviders, FakeOcrProvider, FakeScanner, GoogleDocumentAiOcr, isDevelopmentDocumentUploadEnabled, MemoryDocumentStore } from "./providers";
 
 export const syntheticPng = readFileSync(new URL("./fixtures/synthetic.png", import.meta.url));
 const syntheticJpeg = readFileSync(new URL("./fixtures/synthetic.jpg", import.meta.url));
@@ -83,13 +83,23 @@ describe("health-document boundaries", () => {
     expect((await new FakeOcrProvider([{ number: 1, text: "Weight: 70 kg" }]).extract(syntheticPng, "image/png")).pages).toHaveLength(1);
   });
 
-  it("requires an EU Google processor and never selects fake providers in production", () => {
+  it("requires an EU Google processor and gates the controlled upload flow by environment", () => {
     expect(() => new GoogleDocumentAiOcr("projects/synthetic/locations/us/processors/synthetic")).toThrow();
     expect(() => new GoogleDocumentAiOcr("projects/synthetic/locations/eu/processors/synthetic")).not.toThrow();
     try {
       vi.stubEnv("NODE_ENV", "production");
       vi.stubEnv("HILERA_DOCUMENT_DEV_FAKE_OCR", "ready");
+      expect(isDevelopmentDocumentUploadEnabled()).toBe(false);
       expect(developmentProviders()).toBeNull();
+
+      vi.stubEnv("NODE_ENV", "test");
+      vi.stubEnv("HILERA_DOCUMENT_DEV_FAKE_OCR", "");
+      expect(isDevelopmentDocumentUploadEnabled()).toBe(false);
+      expect(developmentProviders()).toBeNull();
+
+      vi.stubEnv("HILERA_DOCUMENT_DEV_FAKE_OCR", "ready");
+      expect(isDevelopmentDocumentUploadEnabled()).toBe(true);
+      expect(developmentProviders()).not.toBeNull();
     } finally {
       vi.unstubAllEnvs();
     }
