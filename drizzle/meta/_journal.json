@@ -15,6 +15,13 @@
       "when": 1794350387904,
       "tag": "0001_manual_health_persistence",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1794385930396,
+      "tag": "0002_health_document_upload",
+      "breakpoints": true
     }
   ]
 }

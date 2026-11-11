@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 
 import { HealthEntryChooser } from "@/components/health/health-entry-chooser";
+import { ButtonLink } from "@/components/ui/button-link";
 import { Notice } from "@/components/ui/notice";
 import { PageTitle } from "@/components/ui/page-title";
 import { getAuthConfig } from "@/server/auth/config";
@@ -19,6 +20,11 @@ export default async function HealthInformationEntryPage() {
       </PageTitle>
       {process.env.NODE_ENV !== "production" && <Notice title="HILERA test environment"><p>Use fictional health information only.</p></Notice>}
       <HealthEntryChooser csrf={csrf} />
+      <section className="app-section" aria-labelledby="upload-document-heading">
+        <h2 id="upload-document-heading">Have a health document?</h2>
+        <p>Upload a supported PDF or image to look for health information you can review before saving.</p>
+        <ButtonLink href="/app/documents/upload" variant="secondary">Upload health document</ButtonLink>
+      </section>
     </>
   );
 }

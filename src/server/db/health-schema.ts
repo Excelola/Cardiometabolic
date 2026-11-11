@@ -6,7 +6,7 @@ import { users } from "./schema";
 
 const instant = (name: string) => timestamp(name, { withTimezone: true, mode: "string" });
 export const healthRecordType = pgEnum("health_record_type", healthRecordTypes);
-export const healthProvenance = pgEnum("health_record_provenance", ["user_entered"]);
+export const healthProvenance = pgEnum("health_record_provenance", ["user_entered", "document_assisted"]);
 export const concentrationUnit = pgEnum("health_concentration_unit", concentrationUnits);
 export const glucoseContext = pgEnum("health_glucose_context", glucoseContexts);
 export const weightUnit = pgEnum("health_weight_unit", weightUnits);
