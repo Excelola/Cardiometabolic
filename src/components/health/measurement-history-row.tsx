@@ -29,7 +29,7 @@ export function MeasurementHistoryRow({ record, csrf }: Readonly<{ record: Healt
           <span><LocalOccurrenceTime value={occurrence} dayOnly={! ("occurredAt" in entry)} /></span>
           <strong>{label}</strong>
         </div>
-        <span>Added by you</span>
+        <span>{record.provenance === "document_assisted" ? "Document Assisted" : "Added by you"}</span>
       </div>
       <p className="health-history-value">{recordedValue(entry)}</p>
       <details className="measurement-history-row__details">

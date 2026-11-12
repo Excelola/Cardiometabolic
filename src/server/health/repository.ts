@@ -14,10 +14,11 @@ function current(ownerId: string) {
   return and(eq(healthRecords.userId, ownerId), isNull(healthRecords.supersededAt));
 }
 
-async function insertRecord(tx: AuthTransaction, ownerId: string, entry: HealthEntry, predecessor?: string) {
+export async function insertRecord(tx: AuthTransaction, ownerId: string, entry: HealthEntry, predecessor?: string, provenance: "user_entered" | "document_assisted" = "user_entered") {
   const [{ id }] = await tx.insert(healthRecords).values({
     userId: ownerId,
     recordType: entry.type,
+    provenance,
     ...("occurredAt" in entry ? { occurredAt: entry.occurredAt } : { occurredOn: entry.occurredOn }),
     supersedesRecordId: predecessor,
   }).returning({ id: healthRecords.id });
@@ -97,35 +98,36 @@ function ownedRows(db: AuthDb, ownerId: string, id?: string) {
 
 function historyEntry(row: Awaited<ReturnType<typeof ownedRows>>[number]): HealthHistoryEntry {
   const { id, recordType: type, occurredOn } = row.record;
+  const provenance = row.record.provenance;
   if (occurredOn) {
     const duration = type === "physical_activity_duration" ? row.activity : row.sleep;
     if (duration && (type === "physical_activity_duration" || type === "sleep_duration")) {
-      return { id, entry: { type, occurredOn, durationMinutes: duration.durationMinutes } };
+      return { id, provenance, entry: { type, occurredOn, durationMinutes: duration.durationMinutes } };
     }
   }
   const occurredAt = row.record.occurredAt ? new Date(row.record.occurredAt).toISOString() : null;
   if (occurredAt) {
     switch (type) {
       case "blood_pressure":
-        if (row.pressure) return { id, entry: { type, occurredAt, systolic: row.pressure.systolic, diastolic: row.pressure.diastolic } };
+        if (row.pressure) return { id, provenance, entry: { type, occurredAt, systolic: row.pressure.systolic, diastolic: row.pressure.diastolic } };
         break;
       case "blood_glucose":
-        if (row.glucose) return { id, entry: { type, occurredAt, value: row.glucose.value, unit: row.glucose.unit, context: row.glucose.context } };
+        if (row.glucose) return { id, provenance, entry: { type, occurredAt, value: row.glucose.value, unit: row.glucose.unit, context: row.glucose.context } };
         break;
       case "hba1c":
-        if (row.hba1c) return { id, entry: { type, occurredAt, value: row.hba1c.value } };
+        if (row.hba1c) return { id, provenance, entry: { type, occurredAt, value: row.hba1c.value } };
         break;
       case "lipid_panel":
         if (row.lipids) {
           const { unit, totalCholesterol, hdl, ldl, triglycerides } = row.lipids;
-          return { id, entry: { type, occurredAt, unit, totalCholesterol, hdl, ldl, triglycerides } };
+          return { id, provenance, entry: { type, occurredAt, unit, totalCholesterol, hdl, ldl, triglycerides } };
         }
         break;
       case "weight":
-        if (row.weight) return { id, entry: { type, occurredAt, value: row.weight.value, unit: row.weight.unit } };
+        if (row.weight) return { id, provenance, entry: { type, occurredAt, value: row.weight.value, unit: row.weight.unit } };
         break;
       case "waist_circumference":
-        if (row.waist) return { id, entry: { type, occurredAt, value: row.waist.value, unit: row.waist.unit } };
+        if (row.waist) return { id, provenance, entry: { type, occurredAt, value: row.waist.value, unit: row.waist.unit } };
         break;
     }
   }

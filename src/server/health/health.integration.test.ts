@@ -82,7 +82,7 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL health information", () => {
       const second = await account(db, "owner-second");
       const ids = await Promise.all(entries.map((entry) => createHealthRecord(db, first.userId, entry)));
       const other = await createHealthRecord(db, second.userId, entries[0]);
-      expect(await listHealthHistory(db, second.userId)).toEqual([{ id: other, entry: entries[0] }]);
+      expect(await listHealthHistory(db, second.userId)).toEqual([{ id: other, provenance: "user_entered", entry: entries[0] }]);
       expect(await getCurrentHealthRecord(db, first.userId, "")).toBeNull();
       expect(await getCurrentHealthRecord(db, first.userId, other)).toBeNull();
       expect(await correctHealthRecord(db, first.userId, other, corrected(entries[0]))).toBeNull();
@@ -91,11 +91,11 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL health information", () => {
       expect(before.slice(0, 2).every(({ entry }) => "occurredOn" in entry)).toBe(true);
       expect(before).toHaveLength(8);
       for (const [index, entry] of entries.entries()) {
-        expect(await getCurrentHealthRecord(db, first.userId, ids[index])).toEqual({ id: ids[index], entry });
+        expect(await getCurrentHealthRecord(db, first.userId, ids[index])).toEqual({ id: ids[index], provenance: "user_entered", entry });
         const replacement = await correctHealthRecord(db, first.userId, ids[index], corrected(entry));
         expect(replacement).toBeTruthy();
         expect(await getCurrentHealthRecord(db, first.userId, ids[index])).toBeNull();
-        expect(await getCurrentHealthRecord(db, first.userId, replacement!)).toEqual({ id: replacement, entry: corrected(entry) });
+        expect(await getCurrentHealthRecord(db, first.userId, replacement!)).toEqual({ id: replacement, provenance: "user_entered", entry: corrected(entry) });
         const [old] = await db.select().from(healthRecords).where(eq(healthRecords.id, ids[index]));
         const [current] = await db.select().from(healthRecords).where(eq(healthRecords.id, replacement!));
         expect(old.supersededByRecordId).toBe(replacement);
@@ -178,7 +178,7 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL health information", () => {
         if (login.kind !== "success") throw new Error("Synthetic restore sign-in failed.");
         const session = await findActiveSession(db, login.token);
         expect(session?.userId).toBe(fixture.first.userId);
-        expect(await listHealthHistory(db, session!.userId)).toEqual([{ id: fixture.replacement, entry: corrected(entries[3]) }]);
+        expect(await listHealthHistory(db, session!.userId)).toEqual([{ id: fixture.replacement, provenance: "user_entered", entry: corrected(entries[3]) }]);
         expect(await getCurrentHealthRecord(db, session!.userId, fixture.other)).toBeNull();
         expect(await correctHealthRecord(db, session!.userId, fixture.other, corrected(entries[4]))).toBeNull();
       });
