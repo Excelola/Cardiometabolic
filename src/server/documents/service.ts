@@ -4,6 +4,7 @@ import { and, eq, lte, sql } from "drizzle-orm";
 
 import type { HealthEntry } from "@/domain/health-records";
 import type { AuthDb } from "@/server/db/auth-db";
+import { requireHealthWritePermission } from "@/server/auth/health-write-policy";
 import { healthDocumentCandidates, healthDocumentUploads } from "@/server/db/document-schema";
 import { parseHealthForm } from "@/server/health/input";
 import { insertRecord } from "@/server/health/repository";
@@ -17,6 +18,7 @@ export type ReviewCandidate = typeof healthDocumentCandidates.$inferSelect;
 
 export async function processDocumentUpload(db: AuthDb, ownerId: string, file: File,
   scanner: MalwareScanner, ocr: DocumentOcrProvider): Promise<UploadResult> {
+  await db.transaction((tx) => requireHealthWritePermission(tx, ownerId));
   if (file.size > 10 * 1024 * 1024) return { error: "file_too_large" };
   let bytes: Buffer;
   try { bytes = Buffer.from(await file.arrayBuffer()); } catch { return { error: "unreadable_file" }; }
@@ -35,6 +37,7 @@ export async function processDocumentUpload(db: AuthDb, ownerId: string, file: F
       const result = await ocr.extract(bytes, validated.mime);
       const candidates = mapOcrCandidates(result);
       await db.transaction(async (tx) => {
+        await requireHealthWritePermission(tx, ownerId);
         if (candidates.length) await tx.insert(healthDocumentCandidates).values(candidates.map((candidate) => ({ uploadId: upload.id, ...candidate })));
         await tx.update(healthDocumentUploads).set({ status: candidates.length ? "review" : "empty" })
           .where(and(eq(healthDocumentUploads.id, upload.id), eq(healthDocumentUploads.ownerUserId, ownerId)));
@@ -77,6 +80,7 @@ function candidateEntry(candidate: ReviewCandidate, form: FormData): HealthEntry
 export type ConfirmResult = "confirmed" | "expired" | "unavailable" | "invalid";
 export async function confirmDocumentUpload(db: AuthDb, ownerId: string, uploadId: string, form: FormData): Promise<ConfirmResult> {
   return db.transaction(async (tx) => {
+    await requireHealthWritePermission(tx, ownerId);
     const [upload] = await tx.select().from(healthDocumentUploads)
       .where(and(eq(healthDocumentUploads.id, uploadId), eq(healthDocumentUploads.ownerUserId, ownerId))).for("update");
     if (!upload) return "unavailable";

@@ -1,5 +1,7 @@
 # HILERA authentication security decisions
 
+> **13 November 2026 update:** The Master PRD approved the A–D verified-email recovery policy after this register was written. Its implementation parameters and outstanding release gates are described in [verified-email recovery implementation](verified-email-recovery-implementation.md).
+
 Reviewed 9 November 2026. This register records technical recommendations for HILERA's own email-and-password MVP. The Master PRD governs product behaviour. The branch is architecture documentation only.
 
 **Decision status** distinguishes a technical recommendation from a gate requiring product, security or privacy review. **PRD Sync Impact** describes potential impact when a decision is implemented. This documentation changes no product behaviour and requires no Master PRD update.

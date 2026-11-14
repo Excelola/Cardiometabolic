@@ -1,4 +1,5 @@
 import { getAuthConfig } from "@/server/auth/config";
+import { EmailVerificationRequired } from "@/server/auth/health-write-policy";
 import { isTrustedAuthOrigin, verifySessionCsrf } from "@/server/auth/mutation-security";
 import { getCurrentSession } from "@/server/auth/request-session";
 import { getAuthDb } from "@/server/db/auth-db";
@@ -76,7 +77,8 @@ export async function POST(request: Request): Promise<Response> {
     const result = await processDocumentUpload(getAuthDb(), principal.userId, files[0], providers.scanner, providers.ocr);
     if ("error" in result) return failure(errorMessages[result.error], 400);
     return Response.json({ id: result.id }, { status: 201, headers: { "Cache-Control": "no-store" } });
-  } catch {
+  } catch (error) {
+    if (error instanceof EmailVerificationRequired) return failure("Verify your email before saving health information.", 403);
     return failure(errorMessages.temporary_service_problem, 503);
   }
 }

@@ -1,0 +1,4 @@
+ALTER TABLE "auth_email_challenges" DROP CONSTRAINT "auth_email_challenge_time_order";--> statement-breakpoint
+ALTER TABLE "auth_email_challenges" ADD CONSTRAINT "auth_email_challenge_time_order" CHECK ("auth_email_challenges"."expires_at" > "auth_email_challenges"."created_at" and "auth_email_challenges"."expires_at" <= "auth_email_challenges"."created_at" + interval '10 minutes'
+    and ("auth_email_challenges"."activated_at" is null or ("auth_email_challenges"."activated_at" >= "auth_email_challenges"."created_at" and "auth_email_challenges"."activated_at" < "auth_email_challenges"."expires_at"))
+    and ("auth_email_challenges"."consumed_at" is null or "auth_email_challenges"."consumed_at" >= "auth_email_challenges"."created_at"));
