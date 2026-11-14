@@ -1,5 +1,7 @@
 # HILERA authentication foundation implementation
 
+> **13 November 2026 update:** Verification and provider-neutral recovery extend the earlier foundation described below. See [verified-email recovery implementation](verified-email-recovery-implementation.md) for migrations, health-write enforcement and production restrictions.
+
 This branch implements A–D from the [approved specification](backend-auth-implementation-spec.md).
 The Master PRD governs product behaviour. This implementation is for review and
 synthetic validation. Real-user exposure requires the release gates below and the

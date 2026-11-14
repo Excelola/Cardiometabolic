@@ -1,0 +1,1763 @@
+{
+  "id": "d7f9d653-e4d3-46a9-b141-e459ba617e4f",
+  "prevId": "1e0f3dd6-6f37-4246-8278-faf22bd9b645",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.auth_email_challenges": {
+      "name": "auth_email_challenges",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "purpose": {
+          "name": "purpose",
+          "type": "auth_email_challenge_purpose",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "digest": {
+          "name": "digest",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "consumed_at": {
+          "name": "consumed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "failed_attempts": {
+          "name": "failed_attempts",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        }
+      },
+      "indexes": {
+        "auth_email_challenge_owner_purpose_idx": {
+          "name": "auth_email_challenge_owner_purpose_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "purpose",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "auth_email_challenge_expiry_idx": {
+          "name": "auth_email_challenge_expiry_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "auth_email_challenges_user_id_users_id_fk": {
+          "name": "auth_email_challenges_user_id_users_id_fk",
+          "tableFrom": "auth_email_challenges",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "auth_email_challenge_digest_length": {
+          "name": "auth_email_challenge_digest_length",
+          "value": "octet_length(\"auth_email_challenges\".\"digest\") = 32"
+        },
+        "auth_email_challenge_time_order": {
+          "name": "auth_email_challenge_time_order",
+          "value": "\"auth_email_challenges\".\"expires_at\" > \"auth_email_challenges\".\"created_at\" and (\"auth_email_challenges\".\"consumed_at\" is null or \"auth_email_challenges\".\"consumed_at\" >= \"auth_email_challenges\".\"created_at\")"
+        },
+        "auth_email_challenge_attempt_bounds": {
+          "name": "auth_email_challenge_attempt_bounds",
+          "value": "\"auth_email_challenges\".\"failed_attempts\" between 0 and 5"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.auth_security_events": {
+      "name": "auth_security_events",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "event_type": {
+          "name": "event_type",
+          "type": "auth_security_event_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "occurred_at": {
+          "name": "occurred_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {
+        "auth_security_events_time_idx": {
+          "name": "auth_security_events_time_idx",
+          "columns": [
+            {
+              "expression": "occurred_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "auth_security_events_user_idx": {
+          "name": "auth_security_events_user_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "auth_security_events_user_id_users_id_fk": {
+          "name": "auth_security_events_user_id_users_id_fk",
+          "tableFrom": "auth_security_events",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "auth_security_event_attribution": {
+          "name": "auth_security_event_attribution",
+          "value": "(\"auth_security_events\".\"event_type\" = 'sign_in_failed') = (\"auth_security_events\".\"user_id\" is null)"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.auth_sessions": {
+      "name": "auth_sessions",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "token_hash": {
+          "name": "token_hash",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "idle_expires_at": {
+          "name": "idle_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "absolute_expires_at": {
+          "name": "absolute_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "revoked_at": {
+          "name": "revoked_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "auth_sessions_user_idx": {
+          "name": "auth_sessions_user_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "auth_sessions_idle_expiry_idx": {
+          "name": "auth_sessions_idle_expiry_idx",
+          "columns": [
+            {
+              "expression": "idle_expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "auth_sessions_absolute_expiry_idx": {
+          "name": "auth_sessions_absolute_expiry_idx",
+          "columns": [
+            {
+              "expression": "absolute_expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "auth_sessions_revoked_idx": {
+          "name": "auth_sessions_revoked_idx",
+          "columns": [
+            {
+              "expression": "revoked_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"auth_sessions\".\"revoked_at\" is not null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "auth_sessions_user_id_users_id_fk": {
+          "name": "auth_sessions_user_id_users_id_fk",
+          "tableFrom": "auth_sessions",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "auth_sessions_token_hash_unique": {
+          "name": "auth_sessions_token_hash_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "token_hash"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "auth_sessions_digest_length": {
+          "name": "auth_sessions_digest_length",
+          "value": "octet_length(\"auth_sessions\".\"token_hash\") = 32"
+        },
+        "auth_sessions_expiry_order": {
+          "name": "auth_sessions_expiry_order",
+          "value": "\"auth_sessions\".\"created_at\" <= \"auth_sessions\".\"idle_expires_at\" and \"auth_sessions\".\"idle_expires_at\" <= \"auth_sessions\".\"absolute_expires_at\""
+        },
+        "auth_sessions_revocation_order": {
+          "name": "auth_sessions_revocation_order",
+          "value": "\"auth_sessions\".\"revoked_at\" is null or \"auth_sessions\".\"revoked_at\" >= \"auth_sessions\".\"created_at\""
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.auth_throttle_buckets": {
+      "name": "auth_throttle_buckets",
+      "schema": "",
+      "columns": {
+        "scope": {
+          "name": "scope",
+          "type": "auth_throttle_scope",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "bucket_key": {
+          "name": "bucket_key",
+          "type": "bytea",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "attempt_count": {
+          "name": "attempt_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "window_ends_at": {
+          "name": "window_ends_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "next_allowed_at": {
+          "name": "next_allowed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {
+        "auth_throttle_window_idx": {
+          "name": "auth_throttle_window_idx",
+          "columns": [
+            {
+              "expression": "window_ends_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {
+        "auth_throttle_buckets_scope_bucket_key_pk": {
+          "name": "auth_throttle_buckets_scope_bucket_key_pk",
+          "columns": [
+            "scope",
+            "bucket_key"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "auth_throttle_bucket_digest_length": {
+          "name": "auth_throttle_bucket_digest_length",
+          "value": "octet_length(\"auth_throttle_buckets\".\"bucket_key\") = 32"
+        },
+        "auth_throttle_attempt_bounds": {
+          "name": "auth_throttle_attempt_bounds",
+          "value": "\"auth_throttle_buckets\".\"attempt_count\" between 0 and 32767"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.password_credentials": {
+      "name": "password_credentials",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "password_hash": {
+          "name": "password_hash",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "password_changed_at": {
+          "name": "password_changed_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "password_credentials_user_id_users_id_fk": {
+          "name": "password_credentials_user_id_users_id_fk",
+          "tableFrom": "password_credentials",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "password_credentials_argon2id": {
+          "name": "password_credentials_argon2id",
+          "value": "\"password_credentials\".\"password_hash\" like '$argon2id$%' and length(\"password_credentials\".\"password_hash\") <= 512"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.users": {
+      "name": "users",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "normalized_email": {
+          "name": "normalized_email",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "email_verified_at": {
+          "name": "email_verified_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "legacy_recovery_restricted": {
+          "name": "legacy_recovery_restricted",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        },
+        "verification_required_for_health": {
+          "name": "verification_required_for_health",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "users_normalized_email_unique": {
+          "name": "users_normalized_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "normalized_email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "users_email_length": {
+          "name": "users_email_length",
+          "value": "length(\"users\".\"normalized_email\") between 3 and 254"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.blood_glucose_records": {
+      "name": "blood_glucose_records",
+      "schema": "",
+      "columns": {
+        "health_record_id": {
+          "name": "health_record_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "record_type": {
+          "name": "record_type",
+          "type": "health_record_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'blood_glucose'"
+        },
+        "glucose_value": {
+          "name": "glucose_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "unit": {
+          "name": "unit",
+          "type": "health_concentration_unit",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "context": {
+          "name": "context",
+          "type": "health_glucose_context",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "blood_glucose_record_fk": {
+          "name": "blood_glucose_record_fk",
+          "tableFrom": "blood_glucose_records",
+          "tableTo": "health_records",
+          "columnsFrom": [
+            "health_record_id",
+            "record_type"
+          ],
+          "columnsTo": [
+            "id",
+            "record_type"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "blood_glucose_type": {
+          "name": "blood_glucose_type",
+          "value": "\"blood_glucose_records\".\"record_type\" = 'blood_glucose'"
+        },
+        "blood_glucose_finite": {
+          "name": "blood_glucose_finite",
+          "value": "\"blood_glucose_records\".\"glucose_value\" not in ('NaN', 'Infinity', '-Infinity')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.blood_pressure_records": {
+      "name": "blood_pressure_records",
+      "schema": "",
+      "columns": {
+        "health_record_id": {
+          "name": "health_record_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "record_type": {
+          "name": "record_type",
+          "type": "health_record_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'blood_pressure'"
+        },
+        "systolic_value": {
+          "name": "systolic_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "diastolic_value": {
+          "name": "diastolic_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "blood_pressure_record_fk": {
+          "name": "blood_pressure_record_fk",
+          "tableFrom": "blood_pressure_records",
+          "tableTo": "health_records",
+          "columnsFrom": [
+            "health_record_id",
+            "record_type"
+          ],
+          "columnsTo": [
+            "id",
+            "record_type"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "blood_pressure_type": {
+          "name": "blood_pressure_type",
+          "value": "\"blood_pressure_records\".\"record_type\" = 'blood_pressure'"
+        },
+        "blood_pressure_finite": {
+          "name": "blood_pressure_finite",
+          "value": "\"blood_pressure_records\".\"systolic_value\" not in ('NaN', 'Infinity', '-Infinity') and \"blood_pressure_records\".\"diastolic_value\" not in ('NaN', 'Infinity', '-Infinity')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.hba1c_records": {
+      "name": "hba1c_records",
+      "schema": "",
+      "columns": {
+        "health_record_id": {
+          "name": "health_record_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "record_type": {
+          "name": "record_type",
+          "type": "health_record_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'hba1c'"
+        },
+        "hba1c_value": {
+          "name": "hba1c_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "hba1c_record_fk": {
+          "name": "hba1c_record_fk",
+          "tableFrom": "hba1c_records",
+          "tableTo": "health_records",
+          "columnsFrom": [
+            "health_record_id",
+            "record_type"
+          ],
+          "columnsTo": [
+            "id",
+            "record_type"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "hba1c_type": {
+          "name": "hba1c_type",
+          "value": "\"hba1c_records\".\"record_type\" = 'hba1c'"
+        },
+        "hba1c_finite": {
+          "name": "hba1c_finite",
+          "value": "\"hba1c_records\".\"hba1c_value\" not in ('NaN', 'Infinity', '-Infinity')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.health_records": {
+      "name": "health_records",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "record_type": {
+          "name": "record_type",
+          "type": "health_record_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provenance": {
+          "name": "provenance",
+          "type": "health_record_provenance",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'user_entered'"
+        },
+        "occurred_at": {
+          "name": "occurred_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "occurred_on": {
+          "name": "occurred_on",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "entered_at": {
+          "name": "entered_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "supersedes_record_id": {
+          "name": "supersedes_record_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "superseded_at": {
+          "name": "superseded_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "superseded_by_record_id": {
+          "name": "superseded_by_record_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "health_records_owner_idx": {
+          "name": "health_records_owner_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "health_records_current_history_idx": {
+          "name": "health_records_current_history_idx",
+          "columns": [
+            {
+              "expression": "user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "coalesce(\"occurred_at\", \"occurred_on\"::timestamp at time zone 'UTC') desc",
+              "asc": true,
+              "isExpression": true,
+              "nulls": "last"
+            },
+            {
+              "expression": "entered_at",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            },
+            {
+              "expression": "id",
+              "isExpression": false,
+              "asc": false,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "where": "\"health_records\".\"superseded_at\" is null",
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "health_records_user_id_users_id_fk": {
+          "name": "health_records_user_id_users_id_fk",
+          "tableFrom": "health_records",
+          "tableTo": "users",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "health_records_predecessor_fk": {
+          "name": "health_records_predecessor_fk",
+          "tableFrom": "health_records",
+          "tableTo": "health_records",
+          "columnsFrom": [
+            "supersedes_record_id",
+            "user_id",
+            "record_type"
+          ],
+          "columnsTo": [
+            "id",
+            "user_id",
+            "record_type"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        },
+        "health_records_replacement_fk": {
+          "name": "health_records_replacement_fk",
+          "tableFrom": "health_records",
+          "tableTo": "health_records",
+          "columnsFrom": [
+            "superseded_by_record_id",
+            "user_id",
+            "record_type"
+          ],
+          "columnsTo": [
+            "id",
+            "user_id",
+            "record_type"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "health_records_one_replacement": {
+          "name": "health_records_one_replacement",
+          "nullsNotDistinct": false,
+          "columns": [
+            "supersedes_record_id"
+          ]
+        },
+        "health_records_one_predecessor": {
+          "name": "health_records_one_predecessor",
+          "nullsNotDistinct": false,
+          "columns": [
+            "superseded_by_record_id"
+          ]
+        },
+        "health_records_id_type_key": {
+          "name": "health_records_id_type_key",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "record_type"
+          ]
+        },
+        "health_records_id_owner_type_key": {
+          "name": "health_records_id_owner_type_key",
+          "nullsNotDistinct": false,
+          "columns": [
+            "id",
+            "user_id",
+            "record_type"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {
+        "health_records_occurrence_shape": {
+          "name": "health_records_occurrence_shape",
+          "value": "\n    case when \"health_records\".\"record_type\" in ('physical_activity_duration', 'sleep_duration')\n      then \"health_records\".\"occurred_at\" is null and \"health_records\".\"occurred_on\" is not null and isfinite(\"health_records\".\"occurred_on\")\n      else \"health_records\".\"occurred_on\" is null and \"health_records\".\"occurred_at\" is not null and isfinite(\"health_records\".\"occurred_at\")\n    end"
+        },
+        "health_records_supersession_shape": {
+          "name": "health_records_supersession_shape",
+          "value": "(\"health_records\".\"superseded_at\" is null) = (\"health_records\".\"superseded_by_record_id\" is null)\n    and \"health_records\".\"supersedes_record_id\" is distinct from \"health_records\".\"id\"\n    and \"health_records\".\"superseded_by_record_id\" is distinct from \"health_records\".\"id\"\n    and (\"health_records\".\"supersedes_record_id\" is null or \"health_records\".\"supersedes_record_id\" is distinct from \"health_records\".\"superseded_by_record_id\")"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.lipid_panel_records": {
+      "name": "lipid_panel_records",
+      "schema": "",
+      "columns": {
+        "health_record_id": {
+          "name": "health_record_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "record_type": {
+          "name": "record_type",
+          "type": "health_record_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'lipid_panel'"
+        },
+        "unit": {
+          "name": "unit",
+          "type": "health_concentration_unit",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "total_cholesterol_value": {
+          "name": "total_cholesterol_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hdl_value": {
+          "name": "hdl_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ldl_value": {
+          "name": "ldl_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "triglycerides_value": {
+          "name": "triglycerides_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "lipid_panel_record_fk": {
+          "name": "lipid_panel_record_fk",
+          "tableFrom": "lipid_panel_records",
+          "tableTo": "health_records",
+          "columnsFrom": [
+            "health_record_id",
+            "record_type"
+          ],
+          "columnsTo": [
+            "id",
+            "record_type"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "lipid_panel_type": {
+          "name": "lipid_panel_type",
+          "value": "\"lipid_panel_records\".\"record_type\" = 'lipid_panel'"
+        },
+        "lipid_panel_has_component": {
+          "name": "lipid_panel_has_component",
+          "value": "num_nonnulls(\"lipid_panel_records\".\"total_cholesterol_value\", \"lipid_panel_records\".\"hdl_value\", \"lipid_panel_records\".\"ldl_value\", \"lipid_panel_records\".\"triglycerides_value\") > 0"
+        },
+        "lipid_panel_finite": {
+          "name": "lipid_panel_finite",
+          "value": "\"lipid_panel_records\".\"total_cholesterol_value\" not in ('NaN', 'Infinity', '-Infinity') and \"lipid_panel_records\".\"hdl_value\" not in ('NaN', 'Infinity', '-Infinity') and \"lipid_panel_records\".\"ldl_value\" not in ('NaN', 'Infinity', '-Infinity') and \"lipid_panel_records\".\"triglycerides_value\" not in ('NaN', 'Infinity', '-Infinity')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.physical_activity_records": {
+      "name": "physical_activity_records",
+      "schema": "",
+      "columns": {
+        "health_record_id": {
+          "name": "health_record_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "record_type": {
+          "name": "record_type",
+          "type": "health_record_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'physical_activity_duration'"
+        },
+        "duration_minutes": {
+          "name": "duration_minutes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "physical_activity_record_fk": {
+          "name": "physical_activity_record_fk",
+          "tableFrom": "physical_activity_records",
+          "tableTo": "health_records",
+          "columnsFrom": [
+            "health_record_id",
+            "record_type"
+          ],
+          "columnsTo": [
+            "id",
+            "record_type"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "physical_activity_type": {
+          "name": "physical_activity_type",
+          "value": "\"physical_activity_records\".\"record_type\" = 'physical_activity_duration'"
+        },
+        "physical_activity_whole_duration": {
+          "name": "physical_activity_whole_duration",
+          "value": "\"physical_activity_records\".\"duration_minutes\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.sleep_records": {
+      "name": "sleep_records",
+      "schema": "",
+      "columns": {
+        "health_record_id": {
+          "name": "health_record_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "record_type": {
+          "name": "record_type",
+          "type": "health_record_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'sleep_duration'"
+        },
+        "duration_minutes": {
+          "name": "duration_minutes",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "sleep_record_fk": {
+          "name": "sleep_record_fk",
+          "tableFrom": "sleep_records",
+          "tableTo": "health_records",
+          "columnsFrom": [
+            "health_record_id",
+            "record_type"
+          ],
+          "columnsTo": [
+            "id",
+            "record_type"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "sleep_type": {
+          "name": "sleep_type",
+          "value": "\"sleep_records\".\"record_type\" = 'sleep_duration'"
+        },
+        "sleep_whole_duration": {
+          "name": "sleep_whole_duration",
+          "value": "\"sleep_records\".\"duration_minutes\" >= 0"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.waist_circumference_records": {
+      "name": "waist_circumference_records",
+      "schema": "",
+      "columns": {
+        "health_record_id": {
+          "name": "health_record_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "record_type": {
+          "name": "record_type",
+          "type": "health_record_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'waist_circumference'"
+        },
+        "waist_value": {
+          "name": "waist_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "unit": {
+          "name": "unit",
+          "type": "health_waist_unit",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "waist_circumference_record_fk": {
+          "name": "waist_circumference_record_fk",
+          "tableFrom": "waist_circumference_records",
+          "tableTo": "health_records",
+          "columnsFrom": [
+            "health_record_id",
+            "record_type"
+          ],
+          "columnsTo": [
+            "id",
+            "record_type"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "waist_circumference_type": {
+          "name": "waist_circumference_type",
+          "value": "\"waist_circumference_records\".\"record_type\" = 'waist_circumference'"
+        },
+        "waist_circumference_finite": {
+          "name": "waist_circumference_finite",
+          "value": "\"waist_circumference_records\".\"waist_value\" not in ('NaN', 'Infinity', '-Infinity')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.weight_records": {
+      "name": "weight_records",
+      "schema": "",
+      "columns": {
+        "health_record_id": {
+          "name": "health_record_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "record_type": {
+          "name": "record_type",
+          "type": "health_record_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'weight'"
+        },
+        "weight_value": {
+          "name": "weight_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "unit": {
+          "name": "unit",
+          "type": "health_weight_unit",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "weight_record_fk": {
+          "name": "weight_record_fk",
+          "tableFrom": "weight_records",
+          "tableTo": "health_records",
+          "columnsFrom": [
+            "health_record_id",
+            "record_type"
+          ],
+          "columnsTo": [
+            "id",
+            "record_type"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "weight_type": {
+          "name": "weight_type",
+          "value": "\"weight_records\".\"record_type\" = 'weight'"
+        },
+        "weight_finite": {
+          "name": "weight_finite",
+          "value": "\"weight_records\".\"weight_value\" not in ('NaN', 'Infinity', '-Infinity')"
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.health_document_candidates": {
+      "name": "health_document_candidates",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "upload_id": {
+          "name": "upload_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "record_type": {
+          "name": "record_type",
+          "type": "health_document_candidate_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "state": {
+          "name": "state",
+          "type": "health_document_candidate_state",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'pending'"
+        },
+        "candidate_value": {
+          "name": "candidate_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "second_value": {
+          "name": "second_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "unit": {
+          "name": "unit",
+          "type": "health_document_candidate_unit",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "glucose_context": {
+          "name": "glucose_context",
+          "type": "health_glucose_context",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "total_cholesterol_value": {
+          "name": "total_cholesterol_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "hdl_value": {
+          "name": "hdl_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ldl_value": {
+          "name": "ldl_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "triglycerides_value": {
+          "name": "triglycerides_value",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "source_page": {
+          "name": "source_page",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "extraction_confidence": {
+          "name": "extraction_confidence",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "health_document_candidate_upload_idx": {
+          "name": "health_document_candidate_upload_idx",
+          "columns": [
+            {
+              "expression": "upload_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "health_document_candidates_upload_id_health_document_uploads_id_fk": {
+          "name": "health_document_candidates_upload_id_health_document_uploads_id_fk",
+          "tableFrom": "health_document_candidates",
+          "tableTo": "health_document_uploads",
+          "columnsFrom": [
+            "upload_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "health_document_candidate_source_page": {
+          "name": "health_document_candidate_source_page",
+          "value": "\"health_document_candidates\".\"source_page\" is null or \"health_document_candidates\".\"source_page\" between 1 and 15"
+        },
+        "health_document_candidate_confidence": {
+          "name": "health_document_candidate_confidence",
+          "value": "\"health_document_candidates\".\"extraction_confidence\" is null or \"health_document_candidates\".\"extraction_confidence\" between 0 and 1"
+        },
+        "health_document_candidate_shape": {
+          "name": "health_document_candidate_shape",
+          "value": "\n    case \"health_document_candidates\".\"record_type\"\n      when 'blood_pressure' then \"health_document_candidates\".\"candidate_value\" is not null and \"health_document_candidates\".\"second_value\" is not null and \"health_document_candidates\".\"unit\" = 'mmhg'\n      when 'blood_glucose' then \"health_document_candidates\".\"candidate_value\" is not null and \"health_document_candidates\".\"second_value\" is null and \"health_document_candidates\".\"unit\" in ('mmol_l', 'mg_dl') and \"health_document_candidates\".\"glucose_context\" is not null\n      when 'hba1c' then \"health_document_candidates\".\"candidate_value\" is not null and \"health_document_candidates\".\"second_value\" is null and \"health_document_candidates\".\"unit\" = 'percent'\n      when 'lipid_panel' then \"health_document_candidates\".\"candidate_value\" is null and \"health_document_candidates\".\"second_value\" is null and \"health_document_candidates\".\"unit\" in ('mmol_l', 'mg_dl')\n        and num_nonnulls(\"health_document_candidates\".\"total_cholesterol_value\", \"health_document_candidates\".\"hdl_value\", \"health_document_candidates\".\"ldl_value\", \"health_document_candidates\".\"triglycerides_value\") > 0\n      when 'weight' then \"health_document_candidates\".\"candidate_value\" is not null and \"health_document_candidates\".\"second_value\" is null and \"health_document_candidates\".\"unit\" in ('kg', 'lb')\n      when 'waist_circumference' then \"health_document_candidates\".\"candidate_value\" is not null and \"health_document_candidates\".\"second_value\" is null and \"health_document_candidates\".\"unit\" in ('cm', 'in')\n      else false\n    end\n    and (\"health_document_candidates\".\"record_type\" = 'lipid_panel' or num_nonnulls(\"health_document_candidates\".\"total_cholesterol_value\", \"health_document_candidates\".\"hdl_value\", \"health_document_candidates\".\"ldl_value\", \"health_document_candidates\".\"triglycerides_value\") = 0)\n    and (\"health_document_candidates\".\"record_type\" = 'blood_glucose' or \"health_document_candidates\".\"glucose_context\" is null)\n  "
+        }
+      },
+      "isRLSEnabled": false
+    },
+    "public.health_document_uploads": {
+      "name": "health_document_uploads",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "owner_user_id": {
+          "name": "owner_user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status": {
+          "name": "status",
+          "type": "health_document_upload_status",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'processing'"
+        },
+        "mime_type": {
+          "name": "mime_type",
+          "type": "health_document_mime",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "byte_size": {
+          "name": "byte_size",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "page_count": {
+          "name": "page_count",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "finalized_at": {
+          "name": "finalized_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "error_category": {
+          "name": "error_category",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {
+        "health_document_upload_owner_idx": {
+          "name": "health_document_upload_owner_idx",
+          "columns": [
+            {
+              "expression": "owner_user_id",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "health_document_upload_expiry_idx": {
+          "name": "health_document_upload_expiry_idx",
+          "columns": [
+            {
+              "expression": "expires_at",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        }
+      },
+      "foreignKeys": {
+        "health_document_uploads_owner_user_id_users_id_fk": {
+          "name": "health_document_uploads_owner_user_id_users_id_fk",
+          "tableFrom": "health_document_uploads",
+          "tableTo": "users",
+          "columnsFrom": [
+            "owner_user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "restrict",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {
+        "health_document_upload_size": {
+          "name": "health_document_upload_size",
+          "value": "\"health_document_uploads\".\"byte_size\" between 1 and 10485760"
+        },
+        "health_document_upload_pages": {
+          "name": "health_document_upload_pages",
+          "value": "\"health_document_uploads\".\"page_count\" is null or \"health_document_uploads\".\"page_count\" between 1 and 15"
+        },
+        "health_document_upload_expiry": {
+          "name": "health_document_upload_expiry",
+          "value": "\"health_document_uploads\".\"expires_at\" > \"health_document_uploads\".\"created_at\" and \"health_document_uploads\".\"expires_at\" <= \"health_document_uploads\".\"created_at\" + interval '24 hours'"
+        }
+      },
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.auth_email_challenge_purpose": {
+      "name": "auth_email_challenge_purpose",
+      "schema": "public",
+      "values": [
+        "verify_email",
+        "reset_password"
+      ]
+    },
+    "public.auth_security_event_type": {
+      "name": "auth_security_event_type",
+      "schema": "public",
+      "values": [
+        "account_created",
+        "sign_in_succeeded",
+        "sign_in_failed",
+        "sign_out",
+        "session_revoked"
+      ]
+    },
+    "public.auth_throttle_scope": {
+      "name": "auth_throttle_scope",
+      "schema": "public",
+      "values": [
+        "global",
+        "identity"
+      ]
+    },
+    "public.health_concentration_unit": {
+      "name": "health_concentration_unit",
+      "schema": "public",
+      "values": [
+        "mmol_l",
+        "mg_dl"
+      ]
+    },
+    "public.health_glucose_context": {
+      "name": "health_glucose_context",
+      "schema": "public",
+      "values": [
+        "fasting",
+        "before_meal",
+        "after_meal",
+        "random_other",
+        "not_specified"
+      ]
+    },
+    "public.health_record_provenance": {
+      "name": "health_record_provenance",
+      "schema": "public",
+      "values": [
+        "user_entered",
+        "document_assisted"
+      ]
+    },
+    "public.health_record_type": {
+      "name": "health_record_type",
+      "schema": "public",
+      "values": [
+        "blood_pressure",
+        "blood_glucose",
+        "hba1c",
+        "lipid_panel",
+        "weight",
+        "waist_circumference",
+        "physical_activity_duration",
+        "sleep_duration"
+      ]
+    },
+    "public.health_waist_unit": {
+      "name": "health_waist_unit",
+      "schema": "public",
+      "values": [
+        "cm",
+        "in"
+      ]
+    },
+    "public.health_weight_unit": {
+      "name": "health_weight_unit",
+      "schema": "public",
+      "values": [
+        "kg",
+        "lb"
+      ]
+    },
+    "public.health_document_candidate_state": {
+      "name": "health_document_candidate_state",
+      "schema": "public",
+      "values": [
+        "pending",
+        "included",
+        "removed",
+        "corrected",
+        "confirmed"
+      ]
+    },
+    "public.health_document_candidate_type": {
+      "name": "health_document_candidate_type",
+      "schema": "public",
+      "values": [
+        "blood_pressure",
+        "blood_glucose",
+        "hba1c",
+        "lipid_panel",
+        "weight",
+        "waist_circumference"
+      ]
+    },
+    "public.health_document_candidate_unit": {
+      "name": "health_document_candidate_unit",
+      "schema": "public",
+      "values": [
+        "mmhg",
+        "mmol_l",
+        "mg_dl",
+        "percent",
+        "kg",
+        "lb",
+        "cm",
+        "in"
+      ]
+    },
+    "public.health_document_mime": {
+      "name": "health_document_mime",
+      "schema": "public",
+      "values": [
+        "application/pdf",
+        "image/jpeg",
+        "image/png"
+      ]
+    },
+    "public.health_document_upload_status": {
+      "name": "health_document_upload_status",
+      "schema": "public",
+      "values": [
+        "processing",
+        "review",
+        "empty",
+        "failed",
+        "confirmed",
+        "cancelled",
+        "expired"
+      ]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

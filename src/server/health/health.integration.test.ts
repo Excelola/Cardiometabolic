@@ -9,7 +9,8 @@ import { describe, expect, it } from "vitest";
 import type { HealthEntry } from "@/domain/health-records";
 import { readAuthConfig } from "@/server/auth/config";
 import { authenticateAccount, createAccount } from "@/server/auth/credentials";
-import { findActiveSession } from "@/server/auth/sessions";
+import { hashPassword } from "@/server/auth/password";
+import { findActiveSession, issueSession } from "@/server/auth/sessions";
 import type { AuthDb } from "@/server/db/auth-db";
 import { adminUrl, applyMigrations, disposable, runPgTool } from "@/server/db/disposable-postgres";
 import { healthRecords, lipidPanelRecords, weightRecords } from "@/server/db/health-schema";
@@ -39,6 +40,7 @@ async function account(db: AuthDb, name: string) {
   if (result.kind !== "success") throw new Error("Synthetic account creation failed.");
   const session = await findActiveSession(db, result.token);
   if (!session) throw new Error("Synthetic account session failed.");
+  await db.update(users).set({ emailVerifiedAt: new Date() }).where(eq(users.id, session.userId));
   return { userId: session.userId, token: result.token, email };
 }
 
@@ -64,9 +66,17 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL health information", () => {
       await copyFile("drizzle/0000_auth_foundation.sql", join(old, "0000_auth_foundation.sql"));
       await disposable(async (db) => {
         await applyMigrations(db, old);
-        const before = await account(db, "before-upgrade");
+        const email = "before-upgrade@example.test";
+        const passwordHash = await hashPassword(password);
+        const before = await db.transaction(async (tx) => {
+          const inserted = await tx.execute<{ id: string }>(sql`insert into users (normalized_email) values (${email}) returning id`);
+          const userId = inserted.rows[0].id;
+          await tx.execute(sql`insert into password_credentials (user_id, password_hash) values (${userId}, ${passwordHash})`);
+          return { userId, token: await issueSession(tx, userId) };
+        });
         await applyMigrations(db);
         expect((await findActiveSession(db, before.token))?.userId).toBe(before.userId);
+        expect((await authenticateAccount(db, config, { email, password })).kind).toBe("success");
         expect(await db.$count(healthRecords)).toBe(0);
         expect(await createHealthRecord(db, before.userId, entries[0])).toBeTruthy();
       });

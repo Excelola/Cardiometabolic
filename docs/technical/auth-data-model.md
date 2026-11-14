@@ -1,5 +1,7 @@
 # HILERA authentication data model
 
+> **13 November 2026 update:** Verification, legacy eligibility, challenges and recovery admission are added by the migrations described in [verified-email recovery implementation](verified-email-recovery-implementation.md). The model below records the earlier foundation.
+
 This is the reviewed PostgreSQL authentication model implemented on draft PR #6 under [AUTH-ARCH-002, AUTH-ARCH-003, AUTH-ARCH-004, AUTH-ARCH-005, AUTH-ARCH-010, AUTH-ARCH-012 and AUTH-ARCH-016](auth-security-decisions.md). The migration remains subject to disposable PostgreSQL replay, concurrency and restore validation before merge/readiness. The Master PRD governs account behaviour and user data. The model covers email/password identity, credentials, revocable sessions, bounded abuse controls and minimal security events. Health records, questionnaires, clinical data, recovery credentials and email verification are outside its scope.
 
 “Required technical field” means required **if the recommended design is approved**. Recommended fields have a concrete operational purpose. Optional fields need a specific justification before adoption. Deferred fields need a product or privacy decision. PostgreSQL types and names below are proposals, with the migration design subject to review.

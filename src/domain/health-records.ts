@@ -45,4 +45,4 @@ export type HealthEntry =
   | { type: "physical_activity_duration" | "sleep_duration"; occurredOn: string; durationMinutes: number };
 
 export type HealthHistoryEntry = { id: string; entry: HealthEntry; provenance: "user_entered" | "document_assisted" };
-export type HealthMutationState = { error: string } | null;
+export type HealthMutationState = { error: string; verificationRequired?: boolean } | null;

@@ -25,7 +25,7 @@ export async function createAccount(db: AuthDb, config: AuthConfig, input: Crede
   const passwordHash = await hashPassword(input.password);
 
   return db.transaction(async (tx) => {
-    const [user] = await tx.insert(users).values({ normalizedEmail: email })
+    const [user] = await tx.insert(users).values({ normalizedEmail: email, legacyRecoveryRestricted: false })
       .onConflictDoNothing({ target: users.normalizedEmail }).returning({ id: users.id });
     if (!user) return { kind: "registration_failed" };
 

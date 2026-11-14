@@ -1,5 +1,7 @@
 # HILERA backend and authentication architecture
 
+> **13 November 2026 update:** The historical recovery and verification deferrals below are superseded by the approved A–D policy. See [verified-email recovery implementation](verified-email-recovery-implementation.md) for the current implementation, safeguards and production gates.
+
 The product owner approved the architecture foundation on 9 November 2026.
 The [decision register](auth-security-decisions.md#foundation-approval)
 identifies the approved entries and the remaining review gates. The Master PRD

@@ -11,7 +11,9 @@ import { applyMigrations, disposable, adminUrl, runPgTool } from "@/server/db/di
 import { healthDocumentCandidates, healthDocumentUploads } from "@/server/db/document-schema";
 import { healthRecords } from "@/server/db/health-schema";
 import { users } from "@/server/db/schema";
-import { createHealthRecord, listHealthHistory } from "@/server/health/repository";
+import { listHealthHistory } from "@/server/health/repository";
+import { requestEmailChallenge, verifyRegisteredEmail } from "@/server/auth/email-challenge-service";
+import type { EmailDelivery } from "@/server/auth/email-delivery";
 import { FakeOcrProvider, FakeScanner } from "./providers";
 import { cancelDocumentUpload, cleanupExpiredDocumentUploads, confirmDocumentUpload, getOwnedReview, processDocumentUpload } from "./service";
 
@@ -24,8 +26,8 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL document workflow", () => {
     await disposable(async (db) => {
       await applyMigrations(db);
       const [{ id: userA }, { id: userB }] = await db.insert(users).values([
-        { normalizedEmail: `document-a-${randomUUID()}@example.test` },
-        { normalizedEmail: `document-b-${randomUUID()}@example.test` },
+        { normalizedEmail: `document-a-${randomUUID()}@example.test`, emailVerifiedAt: new Date() },
+        { normalizedEmail: `document-b-${randomUUID()}@example.test`, emailVerifiedAt: new Date() },
       ]).returning({ id: users.id });
       let calls = 0;
       const infected = await processDocumentUpload(db, userA, file(), new FakeScanner("infected"), { extract: async () => { calls++; return { pages: [] }; } });
@@ -83,10 +85,24 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL document workflow", () => {
       await copyFile("drizzle/0001_manual_health_persistence.sql", join(old, "0001_manual_health_persistence.sql"));
       await disposable(async (db) => {
         await applyMigrations(db, old);
-        const [{ id: owner }] = await db.insert(users).values({ normalizedEmail: `manual-upgrade-${randomUUID()}@example.test` }).returning({ id: users.id });
-        const oldId = await createHealthRecord(db, owner, { type: "weight", occurredAt: "2026-10-15T04:05:06.000Z", value: "71", unit: "kg" });
+        const email = `manual-upgrade-${randomUUID()}@example.test`;
+        const owner = (await db.execute<{ id: string }>(sql`insert into users (normalized_email) values (${email}) returning id`)).rows[0].id;
+        const oldId = (await db.execute<{ id: string }>(sql`insert into health_records (user_id, record_type, occurred_at) values (${owner}, 'weight', '2026-10-15T04:05:06Z') returning id`)).rows[0].id;
+        await db.execute(sql`insert into weight_records (health_record_id, weight_value, unit) values (${oldId}, 71, 'kg')`);
         await applyMigrations(db);
         expect(await listHealthHistory(db, owner)).toMatchObject([{ id: oldId, provenance: "user_entered" }]);
+        const [legacy] = await db.select().from(users).where(eq(users.id, owner));
+        expect(legacy.emailVerifiedAt).toBeNull();
+        expect(legacy.legacyRecoveryRestricted).toBe(true);
+        expect(legacy.verificationRequiredForHealth).toBe(false);
+        const messages: Array<{ email: string; purpose: string; code: string }> = [];
+        const sender: EmailDelivery = { async send(message) { messages.push(message); } };
+        const config = { codeSecret: Buffer.alloc(32, 3), throttleSecret: Buffer.alloc(32, 4), sender };
+        await requestEmailChallenge(db, config, "verify_email", { userId: owner });
+        expect(await verifyRegisteredEmail(db, config, owner, messages.shift()!.code)).toBe(true);
+        await requestEmailChallenge(db, config, "reset_password", { email });
+        expect(messages).toHaveLength(0);
+        expect(await listHealthHistory(db, owner)).toHaveLength(1);
         expect(await db.$count(healthDocumentUploads)).toBe(0);
       });
     } finally { await rm(old, { recursive: true, force: true }); }
@@ -95,7 +111,7 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL document workflow", () => {
   it("supports removal, cancellation, expiry and idempotent cleanup", async () => {
     await disposable(async (db) => {
       await applyMigrations(db);
-      const [{ id: owner }] = await db.insert(users).values({ normalizedEmail: `document-owner-${randomUUID()}@example.test` }).returning({ id: users.id });
+      const [{ id: owner }] = await db.insert(users).values({ normalizedEmail: `document-owner-${randomUUID()}@example.test`, emailVerifiedAt: new Date() }).returning({ id: users.id });
       const created = await processDocumentUpload(db, owner, file(), new FakeScanner("clean"), ocr);
       if (!("id" in created)) throw new Error("Synthetic upload failed");
       const review = await getOwnedReview(db, owner, created.id);
@@ -134,7 +150,7 @@ describe.skipIf(!adminUrl)("disposable PostgreSQL document workflow", () => {
     try {
       const fixture = await disposable(async (db, name, url) => {
         await applyMigrations(db);
-        const [{ id: owner }] = await db.insert(users).values({ normalizedEmail: `document-restore-${randomUUID()}@example.test` }).returning({ id: users.id });
+        const [{ id: owner }] = await db.insert(users).values({ normalizedEmail: `document-restore-${randomUUID()}@example.test`, emailVerifiedAt: new Date() }).returning({ id: users.id });
         const result = await processDocumentUpload(db, owner, file(), new FakeScanner("clean"), ocr);
         if (!("id" in result)) throw new Error("Synthetic upload failed");
         const review = await getOwnedReview(db, owner, result.id);
