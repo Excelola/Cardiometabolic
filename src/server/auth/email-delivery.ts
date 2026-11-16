@@ -1,6 +1,7 @@
 import "server-only";
 
 import { EMAIL_CODE_LIFETIME_MS, type EmailChallengePurpose } from "./email-challenge-code";
+import { ResendEmailDelivery } from "./resend-delivery";
 
 export interface EmailDelivery {
   send(message: Readonly<{ email: string; purpose: EmailChallengePurpose; code: string }>): Promise<void>;
@@ -36,5 +37,17 @@ const syntheticDelivery = new SyntheticEmailDelivery();
 
 // No production sender is approved. A future sender must be explicitly reviewed and configured.
 export function configuredEmailDelivery(): EmailDelivery | null {
-  return process.env.NODE_ENV !== "production" && process.env.HILERA_SYNTHETIC_EMAIL === "enabled" ? syntheticDelivery : null;
+  if (process.env.NODE_ENV === "production") return null;
+  if (process.env.HILERA_EMAIL_PROVIDER === "resend" && process.env.HILERA_RESEND_TEST_DELIVERY === "enabled") {
+    const recipients = (process.env.HILERA_RESEND_TEST_RECIPIENTS ?? "").split(",").map((value) => value.trim()).filter(Boolean);
+    if (!recipients.length || recipients.some((value) => !/^[^\s@,<>]+@[^\s@,<>]+\.[^\s@,<>]+$/.test(value))) return null;
+    try {
+      const sender = new ResendEmailDelivery({ apiKey: process.env.RESEND_API_KEY ?? "", from: process.env.HILERA_RESEND_FROM ?? "" });
+      return { async send(message) {
+        if (!recipients.includes(message.email)) throw new Error("Email delivery could not be confirmed.");
+        await sender.send(message);
+      } };
+    } catch { return null; }
+  }
+  return process.env.HILERA_SYNTHETIC_EMAIL === "enabled" && !process.env.HILERA_EMAIL_PROVIDER ? syntheticDelivery : null;
 }

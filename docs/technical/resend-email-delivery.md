@@ -1,6 +1,6 @@
 # Resend Free — transactional email adapter preparation
 
-Status: **development-only adapter foundation; provider NOT connected or activated**
+Status: **development-only delivery integration; production remains disabled**
 Date: 16 November 2026
 Owner decision: Resend Free was conditionally selected as the proposed HILERA MVP transactional email provider, recorded in the Google Drive Master PRD on 16 November 2026.
 
@@ -18,12 +18,12 @@ The approved account-ownership, challenge generation, validation, throttling, pa
 - Sends the smallest transaction to Resend's `POST https://api.resend.com/emails` endpoint: one recipient, verified configured sender, subject, plain text and HTML containing the manual code. Uses bearer authorization, a random per-request idempotency identifier and an abort timeout.
 - Does **not** retry ambiguous failures. HTTP failures, missing success confirmation, malformed input or thrown transport exceptions produce one generic non-sensitive error without propagating provider responses.
 - `src/server/auth/resend-delivery.test.ts` uses injected mock HTTP transport to check message shape, code privacy, failure behavior and that a Resend-shaped environment variable does not activate production delivery.
-- **Not wired** into `configuredEmailDelivery()`, signup, verification or recovery actions; **no new environment variables are read by the application**, no domain/API credential is configured, and no real API calls are made by the new tests.
-- No dependency added; uses server-side Node/Web APIs already available in the Next.js runtime. No database migration, clinical logic or product behavior change.
+- The server selector wires the adapter to the existing verification and recovery actions only in non-production, with explicit enablement and exact recipient allowlisting. Automated tests make no real provider calls.
+- No dependency, database migration, or clinical logic was added. Development can now send codes to explicitly configured test recipients after separate send authorization.
 
 ## Production remains deliberately fail-closed
 
-The authoritative provider selector in `src/server/auth/email-delivery.ts` still returns only the explicitly-enabled synthetic sender in a non-production process and `null` in production. Adding a `RESEND_API_KEY` secret to the environment alone does not enable this adapter. Real emails require a **separate explicitly approved code/wiring change and release**.
+The selector returns `null` in production regardless of flags or keys. For non-production Resend tests set `HILERA_EMAIL_PROVIDER=resend`, `HILERA_RESEND_TEST_DELIVERY=enabled`, `HILERA_RESEND_TEST_RECIPIENTS` to comma-separated exact authorized addresses, `HILERA_RESEND_FROM` to a plain verified sender email, and `RESEND_API_KEY` in server-side secret storage. Synthetic delivery remains available via `HILERA_SYNTHETIC_EMAIL=enabled` with no provider selected. A real test send requires separate explicit approval. Do not configure real credentials in the repository.
 
 A provider `200` response indicates API acceptance, **not delivery into the recipient's inbox**. Bounce, rejection, complaints, suppression and deliverability operational behavior still need separately approved handling. The existing code activates a challenge after a sender returns successfully; real activation must review the consequences of delayed bounces.
 
@@ -43,7 +43,7 @@ Before any real transmission, obtain explicit Product Owner/security/privacy app
 
 ## Testing and handoff
 
-Codex should execute `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:postgres` when a disposable PostgreSQL administrator connection is available, `pnpm build`, `pnpm audit --prod`, and `git diff --check`. The GitHub-only implementation author has **not** executed these commands. Do not report tests as passing until independently run.
+Run `pnpm lint`, `pnpm typecheck`, `pnpm test`, `pnpm test:postgres` with disposable PostgreSQL, `pnpm db:check`, `pnpm build`, `pnpm audit --prod`, and `git diff --check`.
 
 The current agent handoff lives in **draft documentation PR #22** (`docs/AGENT_HANDOFF.md`) and is not merged into `main`. Next agent should inspect that PR and current Git status before continuing and update `docs/AGENT_HANDOFF.md` on an approved documentation or feature branch after substantial work, without editing the same working tree concurrently.
 

@@ -4,10 +4,10 @@ import { configuredEmailDelivery } from "./email-delivery";
 import { ResendEmailDelivery } from "./resend-delivery";
 
 const key = "re_synthetic_test_key_only";
-const sender = "HILERA <notifications@example.test>";
+const sender = "notifications@example.test";
 const code = "ABCdef1234567890_-ABCD";
 
-afterEach(() => vi.unstubAllEnvs());
+afterEach(() => { vi.unstubAllEnvs(); vi.unstubAllGlobals(); });
 
 function acceptedTransport() {
   return vi.fn(async (_url: RequestInfo | URL, _options?: RequestInit) =>
@@ -84,6 +84,27 @@ describe("Resend adapter foundation (mock transport only)", () => {
     vi.stubEnv("NODE_ENV", "production");
     vi.stubEnv("HILERA_SYNTHETIC_EMAIL", "enabled");
     vi.stubEnv("RESEND_API_KEY", key);
+    expect(configuredEmailDelivery()).toBeNull();
+  });
+
+  it("requires explicit development activation and refuses unlisted recipients", async () => {
+    vi.stubEnv("NODE_ENV", "test");
+    vi.stubEnv("HILERA_EMAIL_PROVIDER", "resend");
+    vi.stubEnv("HILERA_RESEND_TEST_DELIVERY", "enabled");
+    vi.stubEnv("RESEND_API_KEY", key);
+    vi.stubEnv("HILERA_RESEND_FROM", sender);
+    vi.stubEnv("HILERA_RESEND_TEST_RECIPIENTS", "allowed@example.test");
+    const delivery = configuredEmailDelivery();
+    expect(delivery).not.toBeNull();
+    await expect(delivery!.send({ email: "other@example.test", purpose: "verify_email", code })).rejects.toThrow("could not be confirmed");
+    const transport = acceptedTransport();
+    vi.stubGlobal("fetch", transport);
+    await configuredEmailDelivery()!.send({ email: "allowed@example.test", purpose: "verify_email", code });
+    expect(transport).toHaveBeenCalledTimes(1);
+    vi.stubEnv("HILERA_RESEND_TEST_RECIPIENTS", "");
+    expect(configuredEmailDelivery()).toBeNull();
+    vi.stubEnv("NODE_ENV", "production");
+    vi.stubEnv("HILERA_RESEND_TEST_RECIPIENTS", "allowed@example.test");
     expect(configuredEmailDelivery()).toBeNull();
   });
 });

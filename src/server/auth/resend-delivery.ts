@@ -38,9 +38,8 @@ function renderCodeEmail(purpose: EmailChallengePurpose, code: string) {
 }
 
 /**
- * Reviewed provider adapter foundation only: NOT connected to the application's
- * configuredEmailDelivery() selector. This class cannot become a live sender
- * without a later, separately approved wiring/activation change.
+ * Server-only delivery adapter. The selector restricts it to explicitly
+ * enabled non-production test environments and an exact recipient allowlist.
  */
 export class ResendEmailDelivery implements EmailDelivery {
   private readonly transport: typeof fetch;
@@ -50,7 +49,7 @@ export class ResendEmailDelivery implements EmailDelivery {
     if (!options.apiKey.startsWith("re_") || options.apiKey.length < 12) {
       throw new Error("Resend delivery is not configured.");
     }
-    if (!options.from.includes("@") || /[\r\n]/.test(options.from) || options.from.length > 254) {
+    if (!/^[A-Za-z0-9.!#$%&'*+/=?^_`{|}~-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)+$/.test(options.from) || options.from.length > 254) {
       throw new Error("Resend sender identity is not configured.");
     }
     const timeoutMs = options.timeoutMs ?? DEFAULT_TIMEOUT_MS;

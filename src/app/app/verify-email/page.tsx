@@ -23,6 +23,6 @@ export default async function VerifyEmailPage() {
   return <><PageTitle title="Verify your email"><p>Verify your registered email before saving health information.</p></PageTitle>
     <Card>{!user ? <Notice tone="warning">Email verification is currently unavailable. Please try again later.</Notice>
       : user.emailVerifiedAt ? <Notice>Your email is verified. {user.legacyRecoveryRestricted && "Email-only recovery is not yet available for this account. "}<Link href="/app/measurements/new">Add Health Information</Link></Notice>
-      : configuredEmailDelivery() ? <><Notice title="Synthetic testing only">No real email is sent. Use fictional accounts for this test environment.</Notice><VerificationForms csrf={csrf} /></>
+      : configuredEmailDelivery() ? <><Notice title="Development testing">Delivery is limited to configured test accounts.</Notice><VerificationForms csrf={csrf} /></>
         : <Notice tone="warning">Email verification is currently unavailable. Please try again later.</Notice>}</Card></>;
 }
