@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { check, customType, index, integer, pgEnum, pgTable, primaryKey, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, check, customType, index, integer, pgEnum, pgTable, primaryKey, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 const bytes = customType<{ data: Buffer }>({ dataType: () => "bytea" });
 const instant = (name: string) => timestamp(name, { withTimezone: true });
@@ -8,7 +8,41 @@ export const users = pgTable("users", {
   id: uuid().defaultRandom().primaryKey(),
   normalizedEmail: text("normalized_email").notNull().unique("users_normalized_email_unique"),
   createdAt: instant("created_at").notNull().defaultNow(),
+  emailVerifiedAt: instant("email_verified_at"),
+  legacyRecoveryRestricted: boolean("legacy_recovery_restricted").notNull().default(true),
+  verificationRequiredForHealth: boolean("verification_required_for_health").notNull().default(true),
 }, (table) => [check("users_email_length", sql`length(${table.normalizedEmail}) between 3 and 254`)]);
+
+export const emailChallengePurpose = pgEnum("auth_email_challenge_purpose", ["verify_email", "reset_password"]);
+export const authEmailChallenges = pgTable("auth_email_challenges", {
+  id: uuid().defaultRandom().primaryKey(),
+  userId: uuid("user_id").notNull().references(() => users.id, { onDelete: "restrict" }),
+  purpose: emailChallengePurpose().notNull(),
+  digest: bytes("digest").notNull(),
+  createdAt: instant("created_at").notNull().defaultNow(),
+  expiresAt: instant("expires_at").notNull(),
+  activatedAt: instant("activated_at"),
+  consumedAt: instant("consumed_at"),
+  failedAttempts: integer("failed_attempts").notNull().default(0),
+}, (table) => [
+  check("auth_email_challenge_digest_length", sql`octet_length(${table.digest}) = 32`),
+  check("auth_email_challenge_time_order", sql`${table.expiresAt} > ${table.createdAt} and ${table.expiresAt} <= ${table.createdAt} + interval '10 minutes'
+    and (${table.activatedAt} is null or (${table.activatedAt} >= ${table.createdAt} and ${table.activatedAt} < ${table.expiresAt}))
+    and (${table.consumedAt} is null or ${table.consumedAt} >= ${table.createdAt})`),
+  check("auth_email_challenge_attempt_bounds", sql`${table.failedAttempts} between 0 and 5`),
+  index("auth_email_challenge_owner_purpose_idx").on(table.userId, table.purpose),
+  index("auth_email_challenge_expiry_idx").on(table.expiresAt),
+]);
+
+export const recoveryThrottleBuckets = pgTable("auth_recovery_throttle_buckets", {
+  bucketKey: bytes("bucket_key").primaryKey(),
+  attemptCount: integer("attempt_count").notNull().default(0),
+  windowEndsAt: instant("window_ends_at").notNull(),
+}, (table) => [
+  check("auth_recovery_throttle_key_length", sql`octet_length(${table.bucketKey}) = 32`),
+  check("auth_recovery_throttle_attempt_bounds", sql`${table.attemptCount} between 0 and 32767`),
+  index("auth_recovery_throttle_expiry_idx").on(table.windowEndsAt),
+]);
 
 export const passwordCredentials = pgTable("password_credentials", {
   userId: uuid("user_id").primaryKey().references(() => users.id, { onDelete: "restrict" }),
@@ -52,7 +86,7 @@ export const authThrottleBuckets = pgTable("auth_throttle_buckets", {
 ]);
 
 export const eventType = pgEnum("auth_security_event_type", [
-  "account_created", "sign_in_succeeded", "sign_in_failed", "sign_out", "session_revoked",
+  "account_created", "sign_in_succeeded", "sign_in_failed", "sign_out", "session_revoked", "email_verified", "password_reset_completed",
 ]);
 export const authSecurityEvents = pgTable("auth_security_events", {
   id: uuid().defaultRandom().primaryKey(),

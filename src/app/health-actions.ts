@@ -6,6 +6,7 @@ import { redirect } from "next/navigation";
 
 import type { HealthMutationState } from "@/domain/health-records";
 import { getAuthConfig } from "@/server/auth/config";
+import { EmailVerificationRequired } from "@/server/auth/health-write-policy";
 import { isTrustedAuthOrigin, verifySessionCsrf } from "@/server/auth/mutation-security";
 import { getCurrentSession } from "@/server/auth/request-session";
 import { getAuthDb } from "@/server/db/auth-db";
@@ -33,7 +34,8 @@ async function save(form: FormData, correction: boolean): Promise<HealthMutation
     } else {
       await createHealthRecord(db, principal.userId, entry);
     }
-  } catch {
+  } catch (error) {
+    if (error instanceof EmailVerificationRequired) return { error: "Verify your email before saving health information.", verificationRequired: true };
     return saveUnavailable;
   }
   revalidatePath(history);

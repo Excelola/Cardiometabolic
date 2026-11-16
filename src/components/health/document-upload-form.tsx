@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Notice } from "@/components/ui/notice";
@@ -44,7 +45,7 @@ export function DocumentUploadForm({ csrf }: Readonly<{ csrf: string }>) {
         <p id="document-file-help" className="muted">PDF, JPEG or PNG · up to 10 MB · PDF up to 15 pages. Password-protected PDFs are not supported.</p>
       </div>
       <p>HILERA looks only for supported health information. You must review and explicitly confirm anything found before it is saved.</p>
-      {error && <Notice tone="critical">{error}</Notice>}
+      {error && <Notice tone="critical">{error} {error === "Verify your email before saving health information." && <Link href="/app/verify-email">Verify your email</Link>}</Notice>}
       <Button type="submit" disabled={pending}>{pending ? "Checking document…" : "Upload health document"}</Button>
     </form>
   );

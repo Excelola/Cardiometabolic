@@ -1,5 +1,7 @@
 # HILERA authentication server contracts
 
+> **13 November 2026 update:** The verification and recovery Server Actions and their trust boundaries are described in [verified-email recovery implementation](verified-email-recovery-implementation.md). Earlier statements that recovery is deferred describe the original foundation.
+
 Implemented for draft review in PR #6. `/sign-up` and `/sign-in` use first-party Server Actions backed by PostgreSQL authentication services; `/app` and `/onboarding` are protected by server-side session validation. Health-facing screens still use synthetic preview data. The Master PRD remains authoritative for product behaviour, and real-user exposure remains blocked by the release gates in the implementation notes and production-readiness checklist.
 
 ## Transport and trust boundary

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useState } from "react";
 
 import { cancelHealthDocumentAction, confirmHealthDocumentAction } from "@/app/document-actions";
@@ -70,7 +71,7 @@ export function DocumentCandidateReview({ uploadId, csrf, candidates }: Readonly
     <form action={action} className="document-review-form" aria-busy={pending}>
       <input type="hidden" name="csrf" value={csrf} />
       <input type="hidden" name="uploadId" value={uploadId} />
-      {state?.error && <Notice tone="critical">{state.error}</Notice>}
+      {state?.error && <Notice tone="critical">{state.error} {state.verificationRequired && <Link href="/app/verify-email">Verify your email</Link>}</Notice>}
       {candidates.map((candidate) => <CandidateFields key={candidate.id} candidate={candidate} />)}
       <p>Confirm only the items you have checked. Confirmation does not mean clinical verification.</p>
       <Button type="submit" disabled={pending}>{pending ? "Saving…" : "Confirm selected information"}</Button>

@@ -22,6 +22,41 @@
       "when": 1794385930396,
       "tag": "0002_health_document_upload",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1794526870791,
+      "tag": "0003_fast_sentry",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1794526937738,
+      "tag": "0004_conscious_gunslinger",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1794566807115,
+      "tag": "0005_regular_night_nurse",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1794567710419,
+      "tag": "0006_thin_zombie",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1794569282989,
+      "tag": "0007_lean_deadpool",
+      "breakpoints": true
     }
   ]
 }

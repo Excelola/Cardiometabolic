@@ -5,7 +5,7 @@ import { authSecurityEvents } from "../db/schema";
 
 export type AuthEvent =
   | { type: "sign_in_failed" }
-  | { type: "account_created" | "sign_in_succeeded" | "sign_out" | "session_revoked"; userId: string };
+  | { type: "account_created" | "sign_in_succeeded" | "sign_out" | "session_revoked" | "email_verified" | "password_reset_completed"; userId: string };
 
 export async function recordAuthSecurityEvent(writer: Pick<AuthTransaction, "insert">, event: AuthEvent): Promise<void> {
   await writer.insert(authSecurityEvents).values({

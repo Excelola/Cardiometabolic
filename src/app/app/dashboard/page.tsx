@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { eq } from "drizzle-orm";
 
 import { ProductStateList } from "@/components/app/product-state-list";
 import { ButtonLink } from "@/components/ui/button-link";
@@ -6,14 +7,22 @@ import { Card } from "@/components/ui/card";
 import { InformationCard } from "@/components/ui/information-card";
 import { PageTitle } from "@/components/ui/page-title";
 import { StatusCard } from "@/components/ui/status-card";
+import { Notice } from "@/components/ui/notice";
 import { MOCK_CURRENT_PRODUCT_STATE } from "@/domain/product-state";
 
 import { requireSession } from "@/server/auth/request-session";
+import { getAuthDb } from "@/server/db/auth-db";
+import { users } from "@/server/db/schema";
 
 export const metadata: Metadata = { title: "Overview" };
 
 export default async function DashboardPage() {
-  await requireSession();
+  const principal = await requireSession();
+  let user: { verified: Date | null; required: boolean } | undefined;
+  try {
+    [user] = await getAuthDb().select({ verified: users.emailVerifiedAt, required: users.verificationRequiredForHealth })
+      .from(users).where(eq(users.id, principal.userId)).limit(1);
+  } catch { /* Do not expose database or identity details. */ }
   const status = MOCK_CURRENT_PRODUCT_STATE === "Setup In Progress"
     ? "Setup in progress"
     : MOCK_CURRENT_PRODUCT_STATE;
@@ -23,6 +32,10 @@ export default async function DashboardPage() {
       <PageTitle eyebrow="Overview" title="Your health overview">
         <p className="lede">See where you are in setup and find your next step.</p>
       </PageTitle>
+      {user && !user.verified && <Notice title="Verify your email">
+        <p>{user.required ? "Verify your email before saving health information." : "You can verify your registered email address."}</p>
+        <ButtonLink href="/app/verify-email" variant="text">Verify your email</ButtonLink>
+      </Notice>}
       <StatusCard
         action={<ButtonLink href="/onboarding">Continue setup</ButtonLink>}
         status={status}

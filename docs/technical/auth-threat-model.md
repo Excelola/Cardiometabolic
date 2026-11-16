@@ -1,5 +1,7 @@
 # HILERA authentication threat model
 
+> **13 November 2026 update:** See the [verified-email recovery security review](verified-email-recovery-security-design.md) and [implementation](verified-email-recovery-implementation.md) for the expanded health-write, legacy-account and recovery threat boundaries.
+
 Updated for draft implementation review in PR #6. The branch now contains first-party email/password authentication, PostgreSQL schema/migrations, revocable sessions, server-side route protection and abuse controls, but it is not approved for real-user production exposure. Health-facing screens still use synthetic preview data and no health information is persisted. See the [architecture](backend-authentication-architecture.md), [contracts](auth-api-contracts.md), [decision register](auth-security-decisions.md) and [production-readiness checklist](auth-production-readiness.md).
 
 ## Scope and trust boundaries

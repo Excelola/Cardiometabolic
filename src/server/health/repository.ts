@@ -4,6 +4,7 @@ import { and, desc, eq, isNull, sql } from "drizzle-orm";
 
 import type { HealthEntry, HealthHistoryEntry } from "@/domain/health-records";
 import type { AuthDb, AuthTransaction } from "@/server/db/auth-db";
+import { requireHealthWritePermission } from "@/server/auth/health-write-policy";
 import {
   healthRecords, bloodPressureRecords, bloodGlucoseRecords, hba1cRecords, lipidPanelRecords,
   weightRecords, waistCircumferenceRecords, physicalActivityRecords, sleepRecords,
@@ -15,6 +16,7 @@ function current(ownerId: string) {
 }
 
 export async function insertRecord(tx: AuthTransaction, ownerId: string, entry: HealthEntry, predecessor?: string, provenance: "user_entered" | "document_assisted" = "user_entered") {
+  await requireHealthWritePermission(tx, ownerId);
   const [{ id }] = await tx.insert(healthRecords).values({
     userId: ownerId,
     recordType: entry.type,
@@ -61,6 +63,7 @@ export function createHealthRecord(db: AuthDb, ownerId: string, entry: HealthEnt
 
 export function correctHealthRecord(db: AuthDb, ownerId: string, id: string, entry: HealthEntry) {
   return db.transaction(async (tx) => {
+    await requireHealthWritePermission(tx, ownerId);
     const where = and(current(ownerId), eq(healthRecords.id, id), eq(healthRecords.recordType, entry.type));
     const [old] = await tx.select({ id: healthRecords.id }).from(healthRecords).where(where).for("update");
     if (!old) return null;

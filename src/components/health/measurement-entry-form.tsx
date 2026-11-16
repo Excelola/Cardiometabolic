@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useActionState, useEffect, useId, useState } from "react";
 
 import { correctHealthRecordAction, createHealthRecordAction } from "@/app/health-actions";
@@ -75,7 +76,7 @@ export function MeasurementEntryForm({ type, csrf, correction }: Readonly<EntryF
       <input type="hidden" name="csrf" value={csrf} />
       <input type="hidden" name="type" value={type} />
       {correction && <input type="hidden" name="recordId" value={correction.id} />}
-      {state?.error && <Notice tone="critical">{state.error}</Notice>}
+      {state?.error && <Notice tone="critical">{state.error} {state.verificationRequired && <Link href="/app/verify-email">Verify your email</Link>}</Notice>}
       {type === "lipid_panel" && <p>Enter at least one lipid result. Use the same unit for all results in this entry.</p>}
       <div className="measurement-form__grid">
         {type === "blood_pressure" && <>{field("systolic", "Systolic (mmHg)")}{field("diastolic", "Diastolic (mmHg)")}</>}

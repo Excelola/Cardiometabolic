@@ -5,13 +5,14 @@ import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 
 import { getAuthConfig } from "@/server/auth/config";
+import { EmailVerificationRequired } from "@/server/auth/health-write-policy";
 import { isTrustedAuthOrigin, verifySessionCsrf } from "@/server/auth/mutation-security";
 import { getCurrentSession } from "@/server/auth/request-session";
 import { getAuthDb } from "@/server/db/auth-db";
 import { cancelDocumentUpload, confirmDocumentUpload } from "@/server/documents/service";
 import { isHealthRecordId } from "@/server/health/input";
 
-export type DocumentActionState = { error: string } | null;
+export type DocumentActionState = { error: string; verificationRequired?: boolean } | null;
 
 async function principalFor(form: FormData) {
   const config = getAuthConfig();
@@ -31,7 +32,10 @@ export async function confirmHealthDocumentAction(_previous: DocumentActionState
     if (result === "unavailable") return { error: "This review is unavailable. Start a new upload." };
     if (result === "invalid") return { error: "Select at least one item and check its fields, unit, and date." };
     success = true;
-  } catch { return { error: "We couldn’t save this information. Please try again." }; }
+  } catch (error) {
+    if (error instanceof EmailVerificationRequired) return { error: "Verify your email before saving health information.", verificationRequired: true };
+    return { error: "We couldn’t save this information. Please try again." };
+  }
   if (success) {
     revalidatePath("/app/measurements/history");
     redirect("/app/measurements/history");
