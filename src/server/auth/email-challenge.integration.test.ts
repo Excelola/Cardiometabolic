@@ -17,6 +17,7 @@ import { requestEmailChallenge, resetPasswordWithEmailCode, verifyRegisteredEmai
 import { generateEmailCode } from "./email-challenge-code";
 import { hashPassword } from "./password";
 import { findActiveSession } from "./sessions";
+import { ResendEmailDelivery } from "./resend-delivery";
 
 const auth = readAuthConfig({ NODE_ENV: "test", HILERA_AUTH_CSRF_SECRET: Buffer.alloc(32, 1).toString("base64url"),
   HILERA_AUTH_THROTTLE_SECRET: Buffer.alloc(32, 2).toString("base64url") });
@@ -25,6 +26,36 @@ const replacement = "Another synthetic account password 928!";
 const health = { type: "weight", value: "73", unit: "kg", occurredAt: "2026-01-01T00:00:00.000Z" } as const;
 
 describe.skipIf(!adminUrl)("verified email and recovery on disposable PostgreSQL", () => {
+  it("completes verification and reset through the mocked Resend transport", async () => {
+    await disposable(async (db) => {
+      await applyMigrations(db);
+      const codes: string[] = [];
+      const transport: typeof fetch = async (_url, init) => {
+        const payload = JSON.parse(String(init?.body)) as { text: string };
+        const code = payload.text.match(/\n\n([A-Za-z0-9_-]{22})\n\n/)?.[1];
+        if (!code) throw new Error("Synthetic code missing");
+        codes.push(code);
+        return new Response(JSON.stringify({ id: "synthetic" }), { status: 200 });
+      };
+      const config = { codeSecret: Buffer.alloc(32, 3), throttleSecret: auth.throttleSecret,
+        sender: new ResendEmailDelivery({ apiKey: "re_synthetic_test_key", from: "sender@example.test", transport }) };
+      const email = `resend-test-${randomUUID()}@example.test`;
+      const account = await createAccount(db, auth, { email, password });
+      if (account.kind !== "success") throw new Error("Synthetic signup failed");
+      const principal = await findActiveSession(db, account.token);
+      if (!principal) throw new Error("Synthetic session missing");
+      await requestEmailChallenge(db, config, "verify_email", { userId: principal.userId });
+      expect(await verifyRegisteredEmail(db, config, principal.userId, "invalid")).toBe(false);
+      expect(await verifyRegisteredEmail(db, config, principal.userId, codes[0])).toBe(true);
+      expect(await createHealthRecord(db, principal.userId, health)).toBeTruthy();
+      await requestEmailChallenge(db, config, "reset_password", { email });
+      expect(await resetPasswordWithEmailCode(db, config, email, codes[1], replacement)).toBe(true);
+      expect(await resetPasswordWithEmailCode(db, config, email, codes[1], replacement)).toBe(false);
+      expect(await findActiveSession(db, account.token)).toBeNull();
+      expect((await authenticateAccount(db, auth, { email, password: replacement })).kind).toBe("success");
+    });
+  }, 60000);
+
   it("serializes verification and a concurrent health write on the owner", async () => {
     await disposable(async (db) => {
       await applyMigrations(db);
