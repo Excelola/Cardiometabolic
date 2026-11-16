@@ -33,4 +33,4 @@ The `email_verified` and `password_reset_completed` security events contain only
 
 ## Release and recovery prerequisites
 
-Real-user use requires an explicitly approved delivery provider and cost, privacy/DPA and cross-border review, DPO/legal review, domain and deliverability controls, secure secret management, incident response, cleanup scheduling, test evidence, rollout/rollback plans, and separate release authorization. The document-upload production gate remains in force. No live email is sent by this branch.
+On 16 November 2026 the Product Owner conditionally selected Resend Free for a separately scoped provider integration; this is not authorization to configure or activate it. Real-user use requires provider terms, cost, privacy/DPA and cross-border review, DPO/legal review, domain and deliverability controls, secure secret management, incident response, cleanup scheduling, test evidence, rollout/rollback plans, and separate release authorization. The document-upload production gate remains in force. No live email is sent by this branch.

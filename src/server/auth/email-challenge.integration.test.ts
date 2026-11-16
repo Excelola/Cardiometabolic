@@ -25,6 +25,28 @@ const replacement = "Another synthetic account password 928!";
 const health = { type: "weight", value: "73", unit: "kg", occurredAt: "2026-01-01T00:00:00.000Z" } as const;
 
 describe.skipIf(!adminUrl)("verified email and recovery on disposable PostgreSQL", () => {
+  it("serializes verification and a concurrent health write on the owner", async () => {
+    await disposable(async (db) => {
+      await applyMigrations(db);
+      const messages: Array<{ email: string; purpose: string; code: string }> = [];
+      const config = { codeSecret: Buffer.alloc(32, 3), throttleSecret: auth.throttleSecret,
+        sender: { async send(message: { email: string; purpose: "verify_email" | "reset_password"; code: string }) { messages.push(message); } } };
+      const account = await createAccount(db, auth, { email: `verify-race-${randomUUID()}@example.test`, password });
+      if (account.kind !== "success") throw new Error("Synthetic signup failed");
+      const principal = await findActiveSession(db, account.token);
+      if (!principal) throw new Error("Synthetic session missing");
+      await requestEmailChallenge(db, config, "verify_email", { userId: principal.userId });
+      const [verified, write] = await Promise.allSettled([
+        verifyRegisteredEmail(db, config, principal.userId, messages[0].code),
+        createHealthRecord(db, principal.userId, health),
+      ]);
+      expect(verified).toMatchObject({ status: "fulfilled", value: true });
+      if (write.status === "rejected") expect(String(write.reason)).toContain("Email verification is required");
+      expect(await db.$count(healthRecords)).toBe(write.status === "fulfilled" ? 1 : 0);
+      expect(await createHealthRecord(db, principal.userId, health)).toBeTruthy();
+    });
+  }, 60000);
+
   it("protects new health writes and legacy ownership, consumes recovery exactly once, and revokes sessions", async () => {
     await disposable(async (db) => {
       await applyMigrations(db);
