@@ -62,3 +62,15 @@ This file is introduced by a **documentation-only draft PR** after merge #21, to
 
 ## PR #23 development delivery
 Resend is wired only for explicitly enabled non-production test delivery with a strict recipient allowlist. Production remains disabled. See docs/technical/resend-email-delivery.md for setup and release gates. No live test send is authorized by this implementation request. PR #22 remains open and unchanged.
+
+## Profile onboarding follow-up
+
+The scoped onboarding branch adds an owner-keyed basic profile and migration `0008`, partial save/resume and a personalized Overview. Consent is still pending. Verification guidance distinguishes unavailable configuration from a signed-in test account outside the delivery allowlist. Review `docs/technical/profile-onboarding.md`; migration of persistent or real-data environments requires separate Product Owner authorization. Do not enable production delivery or change the test-recipient allowlist without approval.
+
+Validation on synthetic disposable PostgreSQL: 22 integration tests and 109 full-suite tests passed; lint and typecheck passed (eight existing lint warnings), `db:check`, production build and production audit passed. The first parallel database run had a connection timeout; the isolated retry passed. Browser testing exercised signup, partial save, resume, complete profile and verification/recovery at mobile and desktop widths. No live email or persistent database migration was performed. Production deployment and real-data migration remain separate release gates.
+
+## Review follow-up
+
+PR #24 review requires effective verification-readiness precedence, truthful profile status, input and owner-isolation checks, and the non-destructive `0008` backup/migration/forward-repair procedure in `docs/technical/profile-onboarding.md`. It does not authorize applying `0008` to persistent local PostgreSQL. An earlier simulated Resend delivery milestone was reported by the Product Owner; simulation is not inbox delivery or production activation, and no new live-provider test is authorized by this follow-up. Independently verify its original evidence before relying on provider outcomes. Preserve all production and personal-recipient restrictions.
+
+This follow-up verified 22 disposable PostgreSQL integration tests and 112 full-suite tests, including configuration-precedence, future-date and cross-session/foreign-owner action cases. A synthetic browser check exercised Tab and Enter on Save for later, resume, completion and welcome after sign-in, with overflow checks at 320, 390 and 1440 px. Earlier browser attempts timed out on page loading or an unrelated health screen before the scoped retry passed. No persistent migration or live email was performed. Independent review and explicit authorization remain required before merging or applying migration `0008` to a persistent database.

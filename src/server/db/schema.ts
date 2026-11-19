@@ -1,5 +1,5 @@
 import { sql } from "drizzle-orm";
-import { boolean, check, customType, index, integer, pgEnum, pgTable, primaryKey, text, timestamp, uuid } from "drizzle-orm/pg-core";
+import { boolean, check, customType, date, index, integer, pgEnum, pgTable, primaryKey, text, timestamp, uuid } from "drizzle-orm/pg-core";
 
 const bytes = customType<{ data: Buffer }>({ dataType: () => "bytea" });
 const instant = (name: string) => timestamp(name, { withTimezone: true });
@@ -12,6 +12,16 @@ export const users = pgTable("users", {
   legacyRecoveryRestricted: boolean("legacy_recovery_restricted").notNull().default(true),
   verificationRequiredForHealth: boolean("verification_required_for_health").notNull().default(true),
 }, (table) => [check("users_email_length", sql`length(${table.normalizedEmail}) between 3 and 254`)]);
+
+export const userProfiles = pgTable("user_profiles", {
+  userId: uuid("user_id").primaryKey().references(() => users.id, { onDelete: "restrict" }),
+  preferredName: text("preferred_name"),
+  dateOfBirth: date("date_of_birth", { mode: "string" }),
+  market: text("market").$type<"NG">(),
+}, (table) => [
+  check("user_profiles_name_length", sql`${table.preferredName} is null or length(${table.preferredName}) between 1 and 100`),
+  check("user_profiles_market", sql`${table.market} is null or ${table.market} = 'NG'`),
+]);
 
 export const emailChallengePurpose = pgEnum("auth_email_challenge_purpose", ["verify_email", "reset_password"]);
 export const authEmailChallenges = pgTable("auth_email_challenges", {

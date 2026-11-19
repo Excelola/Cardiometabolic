@@ -12,13 +12,14 @@ export function ProgressIndicator({ currentStep }: ProgressStepsProps) {
       <p className="progress-steps__position">
         Step {currentStep} of {STEPS.length}{currentStepName && ` · ${currentStepName}`}
       </p>
+      <p className="muted">These steps are a guide and do not indicate completed consent.</p>
       <ol className="progress-steps" role="list">
         {STEPS.map((step, index) => {
           const stepNumber = index + 1;
           return (
             <li
               aria-current={stepNumber === currentStep ? "step" : undefined}
-              className={stepNumber <= currentStep ? "is-active" : undefined}
+              className={stepNumber === currentStep ? "is-active" : undefined}
               key={step}
             >
               <span aria-hidden="true">{stepNumber}</span>

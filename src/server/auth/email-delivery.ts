@@ -35,6 +35,16 @@ export class SyntheticEmailDelivery implements EmailDelivery {
 
 const syntheticDelivery = new SyntheticEmailDelivery();
 
+/** Only use for the signed-in user's own verification screen. */
+export function verificationDeliveryStatus(email: string): "available" | "not_configured" | "not_authorized" {
+  if (!configuredEmailDelivery()) return "not_configured";
+  if (process.env.HILERA_EMAIL_PROVIDER === "resend") {
+    const recipients = (process.env.HILERA_RESEND_TEST_RECIPIENTS ?? "").split(",").map((value) => value.trim());
+    if (!recipients.includes(email)) return "not_authorized";
+  } else if (!email.endsWith("@example.test")) return "not_authorized";
+  return "available";
+}
+
 // No production sender is approved. A future sender must be explicitly reviewed and configured.
 export function configuredEmailDelivery(): EmailDelivery | null {
   if (process.env.NODE_ENV === "production") return null;
