@@ -18,7 +18,7 @@ export function ProgressIndicator({ currentStep }: ProgressStepsProps) {
           return (
             <li
               aria-current={stepNumber === currentStep ? "step" : undefined}
-              className={stepNumber <= currentStep ? "is-active" : undefined}
+              className={stepNumber === currentStep ? "is-active" : undefined}
               key={step}
             >
               <span aria-hidden="true">{stepNumber}</span>
