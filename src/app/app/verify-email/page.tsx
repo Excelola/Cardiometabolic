@@ -8,6 +8,7 @@ import { Notice } from "@/components/ui/notice";
 import { getAuthConfig } from "@/server/auth/config";
 import { verificationDeliveryStatus } from "@/server/auth/email-delivery";
 import { readChallengeSecret } from "@/server/auth/email-challenge-service";
+import { verificationReadiness } from "@/server/auth/verification-readiness";
 import { issueSessionCsrf } from "@/server/auth/mutation-security";
 import { requireSession } from "@/server/auth/request-session";
 import { getAuthDb } from "@/server/db/auth-db";
@@ -24,10 +25,11 @@ export default async function VerifyEmailPage() {
     [user] = await getAuthDb().select({ emailVerifiedAt: users.emailVerifiedAt, legacyRecoveryRestricted: users.legacyRecoveryRestricted, email: users.normalizedEmail })
       .from(users).where(eq(users.id, principal.userId)).limit(1);
   } catch { /* Keep database and identity details out of the response and ordinary logs. */ }
+  const readiness = user ? verificationReadiness(Boolean(challengeReady), verificationDeliveryStatus(user.email)) : "not_configured";
   return <><PageTitle title="Verify your email"><p>Verify your registered email before saving health information.</p></PageTitle>
     <Card>{!user ? <Notice tone="warning">Email verification is currently unavailable. Please try again later.</Notice>
       : user.emailVerifiedAt ? <Notice>Your email is verified. {user.legacyRecoveryRestricted && "Email-only recovery is not yet available for this account. "}<Link href="/app/measurements/new">Add Health Information</Link></Notice>
-      : challengeReady && verificationDeliveryStatus(user.email) === "available" ? <><Notice title="Development testing">Delivery is limited to configured test accounts.</Notice><VerificationForms csrf={csrf} /></>
-        : verificationDeliveryStatus(user.email) === "not_authorized" ? <Notice tone="warning">This account is not authorized for development test delivery. Contact the test administrator.</Notice>
+      : readiness === "available" ? <><Notice title="Development testing">Delivery is limited to configured test accounts.</Notice><VerificationForms csrf={csrf} /></>
+        : readiness === "not_authorized" ? <Notice tone="warning">This account is not authorized for development test delivery. Contact the test administrator.</Notice>
         : <Notice tone="warning">Email delivery is not configured for this environment. Contact the test administrator before requesting a code.</Notice>}</Card></>;
 }

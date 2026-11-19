@@ -8,7 +8,6 @@ import { InformationCard } from "@/components/ui/information-card";
 import { PageTitle } from "@/components/ui/page-title";
 import { StatusCard } from "@/components/ui/status-card";
 import { Notice } from "@/components/ui/notice";
-import { MOCK_CURRENT_PRODUCT_STATE } from "@/domain/product-state";
 
 import { requireSession } from "@/server/auth/request-session";
 import { getAuthDb } from "@/server/db/auth-db";
@@ -27,9 +26,6 @@ export default async function DashboardPage() {
       .from(users).where(eq(users.id, principal.userId)).limit(1);
     profile = await getProfile(getAuthDb(), principal.userId);
   } catch { /* Do not expose database or identity details. */ }
-  const status = MOCK_CURRENT_PRODUCT_STATE === "Setup In Progress"
-    ? "Setup in progress"
-    : MOCK_CURRENT_PRODUCT_STATE;
 
   return (
     <>
@@ -42,7 +38,7 @@ export default async function DashboardPage() {
       </Notice>}
       {!isProfileComplete(profile) && <StatusCard
         action={<ButtonLink href="/onboarding">Continue setup</ButtonLink>}
-        status={status}
+        status="Profile incomplete"
         title="Finish setting up your profile"
       >
         <p>Continue to review your profile and consent.</p>
@@ -64,7 +60,7 @@ export default async function DashboardPage() {
         <Card className="workflow-notes">
           <details>
             <summary className="app-disclosure">What these statuses mean</summary>
-            <p className="muted">These eight states describe progress through the product.</p>
+            <p className="muted">These states describe possible product stages; they do not show your current consent or clinical status.</p>
             <ProductStateList />
           </details>
         </Card>

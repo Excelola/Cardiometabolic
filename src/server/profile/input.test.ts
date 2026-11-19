@@ -19,5 +19,7 @@ describe("profile validation", () => {
     expect(parseProfile(form("Ada", "2000-01-01", "US"), true)).toBeNull();
     const duplicate = form("Ada", "", ""); duplicate.append("market", "NG");
     expect(parseProfile(duplicate, false)).toBeNull();
+    expect(parseProfile(form("Ada", "2030-01-02", "NG"), true, new Date("2030-01-01T12:00:00Z"))).toBeNull();
+    expect(parseProfile(form("Ada", "2030-01-02", "NG"), true, new Date("2030-01-01T23:30:00Z"))).not.toBeNull();
   });
 });
